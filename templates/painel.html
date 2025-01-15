@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/painel.css') }}">
+  <title>TVLAR MOTORS - Painel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div class="top-container">
+    <div class="logo-container">
+      <!-- Logo TVLAR MOTORS -->
+      <img src="static/tvlar-motors.png" alt="TVLAR MOTORS" class="logo">
+    </div>
+
+    <div class="vendedor-container">
+      <select id="vendedorTipo" name="vendedorTipo">
+        <option value="">Selecione</option>
+        {% for chave, valor in filiais.items() %}
+        <option value="{{ chave }}">{{ valor }}</option>
+        {% endfor %}
+      </select>
+      <input type="text" id="vendedor" value="{{ usuario }}" placeholder="Nome do Usuario" readonly>
+    </div>
+
+    <div class="btn-container" id="btnContainer">
+      <button class="btn" onclick="window.location.href='/'"> Logout </button>
+    </div>
+  </div>
+
+  <div id="formContainer" class="form-container">
+    <div class="card" id="card1">
+      <label for="yahMotos">MOTOS YAMAHA</label>
+      <select id="motos_yamaha" name="motos_yamaha">
+        <option value="">Selecione</option>
+        {% for chave, valor in motos_yamaha.items() %}
+        <option value="{{ chave }}">{{ valor }}</option>
+        {% endfor %}
+      </select>
+      <label for="cliente">CLIENTE</label>
+      <input type="text" id="cliente" placeholder="Nome do Cliente">
+      <label for="cpfCliente">CPF</label>
+      <input type="text" id="cpf" placeholder="CPF do Cliente" maxlength="14" oninput="formatarCPF(this);"
+        onblur="validarCPF();">
+      <label for="formaPagamento">FORMA DE PAGAMENTO</label>
+      <select id="forma_pagameto" name="formas_pagamentos">
+        <option value="">Selecione</option>
+        {% for chave, valor in formas_pagamentos.items() %}
+        <option value="{{ chave }}">{{ valor }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="card disabled" id="card2">
+      <label for="precoNegociado">PREÇO NEGOCIADO</label>
+      <input type="text" id="preco_negociado" placeholder="R$00,00" disabled>
+      <label for="descontoFCT">DESCONTO ESPECIAL</label>
+      <input type="text" id="desconto_fct" placeholder="R$00,00" disabled>
+      <label for="valorEntrada">ENTRADA REAL</label>
+      <input type="text" id="valor_entrada" placeholder="R$00,00" disabled>
+      <label for="valorReal">VALOR REAL DE VENDA</label>
+      <input type="text" id="valorreal" placeholder="R$00,00" disabled>
+    </div>
+
+    <div class="card disabled" id="card3">
+      <label for="emplacamento">EMPLACAMENTO</label>
+      <input type="text" id="emplacamento" placeholder="Selecionar" disabled>
+      <label for="frete">FRETE</label>
+      <input type="text" id="frete" placeholder="Selecionar" disabled>
+      <label for="cortesia">ACESSÓRIOS</label>
+      <input type="text" id="acessorio" placeholder="R$00,00" disabled>
+      <button class="btn" id="showCard4Button">Simular</button>
+    </div>
+  </div>
+
+  <div id="card4">
+    <span id="resumo-texto">Simular valores...</span>
+  </div>
+
+
+  <script src="{{ url_for('static', filename='js/painel.js') }}"></script>
+</body>
+
+</html>

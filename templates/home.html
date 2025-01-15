@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+  <title>YAMAHA MOTORS</title>
+</head>
+
+<body>
+  <div class="logo-container">
+    <img src="{{ url_for('static', filename='tvlar-motors.png') }}" alt="Logo TVLar Motors">
+  </div>
+
+  <div class="form-container">
+    <form action="/login" method="POST" id="loginForm">
+      <label for="login">Login</label>
+      <input type="text" id="login" name="login" required placeholder="Digite seu login">
+
+      <label for="password">Senha</label>
+      <input type="password" id="password" name="password" required placeholder="Digite sua senha">
+
+      <input type="submit" value="Entrar">
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="message">
+      {{ messages[0] }}
+    </div>
+    {% endif %}
+    {% endwith %}
+  </div>
+</body>
+
+</html>
