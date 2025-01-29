@@ -38,9 +38,9 @@ banco_retorno = {
 
 filiais = {
     "Cachoeirinha": "Cachoeirinha",
-    "compensa": "Compensa",
-    "cd_nova": "Cidade Nova",
-    "max_teixeira": "Max Teixeira",
+    "Compensa": "Compensa",
+    "Cidade Nova": "Cidade Nova",
+    "Max Teixeira": "Max Teixeira",
     "humaita": "Humaitá",
     "itacoatiara": "Itacoatiara",
     "iranduba": "Iranduba",

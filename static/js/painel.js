@@ -191,7 +191,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
 
   var filialSelecionada = document.getElementById('filialTipo').value;
-  var filiaisManaus = ["Cachoeirinha", "compensa", "cd_nova", "max_teixeira"];
+  var filiaisManaus = ["Cachoeirinha", "Compensa", "Cidade Nova", "Max Teixeira"];
 
   var motoSelecionada = $('#motos_yamaha').val();
 
@@ -202,7 +202,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
       } else {
         if (filiaisManaus.includes(filialSelecionada)) {
           document.getElementById('mensagemFilial').innerText = `Relatório de Venda - ${filialSelecionada}`;
-          $('#card4').show(); // Exibe o card com os dados de Manaus
+          $('#card4').show();
           $('#custo_produto').text(`${'.'.repeat(80)} R$ ${data.manaus_custo_produto.toFixed(2).replace('.', ',')}`);
           $('#pps').text(`${'.'.repeat(80)} R$ ${data.manaus_pps.toFixed(2).replace('.', ',')}`);
           custoProduto = data.manaus_custo_produto;
@@ -214,7 +214,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
         } else {
           document.getElementById('mensagemFilial').innerText = `Relatório de Venda - ${filialSelecionada}`;
-          $('#card4').show(); // Exibe o card com os dados do Interior
+          $('#card4').show();
           $('#custo_produto').text(`${'.'.repeat(80)} R$ ${data.interior_custo_produto.toFixed(2).replace('.', ',')}`);
           $('#pps').text(`${'.'.repeat(80)} R$ ${data.interior_pps.toFixed(2).replace('.', ',')}`);
 
@@ -223,6 +223,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
 
         }
+
         const resultadoFrete = retornoFrete - despesaFrete
 
         const margemBruta = valorVendaReal - custoProduto
@@ -243,18 +244,6 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
     $('#revisao').text('');
   }
 
-
-  const checkboxEmplacamento = document.getElementById('enableEmplacamento');
-
-  if (checkboxEmplacamento.checked) {
-    const resultadoEmplacamento = retornoEmplacamento - 1200
-    resultEmplac = 1200
-    document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
-  } else {
-    const resultadoEmplacamento = 0
-    resultEmplac = resultadoEmplacamento
-    document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
-  }
 
   const checkboxAcessorio = document.getElementById('enableAcessorio');
 
@@ -337,6 +326,22 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           $('#custo_produto').text(`${'.'.repeat(80)} R$ ${data.interior_custo_produto.toFixed(2).replace('.', ',')}`);
           custoProduto = data.interior_custo_produto;
           despesaFrete = 600;
+        }
+
+        const formaPagamento = document.getElementById('forma_pagameto').value.trim();
+        const checkboxEmplacamento = document.getElementById('enableEmplacamento');
+        if (checkboxEmplacamento.checked && formaPagamento === "financiado") {
+          const resultadoEmplacamento = retornoEmplacamento - (custoProduto * 0.02 / 12 * 11) - 140.75 - 86.00 - 335.52
+          resultEmplac = resultadoEmplacamento
+          document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
+        } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista") {
+          const resultadoEmplacamento = retornoEmplacamento - (custoProduto * 0.02 / 12 * 11) - 140.75 - 86.00 - 227.08
+          resultEmplac = resultadoEmplacamento
+          document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
+        } else {
+          const resultadoEmplacamento = 0;
+          resultEmplac = 0;
+          document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
         }
 
         resultRevisao = data.revisao
