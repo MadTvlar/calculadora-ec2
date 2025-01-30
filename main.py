@@ -1,22 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, make_response
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, make_response
+from motos_novas.dados_motos import motos
+from users.user import usuarios
+
 
 app = Flask(__name__)
-app.secret_key = 'segredo'  # necessário para utilizar flash
+app.secret_key = 'segredo'  
 
-# Dicionário de usuários cadastrados
-usuarios = {
-    "madson_michel": "220199",
-    "louiz_migles": "123",
-    "admin": "admin123"
-}
-
-motos_yamaha = {
-    "neo_24_25": "Neo 125 UBS 24/25",
-    "factor_24_25": "Factor 150 UBS 24/25",
-    "fazer_24_25": "Fazer 150 UBS 24/25",
-    "r6": "Yamaha R6",
-    "xj6": "XJ6"
-}
 
 formas_pagamentos = {
     "a_vista": "À vista",
@@ -34,17 +23,27 @@ bancos = {
     "outros": "Outros"
 }
 
-filiais = {
-    "cachoeirinha": "Cachoeirinha",
-    "compensa": "Compensa",
-    "cd_nova": "Cidade Nova",
-    "max_teixeia": "Max Teixeira"
+banco_retorno = {
+    "zero": "R0",
+    "um": "R1",
+    "dois": "R2",
+    "tres": "R3",
+    "quatro": "R4"
 }
 
-escolhas = {
-    "sim": "Sim",
-    "nao": "Não"
+filiais = {
+    "Cachoeirinha": "Cachoeirinha",
+    "Compensa": "Compensa",
+    "Cidade Nova": "Cidade Nova",
+    "Max Teixeira": "Max Teixeira",
+    "humaita": "Humaitá",
+    "itacoatiara": "Itacoatiara",
+    "iranduba": "Iranduba",
+    "manacapuru": "Manacapuru",
+    "coari": "Coari",
+    "tefe": "Tefé",
 }
+
 
 @app.route('/')
 def home():
@@ -68,18 +67,35 @@ def login():
         # Redireciona de volta para a página de login (home)
         return redirect(url_for('home'))
 
-@app.route('/painel')
+@app.route('/painel', methods=['GET', 'POST'])
 def painel():
-    # A variável 'usuario_logado' recebe o nome do usuário logado
-    usuario_logado = request.cookies.get('usuario_logado')  # Recuperando o nome de usuário do cookie
+    usuario_logado = request.cookies.get('usuario_logado')
 
-    # Caso o cookie não esteja presente (usuário não logado), redireciona para a página de login
     if not usuario_logado:
         return redirect(url_for('home'))
 
-    return render_template('painel.html', usuario=usuario_logado.replace('_',' ').title(), 
-                           motos_yamaha=motos_yamaha, formas_pagamentos=formas_pagamentos,
-                           bancos=bancos, filiais=filiais)
+    # Renderiza a página normalmente para a requisição GET
+    return render_template('painel.html', usuario=usuario_logado.replace('_', ' ').title(),
+                           motos_yamaha=motos, formas_pagamentos=formas_pagamentos,
+                           bancos=bancos, filiais=filiais, banco_retorno=banco_retorno)
+
+@app.route('/dados_moto/<nome_moto>', methods=['GET'])
+def obter_dados_moto(nome_moto):
+    nome_moto = nome_moto.replace('%20', ' ')  # Corrige o nome da moto se houver espaço
+    if nome_moto in motos:
+        dados_moto = motos[nome_moto]
+        return jsonify({
+            'manaus_custo_produto': dados_moto.get('manaus_custo_produto', 'N/A'),
+            'manaus_pps': dados_moto.get('manaus_pps', 'N/A'),
+            'interior_custo_produto': dados_moto.get('interior_custo_produto', 'N/A'),
+            'interior_pps': dados_moto.get('interior_pps', 'N/A'),
+            'revisao': dados_moto.get('revisao', 'N/A')
+        })
+    else:
+        return jsonify({'error': 'Moto não encontrada'}), 404
+
+
+
 
 @app.route('/logout')
 def logout():

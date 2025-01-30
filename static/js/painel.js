@@ -1,5 +1,5 @@
 function verificarCamposCard1() {
-  const filialSelecionada = document.getElementById('vendedorTipo').value.trim();
+  const filialSelecionada = document.getElementById('filialTipo').value.trim();
   console.log('Filial selecionada:', filialSelecionada);
   const motosYamaha = document.getElementById('motos_yamaha').value;
   const formaPagamento = document.getElementById('forma_pagameto').value.trim();
@@ -7,36 +7,40 @@ function verificarCamposCard1() {
   const cpf = document.getElementById('cpf').value;
   const cpfValido = validarCPF(cpf);
 
-  // Se a filial for escolhida, ativamos o Card 1
   if (filialSelecionada) {
     document.getElementById('card1').classList.remove('suspended');
     document.getElementById('card1').classList.add('active');
   } else {
     document.getElementById('card1').classList.add('suspended');
     document.getElementById('card1').classList.remove('active');
+    document.getElementById('card2').classList.add('suspended');
+    document.getElementById('card2').classList.remove('active');
+    document.getElementById('card3').classList.add('suspended');
+    document.getElementById('card3').classList.remove('active');
   }
 
-  // Verificação dos campos
   if (filialSelecionada && motosYamaha && cliente && cpfValido && formaPagamento) {
     if (formaPagamento === "a_vista") {
+      document.getElementById('card2').classList.add('suspended');
+      document.getElementById('card2').classList.remove('active');
       habilitarCamposCard2e3(false);
       habilitarCamposCard3(true);
       document.getElementById('card3').classList.add('active');
     } else if (formaPagamento === "financiado") {
       habilitarCamposCard2e3(true);
-    } else {
-      habilitarCamposCard2e3(false);
     }
+
   } else {
     habilitarCamposCard2e3(false);
+    document.getElementById('card2').classList.add('suspended');
+    document.getElementById('card2').classList.remove('active');
+    document.getElementById('card3').classList.add('suspended');
+    document.getElementById('card3').classList.remove('active');
   }
 }
 
+document.getElementById('filialTipo').addEventListener('change', verificarCamposCard1);
 
-// Atualização de eventos para verificar a escolha da filial
-document.getElementById('vendedorTipo').addEventListener('change', verificarCamposCard1);
-
-// Inicialização do Card 1, Card 2 e Card 3 com o estilo suspenso
 document.getElementById('card1').classList.add('suspended');
 document.getElementById('card2').classList.add('suspended');
 document.getElementById('card3').classList.add('suspended');
@@ -142,26 +146,230 @@ document.getElementById('cpf').addEventListener('blur', function () {
 document.getElementById('forma_pagameto').addEventListener('change', verificarCamposCard1);
 
 document.getElementById('showCard4Button').addEventListener('click', function () {
-  // Pega os campos dos cards 2 e 3
-  const camposCard2 = document.querySelectorAll('#card2 input:not([disabled]), #card2 select:not([disabled])');
-  const camposCard3 = document.querySelectorAll('#card3 input:not([disabled]), #card3 select:not([disabled])');
 
-  // Calcula a soma apenas dos campos habilitados
-  let soma = 0;
+  const camposCard = document.querySelectorAll('#card2 input:not([disabled]):not([type="select-one"]), #card3 input:not([disabled]):not([type="select-one"])');
 
-  camposCard2.forEach(campo => {
+
+  let precoNegociado = 0;
+  let entradaBonificada = 0;
+  let entradaReal = 0;
+  let custoProduto = 0;
+  let despesaFrete = 0;
+  let retornoFrete = 0;
+  let retornoEmplacamento = 0;
+  let retornoAcessorio = 0;
+  let retornoBrinde = 0;
+  let resultEmplac = 0;
+  let resultRevisao = 0;
+
+
+  camposCard.forEach(campo => {
     const valor = parseFloat(campo.value.replace('R$', '').replace(',', '.') || 0);
-    soma += valor;
+
+    if (campo.id === 'preco_negociado') {
+      precoNegociado = valor;
+    } else if (campo.id === 'entrada_bonificada') {
+      entradaBonificada = valor;
+    } else if (campo.id === 'entrada_real') {
+      entradaReal = valor;
+    } else if (campo.id === 'retorno_frete') {
+      retornoFrete = valor;
+    } else if (campo.id === 'retorno_emplacamento') {
+      retornoEmplacamento = valor;
+    } else if (campo.id === 'retorno_acessorio') {
+      retornoAcessorio = valor;
+    } else if (campo.id === 'retorno_brinde') {
+      retornoBrinde = valor;
+    }
   });
 
-  camposCard3.forEach(campo => {
-    const valor = parseFloat(campo.value.replace('R$', '').replace(',', '.') || 0);
-    soma += valor;
-  });
+  const valorVendaReal = precoNegociado - entradaBonificada;
 
-  // Exibe o total no card4
-  document.getElementById('resumo-texto').innerText = `Total: R$ ${soma.toFixed(2).replace('.', ',')}`;
+  document.getElementById('valor_venda_real').innerText = `Valor de venda real: ${'.'.repeat(82)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
-  // Mostra o card4
-  document.getElementById('card4').style.display = 'flex';
+  document.getElementById('card4').style.display = 'block';
+
+
+  var filialSelecionada = document.getElementById('filialTipo').value;
+  var filiaisManaus = ["Cachoeirinha", "Compensa", "Cidade Nova", "Max Teixeira"];
+
+  var motoSelecionada = $('#motos_yamaha').val();
+
+  if (motoSelecionada) {
+    $.getJSON('/dados_moto/' + encodeURIComponent(motoSelecionada), function (data) {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        if (filiaisManaus.includes(filialSelecionada)) {
+          document.getElementById('mensagemFilial').innerText = `Relatório de Venda - ${filialSelecionada}`;
+          $('#card4').show();
+          $('#custo_produto').text(`${'.'.repeat(80)} R$ ${data.manaus_custo_produto.toFixed(2).replace('.', ',')}`);
+          $('#pps').text(`${'.'.repeat(80)} R$ ${data.manaus_pps.toFixed(2).replace('.', ',')}`);
+          custoProduto = data.manaus_custo_produto;
+
+          const checkboxFrete = document.getElementById('enableFrete');
+          if (checkboxFrete.checked) {
+            despesaFrete = 600;
+          }
+
+        } else {
+          document.getElementById('mensagemFilial').innerText = `Relatório de Venda - ${filialSelecionada}`;
+          $('#card4').show();
+          $('#custo_produto').text(`${'.'.repeat(80)} R$ ${data.interior_custo_produto.toFixed(2).replace('.', ',')}`);
+          $('#pps').text(`${'.'.repeat(80)} R$ ${data.interior_pps.toFixed(2).replace('.', ',')}`);
+
+          custoProduto = data.interior_custo_produto;
+          despesaFrete = 600;
+
+
+        }
+
+        const resultadoFrete = retornoFrete - despesaFrete
+
+        const margemBruta = valorVendaReal - custoProduto
+        document.getElementById('margem_bruta').innerText = `${'.'.repeat(89)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
+        $('#revisao').text(`${'.'.repeat(99)} R$ ${data.revisao.toFixed(2).replace('.', ',')}`);
+        document.getElementById('resultado_frete').innerText = `${'.'.repeat(104)} R$ ${resultadoFrete.toFixed(2).replace('.', ',')}`;
+      }
+    }).fail(function () {
+      alert('Erro ao obter dados da moto');
+    });
+  } else {
+
+    $('#card4').hide();
+    $('#manaus_custo_produto').text('');
+    $('#manaus_pps').text('');
+    $('#interior_custo_produto').text('');
+    $('#interior_pps').text('');
+    $('#revisao').text('');
+  }
+
+
+  const checkboxAcessorio = document.getElementById('enableAcessorio');
+
+  if (checkboxAcessorio.checked) {
+    const resultadoAcessorio = retornoAcessorio
+    document.getElementById('resultado_acessorio').innerText = `${'.'.repeat(97)} R$ ${resultadoAcessorio.toFixed(2).replace('.', ',')}`;
+  } else {
+    const resultadoAcessorio = 0
+    document.getElementById('resultado_acessorio').innerText = `${'.'.repeat(97)} R$ ${resultadoAcessorio.toFixed(2).replace('.', ',')}`;
+  }
+
+
+  const checkboxBrinde = document.getElementById('enableBrinde');
+
+  if (checkboxBrinde.checked) {
+    const resultadoBrinde = retornoBrinde;
+
+    document.getElementById('resultado_brinde').innerText = `${'.'.repeat(102)} R$ ${resultadoBrinde.toFixed(2).replace('.', ',')}`;
+  } else {
+    const resultadoBrinde = 0;
+    document.getElementById('resultado_brinde').innerText = `${'.'.repeat(102)} R$ ${resultadoBrinde.toFixed(2).replace('.', ',')}`;
+  }
+
+
+  const bancoRetorno = document.getElementById('banco_retorno').value.trim();
+  const resultBanco = precoNegociado - entradaBonificada - entradaReal;
+
+  let resultadoBanco = resultBanco;
+
+  if (bancoRetorno === "zero") {
+    resultadoBanco = resultBanco * 0;
+    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+  } else if (bancoRetorno === "um") {
+    resultadoBanco = resultBanco * 0.012;
+    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+  } else if (bancoRetorno === "dois") {
+    resultadoBanco = resultBanco * 0.024;
+    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+  } else if (bancoRetorno === "tres") {
+    resultadoBanco = resultBanco * 0.036;
+    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+  } else if (bancoRetorno === "quatro") {
+    resultadoBanco = resultBanco * 0.048;
+    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+  } else {
+    resultadoBanco = 0;
+    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+  }
+
+  if (motoSelecionada) {
+
+    if (checkboxBrinde.checked) {
+      resultBrinde = retornoBrinde;
+    } else {
+      resultBrinde = 0;
+    }
+
+    $.getJSON('/dados_moto/' + encodeURIComponent(motoSelecionada), function (data) {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        if (filiaisManaus.includes(filialSelecionada)) {
+          $('#card4').show();
+
+          $('#custo_produto').text(`${'.'.repeat(80)} R$ ${data.manaus_custo_produto.toFixed(2).replace('.', ',')}`);
+          custoProduto = data.manaus_custo_produto;
+
+          const checkboxFrete = document.getElementById('enableFrete');
+          if (checkboxFrete.checked) {
+            despesaFrete = 600;
+
+          }
+
+        } else {
+          $('#custo_produto').text(`${'.'.repeat(80)} R$ ${data.interior_custo_produto.toFixed(2).replace('.', ',')}`);
+          custoProduto = data.interior_custo_produto;
+          despesaFrete = 600;
+        }
+
+        const formaPagamento = document.getElementById('forma_pagameto').value.trim();
+        const checkboxEmplacamento = document.getElementById('enableEmplacamento');
+        if (checkboxEmplacamento.checked && formaPagamento === "financiado") {
+          const resultadoEmplacamento = retornoEmplacamento - (custoProduto * 0.02 / 12 * 11) - 140.75 - 86.00 - 335.52
+          resultEmplac = resultadoEmplacamento
+          document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
+        } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista") {
+          const resultadoEmplacamento = retornoEmplacamento - (custoProduto * 0.02 / 12 * 11) - 140.75 - 86.00 - 227.08
+          resultEmplac = resultadoEmplacamento
+          document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
+        } else {
+          const resultadoEmplacamento = 0;
+          resultEmplac = 0;
+          document.getElementById('resultado_emplacamento').innerText = `${'.'.repeat(89)} R$ ${resultadoEmplacamento.toFixed(2).replace('.', ',')}`;
+        }
+
+        resultRevisao = data.revisao
+        const margemBruta = valorVendaReal - custoProduto
+
+        const totalDespesas = valorVendaReal * 0.06 + resultBrinde + resultEmplac + despesaFrete + resultRevisao;
+        document.getElementById('resultado_despesas').innerText = `${'.'.repeat(83)} R$ ${totalDespesas.toFixed(2).replace('.', ',')}`;
+
+        const totalReceitas = retornoAcessorio * 0.10 + resultadoBanco + retornoEmplacamento + retornoFrete
+        document.getElementById('resultado_receitas').innerText = `${'.'.repeat(84)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+
+        const margemLiquida = margemBruta - totalDespesas + totalReceitas;
+        document.getElementById('resultado_liquido').innerText = `${'.'.repeat(86)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+
+        const comissao = margemLiquida * 0.085
+        document.getElementById('comissao').innerText = `${'.'.repeat(96)} R$ ${comissao.toFixed(2).replace('.', ',')}`;
+
+      }
+    }).fail(function () {
+      alert('Erro ao obter dados da moto');
+    });
+  } else {
+    $('#card4').hide();
+    $('#manaus_custo_produto').text('');
+    $('#manaus_pps').text('');
+    $('#interior_custo_produto').text('');
+    $('#interior_pps').text('');
+    $('#revisao').text('');
+  }
+
 });

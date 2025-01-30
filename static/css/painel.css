@@ -1,6 +1,6 @@
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #4169E1;
+  background: linear-gradient(to bottom, #1E3A8A, #4169E1);
   color: #fff;
   margin: 0;
   padding: 0;
@@ -15,17 +15,34 @@ body {
   position: relative;
 }
 
+footer {
+  background-color: #1E3A8A;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  width: 102.8%;
+  top: 190px;
+  position: relative;
+  bottom: 0;
+}
+
+footer p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
 .top-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   position: fixed;
-  top: 0;
-  right: 20px;
+  top: 0px;
+  right: 0px;
   gap: 20px;
   background-color: #4169E1;
-  padding: 10px 20px;
+  padding: 35px;
   z-index: 1000;
   opacity: 0;
   animation: surgindo 2.5s ease-out forwards;
@@ -36,7 +53,7 @@ body {
   align-items: center;
   gap: 10px;
   position: absolute;
-  left: 70px;
+  left: 80px;
   top: 5px;
 }
 
@@ -45,7 +62,7 @@ body {
   height: auto;
 }
 
-.vendedor-container {
+.filial-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,14 +73,14 @@ body {
   width: auto;
 }
 
-.vendedor-container label {
+.filial-container label {
   font-weight: bold;
   color: #fff;
   margin-bottom: 0;
   text-align: center;
 }
 
-.vendedor-container input {
+.filial-container input {
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ddd;
@@ -74,12 +91,12 @@ body {
   text-align: center;
 }
 
-.vendedor-container input:focus {
+.filial-container input:focus {
   outline: none;
   border-color: #4169E1;
 }
 
-.vendedor-container select {
+.filial-container select {
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ddd;
@@ -105,6 +122,7 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin-right: 10px;
   font-size: 1.2rem;
   transition: all 0.3s ease;
 }
@@ -175,14 +193,31 @@ body {
   pointer-events: auto;
 }
 
+.card .box-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: flex-start;
+  padding-left: 0px;
+}
+
+.card .box-container label {
+  margin: 0;
+}
+
+.card .box-container input[type="checkbox"] {
+  margin: 0;
+}
+
 .card label {
   font-weight: bold;
-  margin-bottom: -6px;
+  margin-bottom: 0px;
   font-size: 0.9rem;
   color: #000;
   text-align: left;
-  width: 100%;
-  display: block;
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .card input,
@@ -200,6 +235,13 @@ body {
 .card select:focus {
   outline: none;
   border-color: #4169E1;
+}
+
+.card input[type="checkbox"] {
+  margin-left: 0px;
+  vertical-align: middle;
+  width: auto;
+  margin-top: 10px;
 }
 
 @media (max-width: 900px) {
@@ -234,17 +276,28 @@ body {
 }
 
 #card4 {
-  width: 920px;
-  height: 10%;
+  width: 830px;
+  height: auto;
   background-color: #38bdf8;
   color: white;
-  display: none;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  padding-left: 100px;
+  padding-bottom: 30px;
   align-items: center;
   justify-content: center;
-  padding: 20px;
   border-radius: 10px;
   margin-top: 50px;
   font-weight: bold;
   font-size: 1.2rem;
+  text-align: left;
+}
+
+#card4 p {
+  margin-bottom: 5px;
+}
+
+#mensagemFilial {
   text-align: center;
 }
