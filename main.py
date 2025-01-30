@@ -1,16 +1,11 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, make_response
 from motos_novas.dados_motos import motos
+from users.user import usuarios
 
 
 app = Flask(__name__)
-app.secret_key = 'segredo'  # necessário para utilizar flash
+app.secret_key = 'segredo'  
 
-# Dicionário de usuários cadastrados
-usuarios = {
-    "madson_michel": "220199",
-    "louiz_migles": "123",
-    "admin": "admin123"
-}
 
 formas_pagamentos = {
     "a_vista": "À vista",
