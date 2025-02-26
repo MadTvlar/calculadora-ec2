@@ -1,7 +1,12 @@
 body {
   font-family: 'Roboto', sans-serif;
+<<<<<<< HEAD
   background-color: #fff;
   color: #333;
+=======
+  background-color: #4169E1;
+  color: #fff;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   margin: 0;
   padding: 0;
   display: flex;
@@ -11,6 +16,7 @@ body {
   flex-direction: column;
   text-align: center;
   overflow: hidden;
+<<<<<<< HEAD
 }
 
 header {
@@ -26,26 +32,47 @@ header {
   height: auto;
   margin-left: 25px;
   margin-bottom: 10px;
+=======
+  /* Impede rolagem durante a animação */
+}
+
+.logo-container {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  display: inline-block;
+  margin-bottom: 20px;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   margin-top: -5%;
   opacity: 0;
   animation: fadeInImage 2.5s ease-out forwards;
 }
 
 img {
+<<<<<<< HEAD
   width: 100%;
   max-width: 420px;
+=======
+  width: 420px;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   height: auto;
   display: block;
 }
 
 .form-container {
+<<<<<<< HEAD
   background-color: #0002c6;
   padding: 20px;
+=======
+  background-color: #2b6cb0;
+  padding: 30px;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   text-align: left;
+<<<<<<< HEAD
   height: auto;
   /* tamanho fixo */
   opacity: 0;
@@ -59,13 +86,24 @@ h1 {
   margin-bottom: 20px;
   text-align: center;
   color: #fff;
+=======
+  opacity: 0;
+  /* Inicialmente invisível */
+  transform: translateY(50px);
+  /* Começa um pouco abaixo da tela */
+  animation: fadeInBottom 2s ease-out 1s forwards;
+  /* A animação vai durar 2s com 1s de delay */
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
 }
 
 label {
   font-size: 1.1rem;
   margin-bottom: 10px;
   display: block;
+<<<<<<< HEAD
   color: #fff;
+=======
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
 }
 
 input {
@@ -88,7 +126,10 @@ input[type="submit"] {
   transition: background-color 0.3s ease;
   padding: 10px;
   width: 100%;
+<<<<<<< HEAD
   border-radius: 5px;
+=======
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
 }
 
 input[type="submit"]:hover {
@@ -101,6 +142,7 @@ input[type="submit"]:hover {
   color: #ff3333;
   font-family: 'Roboto', sans-serif;
   font-weight: bold;
+<<<<<<< HEAD
   font-size: 1rem;
   /* mensagem */
   animation: fadeInBottom 2s ease-out 0s;
@@ -189,6 +231,10 @@ input[type="submit"]:hover {
   .footer-iconTop a {
     font-size: 1.2rem;
   }
+=======
+  font-size: 1.5rem;
+  animation: fadeInBottom 2s ease-out 0s;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
 }
 
 @keyframes fadeInImage {
@@ -204,11 +250,20 @@ input[type="submit"]:hover {
 @keyframes fadeInBottom {
   0% {
     opacity: 0;
+<<<<<<< HEAD
     transform: translateY(50px);
+=======
+    transform: translateY(300px);
+    /* Começa um pouco mais abaixo */
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   }
 
   100% {
     opacity: 1;
     transform: translateY(0);
+<<<<<<< HEAD
+=======
+    /* Termina na posição final perto da imagem */
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   }
 }

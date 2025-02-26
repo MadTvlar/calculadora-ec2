@@ -1,7 +1,13 @@
 body {
+<<<<<<< HEAD
   font-family: Arial, sans-serif;
   background: linear-gradient(to bottom, #ffffff, #ffffff);
   color: #000000;
+=======
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(to bottom, #1E3A8A, #4169E1);
+  color: #fff;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   margin: 0;
   padding: 0;
   display: flex;
@@ -10,10 +16,34 @@ body {
   align-items: center;
   min-height: 100vh;
   text-align: center;
+<<<<<<< HEAD
+=======
+  padding: 2%;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   overflow: auto;
   position: relative;
 }
 
+<<<<<<< HEAD
+=======
+footer {
+  background-color: #1E3A8A;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  width: 102.8%;
+  top: 190px;
+  position: relative;
+  bottom: 0;
+}
+
+footer p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
 .top-container {
   display: flex;
   justify-content: space-between;
@@ -23,7 +53,11 @@ body {
   top: 0px;
   right: 0px;
   gap: 20px;
+<<<<<<< HEAD
   background-color: #0002c6;
+=======
+  background-color: #4169E1;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   padding: 35px;
   z-index: 1000;
   opacity: 0;
@@ -35,7 +69,11 @@ body {
   align-items: center;
   gap: 10px;
   position: absolute;
+<<<<<<< HEAD
   left: 78px;
+=======
+  left: 80px;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   top: 5px;
 }
 
@@ -65,11 +103,18 @@ body {
 .filial-container input {
   padding: 8px;
   border-radius: 5px;
+<<<<<<< HEAD
   border: 1px solid #ffffff;
   background-color: #ffffff;
   font-size: 0.9rem;
   color: #0002c6;
   font-weight: bold;
+=======
+  border: 1px solid #ddd;
+  background-color: #f0f0f0;
+  font-size: 0.9rem;
+  color: #4169E1;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   width: 150px;
   text-align: center;
 }
@@ -82,11 +127,18 @@ body {
 .filial-container select {
   padding: 8px;
   border-radius: 5px;
+<<<<<<< HEAD
   border: 1px solid #ffffff;
   background-color: #ffffff;
   font-size: 0.9rem;
   color: #0002c6;
   font-weight: bold;
+=======
+  border: 1px solid #ddd;
+  background-color: #f0f0f0;
+  font-size: 0.9rem;
+  color: #4169E1;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   width: 150px;
   text-align: center;
 }
@@ -99,15 +151,26 @@ body {
 }
 
 .btn {
+<<<<<<< HEAD
   background-color: #ffffff;
   color: #0002c6;
   font-weight: bold;
   padding: 9px 30px;
+=======
+  background-color: #fff;
+  color: #4169E1;
+  font-weight: bold;
+  padding: 6px 20px;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-right: 10px;
+<<<<<<< HEAD
   font-size: 0.9rem;
+=======
+  font-size: 1.2rem;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   transition: all 0.3s ease;
 }
 
@@ -152,7 +215,11 @@ body {
 }
 
 .card {
+<<<<<<< HEAD
   background-color: #0002c6;
+=======
+  background-color: #fff;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   color: #4169E1;
   padding: 20px;
   border-radius: 10px;
@@ -197,7 +264,11 @@ body {
   font-weight: bold;
   margin-bottom: 0px;
   font-size: 0.9rem;
+<<<<<<< HEAD
   color: #ffffff;
+=======
+  color: #000;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   text-align: left;
   width: auto;
   display: inline-block;
@@ -262,7 +333,11 @@ body {
 #card4 {
   width: 830px;
   height: auto;
+<<<<<<< HEAD
   background-color: #0002c6;
+=======
+  background-color: #38bdf8;
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   color: white;
   display: flex;
   flex-direction: column;
@@ -272,7 +347,10 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+<<<<<<< HEAD
   margin-bottom: 90px;
+=======
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
   margin-top: 50px;
   font-weight: bold;
   font-size: 1.2rem;
@@ -285,6 +363,7 @@ body {
 
 #mensagemFilial {
   text-align: center;
+<<<<<<< HEAD
 }
 
 .footer {
@@ -368,4 +447,6 @@ body {
   .footer-iconTop a {
     font-size: 1.2rem;
   }
+=======
+>>>>>>> 0046c15d9255fa3b6ab3517b7c9616b051a1cbdc
 }
