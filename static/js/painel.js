@@ -43,6 +43,7 @@ function verificarCamposCard1() {
 
 document.getElementById('entradaAlter').innerText = `ENTRADA REAL`;
 
+
 document.getElementById('filialTipo').addEventListener('change', verificarCamposCard1);
 
 document.getElementById('card1').classList.add('suspended');
@@ -126,6 +127,7 @@ function validarDocumento(documento) {
 }
 
 function validarCPF(cpf) {
+
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
     return false;
   }
@@ -134,6 +136,7 @@ function validarCPF(cpf) {
   let resto;
 
   for (let i = 0; i < 9; i++) {
+
     soma += parseInt(cpf.charAt(i)) * (10 - i);
   }
   resto = (soma * 10) % 11;
@@ -147,6 +150,7 @@ function validarCPF(cpf) {
   soma = 0;
 
   for (let i = 0; i < 10; i++) {
+
     soma += parseInt(cpf.charAt(i)) * (11 - i);
   }
   resto = (soma * 10) % 11;
@@ -236,6 +240,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
     document.getElementById('receita_acessorio').innerText = `${'.'.repeat(82)} R$ ${receitaAcessorio.toFixed(2).replace('.', ',')}`;
     document.getElementById('custo_acessorio').innerText = `${'.'.repeat(85)} R$ -${custoAcessorio.toFixed(2).replace('.', ',')}`;
   }
+
   const checkboxBrinde = document.getElementById('enableBrinde');
 
   if (checkboxBrinde.checked) {
@@ -371,7 +376,6 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
         const comissao = margemLiquida * 0.085;
         document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`;
-
       }
     }).fail(function () {
       alert('Erro ao obter dados da moto');

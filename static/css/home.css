@@ -39,6 +39,7 @@ img {
 }
 
 .form-container {
+
   background-color: #0002c6;
   padding: 20px;
   border-radius: 10px;
@@ -66,6 +67,7 @@ label {
   margin-bottom: 10px;
   display: block;
   color: #fff;
+
 }
 
 input {
