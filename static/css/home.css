@@ -24,7 +24,8 @@ header {
 .logo-container {
   max-width: 300px;
   height: auto;
-  margin-bottom: 20px;
+  margin-left: 25px;
+  margin-bottom: 10px;
   margin-top: -5%;
   opacity: 0;
   animation: fadeInImage 2.5s ease-out forwards;
@@ -45,15 +46,16 @@ img {
   width: 100%;
   max-width: 400px;
   text-align: left;
-  height: 350px; /* tamanho fixo */
+  height: auto;
+  /* tamanho fixo */
   opacity: 0;
   transform: translateY(50px);
   animation: fadeInBottom 2s ease-out 1s forwards;
 }
 
-
 h1 {
-  font-size: 2rem; /* título */
+  font-size: 2rem;
+  /* título */
   margin-bottom: 20px;
   text-align: center;
   color: #fff;
@@ -99,9 +101,11 @@ input[type="submit"]:hover {
   color: #ff3333;
   font-family: 'Roboto', sans-serif;
   font-weight: bold;
-  font-size: 1rem; /* mensagem */
+  font-size: 1rem;
+  /* mensagem */
   animation: fadeInBottom 2s ease-out 0s;
-  word-wrap: break-word; /* não ultrapasse o quadro */
+  word-wrap: break-word;
+  /* não ultrapasse o quadro */
 }
 
 .footer {
@@ -110,7 +114,7 @@ input[type="submit"]:hover {
   width: 100%;
   background-color: #0203c5;
   color: #fff;
-  padding: 10px;
+  padding: 0px;
   font-size: 1rem;
   text-align: center;
 }

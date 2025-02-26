@@ -1,7 +1,7 @@
 body {
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(to bottom, #1E3A8A, #4169E1);
-  color: #fff;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #ffffff, #ffffff);
+  color: #000000;
   margin: 0;
   padding: 0;
   display: flex;
@@ -10,26 +10,8 @@ body {
   align-items: center;
   min-height: 100vh;
   text-align: center;
-  padding: 2%;
   overflow: auto;
   position: relative;
-}
-
-footer {
-  background-color: #1E3A8A;
-  color: #fff;
-  text-align: center;
-  padding: 10px;
-  width: 102.8%;
-  top: 190px;
-  position: relative;
-  bottom: 0;
-}
-
-footer p {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: bold;
 }
 
 .top-container {
@@ -41,7 +23,7 @@ footer p {
   top: 0px;
   right: 0px;
   gap: 20px;
-  background-color: #4169E1;
+  background-color: #0002c6;
   padding: 35px;
   z-index: 1000;
   opacity: 0;
@@ -53,7 +35,7 @@ footer p {
   align-items: center;
   gap: 10px;
   position: absolute;
-  left: 80px;
+  left: 78px;
   top: 5px;
 }
 
@@ -83,10 +65,11 @@ footer p {
 .filial-container input {
   padding: 8px;
   border-radius: 5px;
-  border: 1px solid #ddd;
-  background-color: #f0f0f0;
+  border: 1px solid #ffffff;
+  background-color: #ffffff;
   font-size: 0.9rem;
-  color: #4169E1;
+  color: #0002c6;
+  font-weight: bold;
   width: 150px;
   text-align: center;
 }
@@ -99,10 +82,11 @@ footer p {
 .filial-container select {
   padding: 8px;
   border-radius: 5px;
-  border: 1px solid #ddd;
-  background-color: #f0f0f0;
+  border: 1px solid #ffffff;
+  background-color: #ffffff;
   font-size: 0.9rem;
-  color: #4169E1;
+  color: #0002c6;
+  font-weight: bold;
   width: 150px;
   text-align: center;
 }
@@ -115,15 +99,15 @@ footer p {
 }
 
 .btn {
-  background-color: #fff;
-  color: #4169E1;
+  background-color: #ffffff;
+  color: #0002c6;
   font-weight: bold;
-  padding: 6px 20px;
+  padding: 9px 30px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-right: 10px;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
 }
 
@@ -168,7 +152,7 @@ footer p {
 }
 
 .card {
-  background-color: #fff;
+  background-color: #0002c6;
   color: #4169E1;
   padding: 20px;
   border-radius: 10px;
@@ -213,7 +197,7 @@ footer p {
   font-weight: bold;
   margin-bottom: 0px;
   font-size: 0.9rem;
-  color: #000;
+  color: #ffffff;
   text-align: left;
   width: auto;
   display: inline-block;
@@ -278,7 +262,7 @@ footer p {
 #card4 {
   width: 830px;
   height: auto;
-  background-color: #38bdf8;
+  background-color: #0002c6;
   color: white;
   display: flex;
   flex-direction: column;
@@ -288,6 +272,7 @@ footer p {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+  margin-bottom: 90px;
   margin-top: 50px;
   font-weight: bold;
   font-size: 1.2rem;
@@ -300,4 +285,87 @@ footer p {
 
 #mensagemFilial {
   text-align: center;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #0203c5;
+  color: #fff;
+  padding: 0%;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.footer-text {
+  margin: 0;
+}
+
+.footer-iconTop a {
+  color: #fff;
+  font-size: 2rem;
+  text-decoration: none;
+}
+
+.footer-iconTop a:hover {
+  color: #38bdf8;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    padding: 20px;
+  }
+
+  .logo-container {
+    margin-top: 0;
+  }
+
+  .form-container {
+    padding: 20px;
+    width: 90%;
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .footer {
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .footer-text p {
+    font-size: 0.9rem;
+  }
+
+  .footer-iconTop a {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-container {
+    padding: 15px;
+  }
+
+  input[type="submit"] {
+    font-size: 1rem;
+  }
+
+  .footer-text p {
+    font-size: 0.8rem;
+  }
+
+  .footer-iconTop a {
+    font-size: 1.2rem;
+  }
 }
