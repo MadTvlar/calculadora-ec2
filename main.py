@@ -3,6 +3,7 @@ from dados.dados_motos import motos
 from dados.user import usuarios
 from dados.taxa import taxas
 
+#inicio
 app = Flask(__name__)
 app.secret_key = 'segredo'  
 
