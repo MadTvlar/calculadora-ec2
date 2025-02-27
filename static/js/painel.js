@@ -344,7 +344,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           const taxaCartao = document.getElementById('parcelas').value.trim();
 
 
-          const valorVendaReal = entradaReal + 1;
+          const valorVendaReal = entradaReal;
           margem_bruta = valorVendaReal - custoProduto;
 
         } else {
