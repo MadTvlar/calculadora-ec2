@@ -342,10 +342,8 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
         } if (formaPagamento === "cartao") {
           const taxaCartao = document.getElementById('parcelas').value.trim();
-
-
-          const valorVendaReal = entradaReal;
-          margem_bruta = valorVendaReal - custoProduto;
+          const valorVendaReal = entradaReal
+          margem_bruta = entradaReal - custoProduto;
 
         } else {
           margem_bruta = entradaReal - custoProduto;

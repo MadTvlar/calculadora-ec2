@@ -107,7 +107,12 @@
       <div id="campoParcelas"
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
         <label for="parcelas" style="margin-right: 5px;">QTD. DE PARCELAS</label>
-        <input type="number" id="parcelas" placeholder="Número de parcelas" min="1" max="21">
+        <select id="parcelas" name="parcelas">
+          <option value="">Selecione</option>
+          {% for chave, valor in taxas.items() %}
+          <option value="{{ chave }}">{{ chave }}</option>
+          {% endfor %}
+        </select>
       </div>
 
       <div class="box-container">

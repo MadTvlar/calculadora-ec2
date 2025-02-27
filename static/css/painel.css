@@ -380,7 +380,7 @@ body {
   border-radius: 10px;
 }
 
-#campoParcelas input {
+#campoParcelas select {
   padding: 8px;
   margin-top: 0;
   border-radius: 5px;
