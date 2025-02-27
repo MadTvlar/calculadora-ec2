@@ -17,9 +17,6 @@ bancos = {
     "pan": "Pan",
     "santander": "Santander",
     "bradesco": "Bradesco",
-    "c6bank": "C6Bank",
-    "cartao_credito": "Cartão de Crédito",
-    "outros": "Outros"
 }
 
 # Outras informações
@@ -116,7 +113,7 @@ def obter_taxa(nome_parcela):
     else:
         return jsonify({'error': 'Parcela não encontrada'}), 404
     
-    
+
 
 @app.route('/motos', methods=['GET'])
 def motos_painel():
