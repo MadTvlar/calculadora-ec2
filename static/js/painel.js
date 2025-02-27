@@ -341,7 +341,8 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           valor_op = valorVendaReal
 
         } if (formaPagamento === "cartao") {
-          const taxaCartao = document.getElementById('forma_pagamento').value.trim();
+          const taxaCartao = document.getElementById('parcelas').value.trim();
+
 
           const valorVendaReal = entradaReal + 1;
           margem_bruta = valorVendaReal - custoProduto;
