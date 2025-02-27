@@ -104,6 +104,12 @@
 
       <input type="text" id="entrada_real" placeholder="R$00,00" disabled>
 
+      <div id="campoParcelas"
+        style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
+        <label for="parcelas" style="margin-right: 5px;">QTD. DE PARCELAS</label>
+        <input type="number" id="parcelas" placeholder="Número de parcelas" min="1" max="21">
+      </div>
+
       <div class="box-container">
         <label for="emplacamento" style="margin-right: 5px;">EMPLACAMENTO</label>
         <input type="checkbox" id="enableEmplacamento" onclick="toggleEmplacamento()" style="margin-left: -2px;">
@@ -127,43 +133,47 @@
         <input type="checkbox" id="enableBrinde" onclick="toggleEmplacamento()">
       </div>
       <input type="text" id="retorno_brinde" placeholder="R$00,00" disabled>
-
-
-
-
     </div>
   </div>
 
-  <div id="card4" style="display: none;">
-    <p style="text-align: center;"><strong>Relatório - </strong> <span id="mensagemFilial"></span></p>
+  <div id="card4" style="display: none; margin-left: -15px">
+    <p style="text-align: center;"><strong>RELATÓRIO - </strong> <span id="mensagemFilial"
+        style="text-transform: uppercase;"></span></p>
 
-    <p id="valor_venda_real"></p>
-    <p><strong>Custo da Moto:</strong> <span id="custo_produto"></span></p>
-    <p><strong>Margem Bruta:</strong> <span id="margem_bruta"></span></p>
-    <p style="height: 1px;"></p>
+
+    <div id="caixa_destacada1" class="caixa-destacada">
+      <p id="valor_venda_real"></p>
+      <p><strong>Custo da Moto:</strong> <span id="custo_produto"></span></p>
+      <p><strong>Margem Bruta:</strong> <span id="margem_bruta"></span></p>
+    </div>
+    <p style="height: 2px;"></p>
 
     <!--<p><strong>Revisão: Esse valor deverá ser cobrado na aba despachante ou do cliente</strong> <span
         id="revisao"></span></p>
     <p style="height: 1px;"></p>-->
 
-    <p><strong>DESPESAS</strong></p>
-    <p><strong>Emplacamento Custo:</strong> <span id="custo_emplacamento"></span></p>
-    <p><strong>Frete Custo:</strong> <span id="custo_frete"></span></p>
-    <p><strong>Acessórios Custo:</strong> <span id="custo_acessorio"></span></p>
-    <p><strong>Brinde:</strong> <span id="resultado_brinde"></span></p>
-    <p><strong>Despesas Operacionais:</strong> <span id="despesas_ope_fin_mkt"></span></p>
-    <p><strong>Total de Despesas:</strong> <span id="resultado_despesas"></span></p>
-    <p style="height: 1px;"></p>
-      
-    <p><strong>Retorno do Banco:</strong> <span id="resultado_banco"></span></p>
-    <p><strong>Emplacamento Receita:</strong> <span id="receita_emplacamento"></span></p>
-    <p><strong>Frete Receita:</strong> <span id="receita_frete"></span></p>
-    <p><strong>Acessórios Receita:</strong> <span id="receita_acessorio"></span></p>
-    <p><strong>Total de Receitas:</strong> <span id="resultado_receitas"></span></p>
+    <p style="text-align: center; margin-left: -15px"><strong>DESPESAS</strong></p>
+    <div id="caixa_destacada2" class="caixa-destacada">
+      <p><strong>Emplacamento Custo:</strong> <span id="custo_emplacamento"></span></p>
+      <p><strong>Frete Custo:</strong> <span id="custo_frete"></span></p>
+      <p><strong>Acessórios Custo:</strong> <span id="custo_acessorio"></span></p>
+      <p><strong>Brinde:</strong> <span id="resultado_brinde"></span></p>
+      <p><strong>Despesas Operacionais:</strong> <span id="despesas_ope_fin_mkt"></span></p>
+      <p><strong>Total de Despesas:</strong> <span id="resultado_despesas"></span></p>
+    </div>
+    <p style="height: 2px;"></p>
+
+    <p style="text-align: center; margin-left: -15px;"><strong>RECEITAS</strong></p>
+    <div id="caixa_destacada3" class="caixa-destacada">
+      <p><strong>Retorno do Banco:</strong> <span id="resultado_banco"></span></p>
+      <p><strong>Emplacamento Receita:</strong> <span id="receita_emplacamento"></span></p>
+      <p><strong>Frete Receita:</strong> <span id="receita_frete"></span></p>
+      <p><strong>Acessórios Receita:</strong> <span id="receita_acessorio"></span></p>
+      <p><strong>Total de Receitas:</strong> <span id="resultado_receitas"></span></p>
+    </div>
     <p style="height: 1px;"></p>
 
-    <div id="caixa_destacada"
-      style="border: 2px solid #ffffff; padding: 10px 20px 20px 20px; margin-top: 20px; background-color: transparent; width: 91%; margin-left: -35px;">
+    <div id="caixa_destacada4" class="caixa-destacada">
       <p><strong>Margem Líquida:</strong> <span id="resultado_liquido"></span></p>
       <p><strong>Comissão Aproximada:</strong> <span id="comissao"></span></p>
     </div>

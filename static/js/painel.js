@@ -7,6 +7,18 @@ function verificarCamposCard1() {
   const cpfCnpj = document.getElementById('cpf').value;
   const cpfCnpjValido = validarDocumento(cpfCnpj);
 
+  document.getElementById('forma_pagamento').addEventListener('change', function () {
+    var formaPagamento = this.value;
+    var campoParcelas = document.getElementById('campoParcelas');
+
+    // Verifica se a opção selecionada é 'Cartão de Crédito'
+    if (formaPagamento === 'cartao') {
+      campoParcelas.style.display = 'block'; // Exibe o campo de parcelas
+    } else {
+      campoParcelas.style.display = 'none'; // Oculta o campo de parcelas
+    }
+  });
+
   if (filialSelecionada) {
     document.getElementById('card1').classList.remove('suspended');
     document.getElementById('card1').classList.add('active');
@@ -20,7 +32,7 @@ function verificarCamposCard1() {
   }
 
   if (localizacaomoto && filialSelecionada && motosYamaha && cliente && cpfCnpjValido && formaPagamento) {
-    if (formaPagamento === "a_vista") {
+    if (formaPagamento === "a_vista" || formaPagamento === "cartao") {
       document.getElementById('card2').classList.add('suspended');
       document.getElementById('card2').classList.remove('active');
       habilitarCamposCard2e3(false);
@@ -224,6 +236,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
   document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
+
   document.getElementById('card4').style.display = 'block';
 
   const checkboxAcessorio = document.getElementById('enableAcessorio');
@@ -326,6 +339,13 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
         if (formaPagamento === "financiado") {
           margem_bruta = valorVendaReal - custoProduto;
           valor_op = valorVendaReal
+
+        } if (formaPagamento === "cartao") {
+          const taxaCartao = document.getElementById('forma_pagamento').value.trim();
+
+          const valorVendaReal = entradaReal + 1;
+          margem_bruta = valorVendaReal - custoProduto;
+
         } else {
           margem_bruta = entradaReal - custoProduto;
           const valorVendaReal = entradaReal;
@@ -348,7 +368,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
-        } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista") {
+        } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista" || checkboxEmplacamento.checked && formaPagamento === "cartao") {
           despEmplacamento = (entradaReal * 0.0275) + 140.75 + 290 + 227.08;
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;

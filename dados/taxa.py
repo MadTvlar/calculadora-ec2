@@ -1,12 +1,11 @@
 taxas = {
-  "doze": "De 1 à 12 Parcelas",
-  "treze": "13 Parcelas",
-  "quartoze": "14 Parcelas",
-  "quinze": "15 Parcelas",
-  "dezesseis": "16 Parcelas",
-  "dezessete": "17 parcelas",
-  "dezoito": "18 Parcelas",
-  "dezenove": "19 Parcelas",
-  "vinte": "20 Parcelas",
-  "vinte_um": "21 Parcelas"
+  13: 0.1270,
+  14: 0.1345,
+  15: 14.20,
+  16: 0.1495,
+  17: 0.1570,
+  18: 0.1645,
+  19: 0.1720,
+  20: 0.1795,
+  21: 18.70
 }
