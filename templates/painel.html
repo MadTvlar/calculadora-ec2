@@ -104,16 +104,29 @@
 
       <input type="text" id="entrada_real" placeholder="R$00,00" disabled>
 
+
+
+
+
+
+
       <div id="campoParcelas"
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
         <label for="parcelas" style="margin-right: 5px;">QTD. DE PARCELAS</label>
         <select id="parcelas" name="parcelas">
           <option value="">Selecione</option>
           {% for chave, valor in taxas.items() %}
-          <option value="{{ chave }}">{{ chave }}</option>
+          <option value="{{ chave }}" data-taxa="{{ valor }}">{{ chave }}</option>
           {% endfor %}
         </select>
       </div>
+
+
+
+
+
+
+
 
       <div class="box-container">
         <label for="emplacamento" style="margin-right: 5px;">EMPLACAMENTO</label>
@@ -148,6 +161,7 @@
 
     <div id="caixa_destacada1" class="caixa-destacada">
       <p id="valor_venda_real"></p>
+      <div id="valorTaxa" style="font-weight: bold; color: rgb(255, 255, 255); font-size: 1rem;"></div>
       <p><strong>Custo da Moto:</strong> <span id="custo_produto"></span></p>
       <p><strong>Margem Bruta:</strong> <span id="margem_bruta"></span></p>
     </div>

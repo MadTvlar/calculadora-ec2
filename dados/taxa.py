@@ -8,5 +8,5 @@ taxas = {
   "18 Parcelas": 0.1645,
   "19 Parcelas": 0.1720,
   "20 Parcelas": 0.1795,
-  "21 Parcelas": 18.70
+  "21 Parcelas": 18.70,
 }

@@ -307,6 +307,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
       resultBrinde = 0;
     }
 
+
     $.getJSON('/dados_moto/' + encodeURIComponent(motoSelecionada), function (data) {
       if (data.error) {
         alert(data.error);
@@ -340,18 +341,59 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           margem_bruta = valorVendaReal - custoProduto;
           valor_op = valorVendaReal
 
-        } if (formaPagamento === "cartao") {
-          const taxaCartao = document.getElementById('parcelas').value.trim();
-          const valorVendaReal = entradaReal
-          margem_bruta = entradaReal - custoProduto;
-
-        } else {
+        } if (formaPagamento === "a_vista") {
           margem_bruta = entradaReal - custoProduto;
           const valorVendaReal = entradaReal;
           valor_op = entradaReal
 
           document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+
+
+
+
+
+        } if (formaPagamento === "cartao") {
+          // Exibir o campo de parcelas quando o cartão for selecionado
+          document.getElementById('campoParcelas').style.display = 'block';
+
+          // Adicionar um listener para o evento de mudança no select
+          document.getElementById('parcelas').addEventListener('change', function () {
+            var nomeParcela = this.value;
+
+            // Verifica se o valor da parcela foi selecionado
+            if (nomeParcela) {
+              // Realiza a requisição para obter a taxa associada à parcela
+              fetch(`/obter_taxa/${encodeURIComponent(nomeParcela)}`)
+                .then(response => response.json())
+                .then(data => {
+                  if (data.error) {
+                    // Se houver um erro, exibe a mensagem de erro
+                    document.getElementById('valorTaxa').textContent = 'Erro: ' + data.error;
+                  } else {
+
+                    // Caso contrário, exibe o valor da taxa
+                    document.getElementById('valorTaxa').textContent = 'Taxa: R$ ' + data.taxa.toFixed(2);
+                  }
+                })
+                .catch(error => {
+                  console.error('Erro ao obter a taxa:', error);
+                });
+            } else {
+              // Se nenhuma parcela foi selecionada, esconde o valor da taxa
+              document.getElementById('valorTaxa').textContent = '';
+            }
+          });
         }
+
+
+
+
+
+
+
+
+
 
         const margemBruta = margem_bruta
         document.getElementById('margem_bruta').innerText = `${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
@@ -367,7 +409,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
-        } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista" || checkboxEmplacamento.checked && formaPagamento === "cartao") {
+        } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista") {
           despEmplacamento = (entradaReal * 0.0275) + 140.75 + 290 + 227.08;
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
@@ -394,7 +436,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
         document.getElementById('resultado_liquido').innerText = `${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
         const comissao = margemLiquida * 0.085;
-        document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`;
+        document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
       }
     }).fail(function () {
       alert('Erro ao obter dados da moto');

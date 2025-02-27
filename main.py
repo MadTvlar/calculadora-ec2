@@ -86,6 +86,7 @@ def painel():
                            motos_yamaha=motos, formas_pagamentos=formas_pagamentos,
                            bancos=bancos, filiais=filiais, banco_retorno=banco_retorno, origem_moto=origem_moto, taxas=taxas)
 
+
 @app.route('/dados_moto/<nome_moto>', methods=['GET'])
 def obter_dados_moto(nome_moto):
     nome_moto = nome_moto.replace('%20', ' ')
@@ -100,6 +101,22 @@ def obter_dados_moto(nome_moto):
         })
     else:
         return jsonify({'error': 'Moto não encontrada'}), 404
+    
+
+@app.route('/obter_taxa/<nome_parcela>', methods=['GET'])
+def obter_taxa(nome_parcela):
+    nome_parcela = nome_parcela.replace('%20', ' ')  # Caso a URL passe espaços como %20
+
+    if nome_parcela in taxas:
+        taxa = taxas[nome_parcela]
+        return jsonify({
+            'nome_parcela': nome_parcela,
+            'taxa': taxa
+        })
+    else:
+        return jsonify({'error': 'Parcela não encontrada'}), 404
+    
+    
 
 @app.route('/motos', methods=['GET'])
 def motos_painel():
