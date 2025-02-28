@@ -307,97 +307,131 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
       resultBrinde = 0;
     }
 
-    var nomeParcela = document.getElementById('parcelas').value;
+
+
     $.getJSON('/dados_moto/' + encodeURIComponent(motoSelecionada), function (data) {
-      $.getJSON(`/obter_taxa/${encodeURIComponent(nomeParcela)}`, function (parc) {
-
-        if (data.error) {
-          alert(data.error);
-        } else {
-          document.getElementById('mensagemFilial').innerText = `${filialSelecionada}`;
-          if (filiaisManaus.includes(filialSelecionada)) {
-            $('#card4').show();
-            $('#pps').text(`${'.'.repeat(80)} R$ ${data.manaus_pps.toFixed(2).replace('.', ',')}`);
-            const checkboxFrete = document.getElementById('enableFrete');
-            if (checkboxFrete.checked) {
-              despesaFrete = 600;
-            }
-
-          } else {
-            $('#pps').text(`${'.'.repeat(80)} R$ ${data.interior_pps.toFixed(2).replace('.', ',')}`);
+      if (data.error) {
+        alert(data.error);
+      } else {
+        document.getElementById('mensagemFilial').innerText = `${filialSelecionada}`;
+        if (filiaisManaus.includes(filialSelecionada)) {
+          $('#card4').show();
+          $('#pps').text(`${'.'.repeat(80)} R$ ${data.manaus_pps.toFixed(2).replace('.', ',')}`);
+          const checkboxFrete = document.getElementById('enableFrete');
+          if (checkboxFrete.checked) {
             despesaFrete = 600;
           }
 
-          const localizacaomoto = document.getElementById('locMoto').value.trim();
-          if (localizacaomoto === "Capital") {
-            $('#custo_produto').text(`${'.'.repeat(90)} R$ -${data.manaus_custo_produto.toFixed(2).replace('.', ',')}`);
-            custoProduto = data.manaus_custo_produto;
+        } else {
+          $('#pps').text(`${'.'.repeat(80)} R$ ${data.interior_pps.toFixed(2).replace('.', ',')}`);
+          despesaFrete = 600;
+        }
 
-          } else {
-            $('#custo_produto').text(`${'.'.repeat(90)} R$ -${data.interior_custo_produto.toFixed(2).replace('.', ',')}`);
-            custoProduto = data.interior_custo_produto;
-          }
+        const localizacaomoto = document.getElementById('locMoto').value.trim();
+        if (localizacaomoto === "Capital") {
+          $('#custo_produto').text(`${'.'.repeat(90)} R$ -${data.manaus_custo_produto.toFixed(2).replace('.', ',')}`);
+          custoProduto = data.manaus_custo_produto;
 
-          const formaPagamento = document.getElementById('forma_pagamento').value.trim();
-          if (formaPagamento === "financiado") {
-            margem_bruta = valorVendaReal - custoProduto;
+        } else {
+          $('#custo_produto').text(`${'.'.repeat(90)} R$ -${data.interior_custo_produto.toFixed(2).replace('.', ',')}`);
+          custoProduto = data.interior_custo_produto;
+        }
+
+        const formaPagamento = document.getElementById('forma_pagamento').value.trim();
+        if (formaPagamento === "financiado") {
+          margem_bruta = valorVendaReal - custoProduto;
+          valor_op = valorVendaReal
+
+          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+        } if (formaPagamento === "a_vista") {
+          margem_bruta = entradaReal - custoProduto;
+          const valorVendaReal = entradaReal;
+          valor_op = entradaReal
+
+          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+        } if (formaPagamento === "cartao") {
+
+          // Pega o valor selecionado no select de parcelas
+          var nomeParcela = document.getElementById('parcelas').value;
+
+          // Realiza a requisição para obter a taxa associada à parcela
+          $.getJSON(`/obter_taxa/${encodeURIComponent(nomeParcela)}`, function (data) {
+
+            const valorVendaReal = entradaReal * data.taxa + entradaReal;
             valor_op = valorVendaReal
 
-          } if (formaPagamento === "a_vista") {
-            margem_bruta = entradaReal - custoProduto;
-            const valorVendaReal = entradaReal;
-            valor_op = entradaReal
-
-            document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
-
-
-
-
-
-
-          } if (formaPagamento === "cartao") {
-
-            const valorVendaReal = entradaReal * parc.taxa + entradaReal;
-            valor_op = valorVendaReal;
 
             margem_bruta = valorVendaReal - custoProduto;
-
+            const margemBruta = margem_bruta
+            // Exibe a taxa com os pontos e o formato adequado
             document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
-          }
+            document.getElementById('margem_bruta').innerText = `${'.'.repeat(91)}  R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
+
+            if (checkboxEmplacamento.checked) {
+              despEmplacamento = (valorVendaReal * 0.0275) + 140.75 + 290 + 227.08;
+              document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+              document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+            } else {
+              despEmplacamento = 0;
+              retornoEmplacamento = 0;
+              document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+              document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+
+            }
+
+            const despOpeFinMkt = valor_op * 0.06;
+            document.getElementById('despesas_ope_fin_mkt').innerText = `${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
+
+            const totalDespesas = despOpeFinMkt + resultBrinde + despEmplacamento + despesaFrete + retornoAcessorio * 0.7;
+            document.getElementById('resultado_despesas').innerText = `${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
+
+            const totalReceitas = retornoAcessorio + resultadoBanco + retornoEmplacamento + retornoFrete;
+            document.getElementById('resultado_receitas').innerText = `${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+
+            const margemLiquida = margemBruta - totalDespesas + totalReceitas;
+            document.getElementById('resultado_liquido').innerText = `${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+
+            const comissao = margemLiquida * 0.085;
+            document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
 
 
 
+          })
+
+        }
 
 
+        const margemBruta = margem_bruta
+        document.getElementById('margem_bruta').innerText = `${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
+        $('#revisao').text(`${'.'.repeat(3)} R$ ${data.revisao.toFixed(2).replace('.', ',')}`);
+
+        document.getElementById('custo_frete').innerText = `${'.'.repeat(96)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
+        document.getElementById('receita_frete').innerText = `${'.'.repeat(93)} R$ ${retornoFrete.toFixed(2).replace('.', ',')}`;
 
 
-          const margemBruta = margem_bruta
-          document.getElementById('margem_bruta').innerText = `${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
-          $('#revisao').text(`${'.'.repeat(3)} R$ ${data.revisao.toFixed(2).replace('.', ',')}`);
+        const checkboxEmplacamento = document.getElementById('enableEmplacamento');
+        if (checkboxEmplacamento.checked && formaPagamento === "financiado") {
+          despEmplacamento = (precoNegociado * 0.0275) + 140.75 + 290 + 335.52;
+          document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
-          document.getElementById('custo_frete').innerText = `${'.'.repeat(96)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
-          document.getElementById('receita_frete').innerText = `${'.'.repeat(93)} R$ ${retornoFrete.toFixed(2).replace('.', ',')}`;
+        } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista") {
+          despEmplacamento = (entradaReal * 0.0275) + 140.75 + 290 + 227.08;
+          document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+
+        } else if (formaPagamento !== "cartao") {
+          despEmplacamento = 0;
+          retornoEmplacamento = 0;
+          document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+        }
 
 
-          const checkboxEmplacamento = document.getElementById('enableEmplacamento');
-          if (checkboxEmplacamento.checked && formaPagamento === "financiado") {
-            despEmplacamento = (precoNegociado * 0.0275) + 140.75 + 290 + 335.52;
-            document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-            document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
-
-          } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista" || checkboxEmplacamento.checked && formaPagamento === "cartao") {
-            despEmplacamento = (entradaReal * 0.0275) + 140.75 + 290 + 227.08;
-            document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-            document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
-
-          } else {
-            despEmplacamento = 0;
-            retornoEmplacamento = 0;
-            document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-            document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
-          }
-
+        if (formaPagamento !== "cartao") {
           resultRevisao = data.revisao
 
           const despOpeFinMkt = valor_op * 0.06;
@@ -415,7 +449,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           const comissao = margemLiquida * 0.085;
           document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
         }
-      })
+      }
     }).fail(function () {
       alert('Erro ao obter dados da moto');
     });

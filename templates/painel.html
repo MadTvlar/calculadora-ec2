@@ -114,7 +114,6 @@
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
         <label for="parcelas" style="margin-right: 5px;">QTD. DE PARCELAS</label>
         <select id="parcelas" name="parcelas">
-          <option value="">Selecione</option>
           {% for chave, valor in taxas.items() %}
           <option value="{{ chave }}" data-taxa="{{ valor }}">{{ chave }}</option>
           {% endfor %}
