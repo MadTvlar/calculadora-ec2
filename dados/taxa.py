@@ -10,3 +10,16 @@ taxas = {
   "20 Parcelas": 0.1795,
   "21 Parcelas": 0.1870,
 }
+
+parcelas = {
+  "Até 12 Parcelas": 12,
+  "13 Parcelas": 13,
+  "14 Parcelas": 14,
+  "15 Parcelas": 15,
+  "16 Parcelas": 16,
+  "17 Parcelas": 17,
+  "18 Parcelas": 18,
+  "19 Parcelas": 19,
+  "20 Parcelas": 20,
+  "21 Parcelas": 21,
+}

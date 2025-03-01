@@ -338,6 +338,10 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
         }
 
         const formaPagamento = document.getElementById('forma_pagamento').value.trim();
+        document.getElementById('parcelas_taxa').innerText = '';
+        document.getElementById('taxa_cartao').innerText = '';
+
+
         if (formaPagamento === "financiado") {
           margem_bruta = valorVendaReal - custoProduto;
           valor_op = valorVendaReal
@@ -359,19 +363,30 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           // Realiza a requisição para obter a taxa associada à parcela
           $.getJSON(`/obter_taxa/${encodeURIComponent(nomeParcela)}`, function (data) {
 
-            const valorVendaReal = entradaReal * data.taxa + entradaReal;
-            valor_op = valorVendaReal
+            const taxaCartao = entradaReal * data.taxa;
+            const valorVendaReal = taxaCartao + entradaReal;
 
 
             margem_bruta = valorVendaReal - custoProduto;
-            const margemBruta = margem_bruta
+            const margemBruta = margem_bruta;
+
+            $.getJSON(`/obter_qtd/${encodeURIComponent(nomeParcela)}`, function (valor) {
+              const parcelasTaxa = valorVendaReal / valor.qtd;
+
+              document.getElementById('parcelas_taxa').innerText = `Parcelas ${valor.qtd}x: ${'.'.repeat(93)} R$ ${parcelasTaxa.toFixed(2).replace('.', ',')}`;
+
+            });
+
             // Exibe a taxa com os pontos e o formato adequado
             document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+            document.getElementById('taxa_cartao').innerText = `Taxa do Cartão: ${'.'.repeat(90)} R$ -${taxaCartao.toFixed(2).replace('.', ',')}`;
+
 
             document.getElementById('margem_bruta').innerText = `${'.'.repeat(91)}  R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
 
             if (checkboxEmplacamento.checked) {
-              despEmplacamento = (valorVendaReal * 0.0275) + 140.75 + 290 + 227.08;
+              despEmplacamento = (valorVendaReal * 0.025) + 140.75 + 290 + 227.08;
               document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
               document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
             } else {
@@ -382,10 +397,10 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
             }
 
-            const despOpeFinMkt = valor_op * 0.06;
+            const despOpeFinMkt = entradaReal * 0.06;
             document.getElementById('despesas_ope_fin_mkt').innerText = `${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
 
-            const totalDespesas = despOpeFinMkt + resultBrinde + despEmplacamento + despesaFrete + retornoAcessorio * 0.7;
+            const totalDespesas = despOpeFinMkt + resultBrinde + despEmplacamento + despesaFrete + retornoAcessorio * 0.7 + taxaCartao;
             document.getElementById('resultado_despesas').innerText = `${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
 
             const totalReceitas = retornoAcessorio + resultadoBanco + retornoEmplacamento + retornoFrete;
@@ -414,12 +429,12 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
         const checkboxEmplacamento = document.getElementById('enableEmplacamento');
         if (checkboxEmplacamento.checked && formaPagamento === "financiado") {
-          despEmplacamento = (precoNegociado * 0.0275) + 140.75 + 290 + 335.52;
+          despEmplacamento = (precoNegociado * 0.025) + 140.75 + 290 + 335.52;
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
         } else if (checkboxEmplacamento.checked && formaPagamento === "a_vista") {
-          despEmplacamento = (entradaReal * 0.0275) + 140.75 + 290 + 227.08;
+          despEmplacamento = (entradaReal * 0.025) + 140.75 + 290 + 227.08;
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 

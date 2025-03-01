@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, make_response
 from dados.dados_motos import motos
 from dados.user import usuarios
-from dados.taxa import taxas
+from dados.taxa import taxas, parcelas
 
 app = Flask(__name__)
 app.secret_key = 'segredo'  
@@ -112,6 +112,21 @@ def obter_taxa(nome_parcela):
         })
     else:
         return jsonify({'error': 'Parcela não encontrada'}), 404
+    
+
+@app.route('/obter_qtd/<quantidade_parcela>', methods=['GET'])
+def obter_qtd(quantidade_parcela):  # O nome do argumento precisa ser igual ao da rota
+    quantidade_parcela = quantidade_parcela.replace('%20', ' ')  # Substitui espaços codificados
+
+    if quantidade_parcela in parcelas:
+        qtd = parcelas[quantidade_parcela]
+        return jsonify({
+            'nome_parcela': quantidade_parcela,
+            'qtd': qtd  # Ajustei a chave para corresponder ao que o JS espera
+        })
+    else:
+        return jsonify({'error': 'Parcela não encontrada'}), 404
+
     
 
 
