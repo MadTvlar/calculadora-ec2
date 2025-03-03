@@ -104,12 +104,6 @@
 
       <input type="text" id="entrada_real" placeholder="R$00,00" disabled>
 
-
-
-
-
-
-
       <div id="campoParcelas"
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
         <label for="parcelas" style="margin-right: 5px;">QTD. DE PARCELAS</label>
@@ -119,13 +113,6 @@
           {% endfor %}
         </select>
       </div>
-
-
-
-
-
-
-
 
       <div class="box-container">
         <label for="emplacamento" style="margin-right: 5px;">EMPLACAMENTO</label>
@@ -165,7 +152,6 @@
       <p><strong>Custo da Moto:</strong> <span id="custo_produto"></span></p>
       <p><strong>Margem Bruta:</strong> <span id="margem_bruta"></span></p>
     </div>
-    <p style="height: 2px;"></p>
 
     <!--<p><strong>Revisão: Esse valor deverá ser cobrado na aba despachante ou do cliente</strong> <span
         id="revisao"></span></p>
@@ -176,28 +162,25 @@
       <p><strong>Emplacamento Custo:</strong> <span id="custo_emplacamento"></span></p>
       <p><strong>Frete Custo:</strong> <span id="custo_frete"></span></p>
       <p><strong>Acessórios Custo:</strong> <span id="custo_acessorio"></span></p>
-      <p><strong>Brinde:</strong> <span id="resultado_brinde"></span></p>
+      <p id="resultado_brinde"></p>
       <p id="taxa_cartao"></p>
       <p><strong>Despesas Operacionais:</strong> <span id="despesas_ope_fin_mkt"></span></p>
       <p><strong>Total de Despesas:</strong> <span id="resultado_despesas"></span></p>
     </div>
-    <p style="height: 2px;"></p>
 
     <p style="text-align: center; margin-left: -15px;"><strong>RECEITAS</strong></p>
     <div id="caixa_destacada3" class="caixa-destacada">
-      <p><strong>Retorno do Banco:</strong> <span id="resultado_banco"></span></p>
+      <p id="resultado_banco"> </p>
       <p><strong>Emplacamento Receita:</strong> <span id="receita_emplacamento"></span></p>
       <p><strong>Frete Receita:</strong> <span id="receita_frete"></span></p>
       <p><strong>Acessórios Receita:</strong> <span id="receita_acessorio"></span></p>
       <p><strong>Total de Receitas:</strong> <span id="resultado_receitas"></span></p>
     </div>
-    <p style="height: 1px;"></p>
 
     <div id="caixa_destacada4" class="caixa-destacada">
       <p><strong>Margem Líquida:</strong> <span id="resultado_liquido"></span></p>
       <p><strong>Comissão Aproximada:</strong> <span id="comissao"></span></p>
     </div>
-    <p style="height: 1px;"></p>
 
     <!--<p><strong>PPS:</strong> <span id="pps"></span></p> -->
   </div>

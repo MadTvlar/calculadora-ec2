@@ -5,4 +5,5 @@ usuarios = {
     "gab_jogador": "admin",
     "paula_brito": "admin",
     "nayara_serrao": "admin123",
+    "jamila_fernandes": "Jamila123@"
 }

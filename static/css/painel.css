@@ -228,27 +228,6 @@ body {
   margin-top: 10px;
 }
 
-@media (max-width: 900px) {
-  .form-container {
-    flex-direction: column;
-  }
-
-  .card {
-    width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  .btn {
-    font-size: 1rem;
-    padding: 8px 16px;
-  }
-
-  .card input {
-    padding: 12px;
-  }
-}
-
 .hidden {
   display: none;
 }
@@ -312,64 +291,6 @@ body {
   color: #38bdf8;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-  body {
-    height: auto;
-    padding: 20px;
-  }
-
-  .logo-container {
-    margin-top: 0;
-  }
-
-  .form-container {
-    padding: 20px;
-    width: 90%;
-    max-width: 100%;
-  }
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  .footer {
-    flex-direction: column;
-    text-align: center;
-    padding: 10px;
-  }
-
-  .footer-text p {
-    font-size: 0.9rem;
-  }
-
-  .footer-iconTop a {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .form-container {
-    padding: 15px;
-  }
-
-  input[type="submit"] {
-    font-size: 1rem;
-  }
-
-  .footer-text p {
-    font-size: 0.8rem;
-  }
-
-  .footer-iconTop a {
-    font-size: 1.2rem;
-  }
-}
-
 .caixa-destacada {
   border: 2px solid #ffffff;
   padding: 10px 20px 20px 20px;
@@ -390,4 +311,190 @@ body {
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
+}
+
+@media print {
+  @page {
+    size: auto;
+    margin: 0.5cm;
+    /* Margem pequena para garantir mais espaço */
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    font-size: 0.8rem;
+    /* Aumentar o tamanho da fonte geral */
+    transform: scale(1);
+    /* Aumentar a escala da página para 90% */
+    transform-origin: top left;
+    /* A escala será aplicada a partir do canto superior esquerdo */
+  }
+
+  /* Garantir que a transformação seja aplicada a todos os elementos dentro da página */
+  .form-container,
+  .top-container,
+  .filial-container,
+  .card,
+  #card4 {
+    transform: scale(1);
+    /* Aumentar a escala dos containers e cards para 90% */
+    transform-origin: top left;
+  }
+
+  .form-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    page-break-before: avoid;
+    page-break-after: avoid;
+  }
+
+  .card {
+    width: 32%;
+    /* Aumentar a largura dos cards para 32% */
+    box-shadow: none;
+    border: 1px solid #000;
+    padding: 6px;
+    font-size: 0.85rem;
+    /* Aumentar o tamanho da fonte dentro dos cards */
+    page-break-before: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Ajustes nos elementos internos do card */
+  .card h1,
+  .card h2,
+  .card h3,
+  .card h4,
+  .card p,
+  .card span {
+    font-size: 0.85rem;
+    /* Aumentar o tamanho da fonte */
+    margin-bottom: 6px;
+  }
+
+  .card input,
+  .card select,
+  .card button {
+    font-size: 0.85rem;
+    /* Aumentar a fonte de inputs e botões */
+    padding: 8px 14px;
+    margin: 4px 0;
+  }
+
+  #card4 {
+    width: 92%;
+    /* Aumentar a largura do card4 para 92% */
+    box-shadow: none;
+    border: 1px solid #000;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.85rem;
+    page-break-before: avoid;
+    page-break-after: avoid;
+  }
+
+  .top-container {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.85rem;
+    /* Aumentar a fonte nos elementos do topo */
+  }
+
+  .filial-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    width: auto;
+    position: absolute;
+    right: 110px;
+  }
+
+  .btn-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    position: absolute;
+    right: 12px;
+  }
+
+  .footer {
+    display: none;
+    /* Esconder o rodapé na impressão */
+  }
+
+  /* Garantir que os elementos se ajustem sem quebrar */
+  * {
+    page-break-inside: avoid;
+  }
+
+  /* Garantir que o conteúdo caiba corretamente */
+  html,
+  body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .form-container,
+  .card,
+  #card4,
+  .top-container,
+  .filial-container {
+    page-break-before: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Ajuste específico para os inputs de texto no card3 */
+  #card3 input {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    margin: 4px 0;
+  }
+
+  /* Ajustar o tamanho do botão */
+  .btn {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+  }
+
+  /* Ajustar os elementos de caixa destacada dentro do card4 */
+  .caixa-destacada {
+    font-size: 0.8rem;
+    margin: 4px 0;
+  }
+
+  .caixa-destacada p {
+    margin-bottom: 4px;
+  }
+
+  /* Ajustar os elementos de caixa de seleção */
+  #campoParcelas select {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .box-container input {
+    font-size: 0.85rem;
+    margin-left: 6px;
+  }
+
+  .box-container label {
+    font-size: 0.85rem;
+    margin-right: 6px;
+  }
 }

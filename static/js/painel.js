@@ -210,6 +210,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
   let despEmplacamento = 0;
   let margem_bruta = 0;
   let valor_op = 0;
+  let resultadoBanco = 0;
 
 
   camposCard.forEach(campo => {
@@ -258,41 +259,12 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
   if (checkboxBrinde.checked) {
     const resultadoBrinde = retornoBrinde;
+    resultBrinde = retornoBrinde;
 
-    document.getElementById('resultado_brinde').innerText = `${'.'.repeat(104)} R$ -${resultadoBrinde.toFixed(2).replace('.', ',')}`;
+    document.getElementById('resultado_brinde').innerText = `Brinde:${'.'.repeat(104)} R$ -${resultadoBrinde.toFixed(2).replace('.', ',')}`;
   } else {
-    const resultadoBrinde = 0;
-    document.getElementById('resultado_brinde').innerText = `${'.'.repeat(104)} R$ -${resultadoBrinde.toFixed(2).replace('.', ',')}`;
-  }
-
-  const bancoRetorno = document.getElementById('banco_retorno').value.trim();
-  const resultBanco = precoNegociado - entradaReal - entradaBonificada;
-
-  let resultadoBanco = resultBanco;
-
-  if (bancoRetorno === "zero") {
-    resultadoBanco = resultBanco * 0;
-    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-  } else if (bancoRetorno === "um") {
-    resultadoBanco = resultBanco * 0.012;
-    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-  } else if (bancoRetorno === "dois") {
-    resultadoBanco = resultBanco * 0.024;
-    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-  } else if (bancoRetorno === "tres") {
-    resultadoBanco = resultBanco * 0.036;
-    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-  } else if (bancoRetorno === "quatro") {
-    resultadoBanco = resultBanco * 0.048;
-    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-  } else {
-    resultadoBanco = 0;
-    document.getElementById('resultado_banco').innerText = `${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+    resultBrinde = 0;
+    document.getElementById('resultado_brinde').innerText = '';
   }
 
   var filialSelecionada = document.getElementById('filialTipo').value;
@@ -300,14 +272,6 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
   var motoSelecionada = $('#motos_yamaha').val();
 
   if (motoSelecionada) {
-
-    if (checkboxBrinde.checked) {
-      resultBrinde = retornoBrinde;
-    } else {
-      resultBrinde = 0;
-    }
-
-
 
     $.getJSON('/dados_moto/' + encodeURIComponent(motoSelecionada), function (data) {
       if (data.error) {
@@ -340,6 +304,25 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
         const formaPagamento = document.getElementById('forma_pagamento').value.trim();
         document.getElementById('parcelas_taxa').innerText = '';
         document.getElementById('taxa_cartao').innerText = '';
+        document.getElementById('resultado_banco').innerText = '';
+        document.getElementById('custo_emplacamento').innerText = '';
+        document.getElementById('receita_emplacamento').innerText = '';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         if (formaPagamento === "financiado") {
@@ -347,6 +330,36 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           valor_op = valorVendaReal
 
           document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+          const bancoRetorno = document.getElementById('banco_retorno').value.trim();
+          const resultBanco = precoNegociado - entradaReal - entradaBonificada;
+
+          resultadoBanco = resultBanco;
+
+          if (bancoRetorno === "zero") {
+            resultadoBanco = resultBanco * 0;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+          } else if (bancoRetorno === "um") {
+            resultadoBanco = resultBanco * 0.012;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+          } else if (bancoRetorno === "dois") {
+            resultadoBanco = resultBanco * 0.024;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+          } else if (bancoRetorno === "tres") {
+            resultadoBanco = resultBanco * 0.036;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+          } else if (bancoRetorno === "quatro") {
+            resultadoBanco = resultBanco * 0.048;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+          } else {
+            resultadoBanco = 0;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+          }
 
         } if (formaPagamento === "a_vista") {
           margem_bruta = entradaReal - custoProduto;
@@ -411,8 +424,6 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
             const comissao = margemLiquida * 0.085;
             document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
-
-
 
           })
 

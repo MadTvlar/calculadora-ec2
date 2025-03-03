@@ -286,6 +286,19 @@ motos = { #ULTIMA ALTERAÇÃO: __/__/__
         'revisao': 500,
     },
 
+    'Lander XTZ 250 ABS Connected 25-25': { #ULTIMA ALTERAÇÃO: 07/02/2025
+        # MANAUS
+        'manaus_custo_produto': 24246.40,
+        'manaus_pps': 0,
+
+        # INTERIOR
+        'interior_custo_produto': 25004.58,
+        'interior_pps': 0,
+
+        # GERAL
+        'revisao': 500,
+    },
+
      'MT-07 ABS 24-25': { #ULTIMA ALTERAÇÃO: 07/02/2025
         # MANAUS
         'manaus_custo_produto': 42250.26,
