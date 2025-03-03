@@ -4,7 +4,7 @@ usuarios = {
     "admin": "admin123",
     "gab_jogador": "admin",
     "nayara_serrao": "admin123",
-    "jamila_fernandes": "Jamila123@",
+    
 
 
     #Grande Circular
@@ -30,5 +30,16 @@ usuarios = {
     "iara_cabral": "220621",
 
     #Coari
-    "stefani_souza": "052025"
+    "stefani_souza": "052025",
+
+    #Humaita
+    "guilherme_guacebe": "fabrisg1517",
+
+    #Manacapuru
+    "jamila_fernandes": "Jamila123@",
+    "paulo_lemos": "241428",
+
+    #Nautica
+    "waleria_rodrigues": "636153",
+
 }
