@@ -1,0 +1,52 @@
+version: '3.8'
+
+volumes:
+  postgres_data:
+
+networks:
+  calculadora_net:
+
+services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app_calculadora
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: calculadora_user
+      DB_PASSWORD: senha123
+      DB_NAME: calculadora
+    networks:
+      - calculadora_net
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: calculadora_db
+    environment:
+      POSTGRES_USER: calculadora_user
+      POSTGRES_PASSWORD: senha123
+      POSTGRES_DB: calculadora
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - calculadora_net
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_calculadora
+    volumes:
+      - ./nginx/calculadora.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - calculadora_net
+    depends_on:
+      - app
