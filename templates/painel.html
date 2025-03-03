@@ -106,7 +106,7 @@
 
       <div id="campoParcelas"
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
-        <label for="parcelas" style="margin-right: 5px;">QTD. DE PARCELAS</label>
+        <label for="parcelas" style="margin-bottom: 10px;">QTD. DE PARCELAS</label>
         <select id="parcelas" name="parcelas">
           {% for chave, valor in taxas.items() %}
           <option value="{{ chave }}" data-taxa="{{ valor }}">{{ chave }}</option>
@@ -161,7 +161,7 @@
     <div id="caixa_destacada2" class="caixa-destacada">
       <p><strong>Emplacamento Custo:</strong> <span id="custo_emplacamento"></span></p>
       <p><strong>Frete Custo:</strong> <span id="custo_frete"></span></p>
-      <p><strong>Acessórios Custo:</strong> <span id="custo_acessorio"></span></p>
+      <p id="custo_acessorio"></p>
       <p id="resultado_brinde"></p>
       <p id="taxa_cartao"></p>
       <p><strong>Despesas Operacionais:</strong> <span id="despesas_ope_fin_mkt"></span></p>
@@ -173,7 +173,7 @@
       <p id="resultado_banco"> </p>
       <p><strong>Emplacamento Receita:</strong> <span id="receita_emplacamento"></span></p>
       <p><strong>Frete Receita:</strong> <span id="receita_frete"></span></p>
-      <p><strong>Acessórios Receita:</strong> <span id="receita_acessorio"></span></p>
+      <p id="receita_acessorio"></p>
       <p><strong>Total de Receitas:</strong> <span id="resultado_receitas"></span></p>
     </div>
 

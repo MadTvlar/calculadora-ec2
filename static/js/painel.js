@@ -245,14 +245,13 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
   if (checkboxAcessorio.checked) {
     const receitaAcessorio = retornoAcessorio;
     const custoAcessorio = retornoAcessorio * 0.7;
-    document.getElementById('receita_acessorio').innerText = `${'.'.repeat(82)} R$ ${receitaAcessorio.toFixed(2).replace('.', ',')}`;
-    document.getElementById('custo_acessorio').innerText = `${'.'.repeat(86)} R$ -${custoAcessorio.toFixed(2).replace('.', ',')}`;
+    document.getElementById('receita_acessorio').innerText = `Frete Receita:${'.'.repeat(82)} R$ ${receitaAcessorio.toFixed(2).replace('.', ',')}`;
+    document.getElementById('custo_acessorio').innerText = `Acessórios Custo:${'.'.repeat(86)} R$ -${custoAcessorio.toFixed(2).replace('.', ',')}`;
 
   } else {
-    const receitaAcessorio = 0;
-    const custoAcessorio = 0;
-    document.getElementById('receita_acessorio').innerText = `${'.'.repeat(82)} R$ ${receitaAcessorio.toFixed(2).replace('.', ',')}`;
-    document.getElementById('custo_acessorio').innerText = `${'.'.repeat(85)} R$ -${custoAcessorio.toFixed(2).replace('.', ',')}`;
+    retornoAcessorio = 0;
+    document.getElementById('receita_acessorio').innerText = '';
+    document.getElementById('custo_acessorio').innerText = '';
   }
 
   const checkboxBrinde = document.getElementById('enableBrinde');
