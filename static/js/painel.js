@@ -318,6 +318,10 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           margem_bruta = valorVendaReal - custoProduto;
           valor_op = valorVendaReal
 
+          const valor_bem = precoNegociado;
+
+          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(81)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+
           document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
           const bancoRetorno = document.getElementById('banco_retorno').value.trim();
@@ -355,6 +359,10 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           const valorVendaReal = entradaReal;
           valor_op = entradaReal
 
+          const valor_bem = entradaReal;
+
+          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(81)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+
           document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
         } if (formaPagamento === "Cartão de Crédito") {
@@ -376,6 +384,10 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
             // Atualiza os valores no HTML
 
             $('#parcelas_taxa').text(`Parcelas de ${data.parcela}x: ${'.'.repeat(88)} R$ ${parcelaCartao.toFixed(2).replace('.', ',')} `);
+
+            const valor_bem = entradaReal;
+
+            document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(81)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
 
             document.getElementById('valor_venda_real').innerText =
               `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
@@ -474,18 +486,62 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
 });
 
+
+
+
+
+
+
+
+
+
+
+
+function converterDecimal(valor) {
+  if (!valor) return 0;
+  // Remove tudo que não for número ou vírgula
+  valor = valor.replace(/[^0-9,]/g, '');
+  // Substitui a vírgula por ponto para converter
+  return parseFloat(valor.replace(',', '.')) || 0;
+}
+
 function enviarFormulario() {
   const vendedor = document.getElementById('vendedor').value;
   const cliente = document.getElementById('cliente').value;
   const cpf = document.getElementById('cpf').value;
   const moto = document.getElementById('motos_yamaha').value;
   const filialTipo = document.getElementById('filialTipo').value;
+  const formaPagamento = document.getElementById('forma_pagamento').value.trim();
+  const localizacaomoto = document.getElementById('locMoto').value.trim();
+  const bancoSelecionado = document.getElementById('forma_banco').value;
+  const retornoSelecionado = document.getElementById('banco_retorno').value;
+
+
 
   // Verifica se todos os campos obrigatórios estão preenchidos
-  if (!vendedor || !cliente || !cpf || !moto || !filialTipo) {
+  if (!vendedor || !cliente || !cpf || !moto || !filialTipo || !formaPagamento || !localizacaomoto) {
     alert('Todos os campos devem ser preenchidos!');
     return;
   }
+
+  // Pega e converte todos os DECIMAL (xx,xx -> xx.xx)
+  const valor_bem = converterDecimal(document.getElementById('valor_bem').value);
+  const valor_venda_real = converterDecimal(document.getElementById('valor_venda_real').innerText);
+  const custo_moto = converterDecimal(document.getElementById('custo_produto').value);
+  const margem_bruta = converterDecimal(document.getElementById('margem_bruta').innerText);
+  const emplacamento_receita = converterDecimal(document.getElementById('receita_emplacamento').value);
+  const frete_receita = converterDecimal(document.getElementById('receita_frete').value);
+  const acessorio = converterDecimal(document.getElementById('resultado_receitas').value);
+  const valor_retorno = converterDecimal(document.getElementById('resultado_banco').value);
+  const emplcamento_custo = converterDecimal(document.getElementById('custo_emplacamento').value);
+  const frete_custo = converterDecimal(document.getElementById('custo_frete').value);
+  const taxa_cartao = converterDecimal(document.getElementById('taxa_cartao').innerText);
+  const brinde = converterDecimal(document.getElementById('resultado_brinde').value);
+  const despesa_operacionais = converterDecimal(document.getElementById('despesas_ope_fin_mkt').value);
+  const total_despesas = converterDecimal(document.getElementById('resultado_despesas').value);
+  const total_receitas = converterDecimal(document.getElementById('resultado_receitas').value);
+  const margem_liquida = converterDecimal(document.getElementById('resultado_liquido').value);
+  const comissao = converterDecimal(document.getElementById('comissao').value);
 
   // Enviar os dados usando fetch
   fetch('/venda', {
@@ -494,11 +550,32 @@ function enviarFormulario() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      vendedor,
-      cliente,
-      cpf,
-      moto,
-      filialTipo
+      nome_vendedor: vendedor,
+      nome_cliente: cliente,
+      cpf_cnpj_cliente: cpf,
+      moto_selecionada: moto,
+      origiem_moto: localizacaomoto,
+      forma_pagamento: formaPagamento,
+      filial_escolhida: filialTipo,
+      banco_selecionado: bancoSelecionado,
+      retorno_selecionado: retornoSelecionado,
+      valor_bem,
+      valor_venda_real,
+      custo_moto,
+      margem_bruta,
+      emplacamento_receita,
+      frete_receita,
+      acessorio,
+      valor_retorno,
+      emplcamento_custo,
+      frete_custo,
+      taxa_cartao,
+      brinde,
+      despesa_operacionais,
+      total_despesas,
+      total_receitas,
+      margem_liquida,
+      comissao
     })
   })
     .then(response => response.text())

@@ -141,22 +141,48 @@ app.get('/obter_taxa/:nome_parcela', (req, res) => {
 });
 
 
+
+
+
+
+
+
 // Rota para receber os dados do formulário e inserir no banco
 app.post('/venda', (req, res) => {
-  const { vendedor, cliente, cpf, moto, filialTipo } = req.body;
+  const {
+    nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento,
+    filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
+    margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplcamento_custo,
+    frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas,
+    margem_liquida, comissao
+  } = req.body;
 
   // Verifique se todos os campos necessários estão preenchidos
-  if (!vendedor || !cliente || !cpf || !moto || !filialTipo) {
+  if (!nome_vendedor || !nome_cliente || !cpf_cnpj_cliente || !moto_selecionada || !filial_escolhida) {
     return res.status(400).send('Todos os campos são obrigatórios');
   }
 
   // Query para inserir os dados na tabela "vendas"
   const query = `
-    INSERT INTO vendas (nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, filial_escolhida)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO vendas (
+      nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento, 
+      filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto, 
+      margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplcamento_custo, 
+      frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas, 
+      margem_liquida, comissao
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  connection.query(query, [vendedor, cliente, cpf, moto, filialTipo], (err, results) => {
+  const values = [
+    nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento,
+    filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
+    margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplcamento_custo,
+    frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas,
+    margem_liquida, comissao
+  ];
+
+  connection.query(query, values, (err) => {
     if (err) {
       console.error('Erro ao inserir dados: ', err);
       return res.status(500).send('Erro ao registrar a venda');
@@ -164,6 +190,11 @@ app.post('/venda', (req, res) => {
     res.send('Venda registrada com sucesso!');
   });
 });
+
+
+
+
+
 
 
 app.get('/logout', (req, res) => {

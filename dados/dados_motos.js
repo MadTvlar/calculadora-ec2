@@ -215,6 +215,15 @@ const motos = {
 
   },
 
+  'MT-03 ABS 24-25': {
+    // MANAUS
+    'manaus_custo_produto': 29503.77,
+
+    // INTERIOR
+    'interior_custo_produto': 29503.77,
+
+  },
+
   'MT-07 ABS 24-25': {
     // MANAUS
     'manaus_custo_produto': 42250.26,
