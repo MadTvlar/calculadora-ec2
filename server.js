@@ -140,13 +140,6 @@ app.get('/obter_taxa/:nome_parcela', (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
 // Rota para receber os dados do formulário e inserir no banco
 app.post('/venda', (req, res) => {
   const {
@@ -158,7 +151,7 @@ app.post('/venda', (req, res) => {
   } = req.body;
 
   // Verifique se todos os campos necessários estão preenchidos
-  if (!nome_vendedor || !nome_cliente || !cpf_cnpj_cliente || !moto_selecionada || !filial_escolhida) {
+  if (!nome_vendedor || !nome_cliente || !cpf_cnpj_cliente || !moto_selecionada) {
     return res.status(400).send('Todos os campos são obrigatórios');
   }
 
@@ -190,12 +183,6 @@ app.post('/venda', (req, res) => {
     res.send('Venda registrada com sucesso!');
   });
 });
-
-
-
-
-
-
 
 app.get('/logout', (req, res) => {
   res.clearCookie('usuario_logado').redirect('/');

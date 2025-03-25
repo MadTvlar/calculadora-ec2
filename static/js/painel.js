@@ -271,7 +271,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
     const resultadoBrinde = retornoBrinde;
     resultBrinde = retornoBrinde;
 
-    document.getElementById('resultado_brinde').innerText = `Brinde:${'.'.repeat(104)} R$ -${resultadoBrinde.toFixed(2).replace('.', ',')}`;
+    document.getElementById('resultado_brinde').innerText = `Brinde:${'.'.repeat(105)} R$ -${resultadoBrinde.toFixed(2).replace('.', ',')}`;
   } else {
     resultBrinde = 0;
     document.getElementById('resultado_brinde').innerText = '';
@@ -320,7 +320,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
           const valor_bem = precoNegociado;
 
-          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(81)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
 
           document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
@@ -361,7 +361,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
           const valor_bem = entradaReal;
 
-          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(81)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
 
           document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
@@ -387,7 +387,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
             const valor_bem = entradaReal;
 
-            document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(81)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+            document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
 
             document.getElementById('valor_venda_real').innerText =
               `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
@@ -480,21 +480,15 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           const comissao = margemLiquida * 0.085;
           document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
         }
+
+        setTimeout(() => {
+          enviarFormulario();
+        }, 50);
       }
     });
   }
 
 });
-
-
-
-
-
-
-
-
-
-
 
 
 function converterDecimal(valor) {
@@ -525,23 +519,23 @@ function enviarFormulario() {
   }
 
   // Pega e converte todos os DECIMAL (xx,xx -> xx.xx)
-  const valor_bem = converterDecimal(document.getElementById('valor_bem').value);
+  const valor_bem = converterDecimal(document.getElementById('valor_bem').innerText);
   const valor_venda_real = converterDecimal(document.getElementById('valor_venda_real').innerText);
-  const custo_moto = converterDecimal(document.getElementById('custo_produto').value);
+  const custo_moto = converterDecimal(document.getElementById('custo_produto').innerText);
   const margem_bruta = converterDecimal(document.getElementById('margem_bruta').innerText);
-  const emplacamento_receita = converterDecimal(document.getElementById('receita_emplacamento').value);
-  const frete_receita = converterDecimal(document.getElementById('receita_frete').value);
-  const acessorio = converterDecimal(document.getElementById('resultado_receitas').value);
-  const valor_retorno = converterDecimal(document.getElementById('resultado_banco').value);
-  const emplcamento_custo = converterDecimal(document.getElementById('custo_emplacamento').value);
-  const frete_custo = converterDecimal(document.getElementById('custo_frete').value);
+  const emplacamento_receita = converterDecimal(document.getElementById('receita_emplacamento').innerText);
+  const frete_receita = converterDecimal(document.getElementById('receita_frete').innerText);
+  const acessorio = converterDecimal(document.getElementById('receita_acessorio').innerText);
+  const valor_retorno = converterDecimal(document.getElementById('resultado_banco').innerText);
+  const emplcamento_custo = converterDecimal(document.getElementById('custo_emplacamento').innerText);
+  const frete_custo = converterDecimal(document.getElementById('custo_frete').innerText);
   const taxa_cartao = converterDecimal(document.getElementById('taxa_cartao').innerText);
-  const brinde = converterDecimal(document.getElementById('resultado_brinde').value);
-  const despesa_operacionais = converterDecimal(document.getElementById('despesas_ope_fin_mkt').value);
-  const total_despesas = converterDecimal(document.getElementById('resultado_despesas').value);
-  const total_receitas = converterDecimal(document.getElementById('resultado_receitas').value);
-  const margem_liquida = converterDecimal(document.getElementById('resultado_liquido').value);
-  const comissao = converterDecimal(document.getElementById('comissao').value);
+  const brinde = converterDecimal(document.getElementById('resultado_brinde').innerText);
+  const despesa_operacionais = converterDecimal(document.getElementById('despesas_ope_fin_mkt').innerText);
+  const total_despesas = converterDecimal(document.getElementById('resultado_despesas').innerText);
+  const total_receitas = converterDecimal(document.getElementById('resultado_receitas').innerText);
+  const margem_liquida = converterDecimal(document.getElementById('resultado_liquido').innerText);
+  const comissao = converterDecimal(document.getElementById('comissao').innerText);
 
   // Enviar os dados usando fetch
   fetch('/venda', {
@@ -587,3 +581,5 @@ function enviarFormulario() {
       alert('Houve um erro ao registrar a venda');
     });
 }
+
+
