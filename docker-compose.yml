@@ -1,8 +1,5 @@
 version: '3.8'
 
-volumes:
-  postgres_data:
-
 networks:
   calculadora_net:
 
@@ -15,26 +12,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: calculadora_user
-      DB_PASSWORD: senha123
-      DB_NAME: calculadora
-    networks:
-      - calculadora_net
-    depends_on:
-      - db
-
-  db:
-    image: postgres:15
-    container_name: calculadora_db
-    environment:
-      POSTGRES_USER: calculadora_user
-      POSTGRES_PASSWORD: senha123
-      POSTGRES_DB: calculadora
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      DB_HOST: 172.17.0.1
+      DB_PORT: 3306
+      DB_USER: motors
+      DB_PASSWORD: Motors!@#3223
+      DB_NAME: dados_vendas
     networks:
       - calculadora_net
 
@@ -50,3 +32,4 @@ services:
       - calculadora_net
     depends_on:
       - app
+
