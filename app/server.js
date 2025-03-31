@@ -1,22 +1,35 @@
 const express = require('express');
-const { Pool } = require('pg');
+const mysql = require('mysql2');
 
 const app = express();
 const port = 8080;
 
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER || 'motors',
+  password: process.env.DB_PASSWORD || 'Motors!@#3223',
+  database: process.env.DB_NAME || 'dados_vendas'
 });
 
-app.get('/', async (req, res) => {
-    const result = await pool.query('SELECT NOW()');
-    res.send(`Calculadora funcionando! Hora do Banco: ${result.rows[0].now}`);
+connection.connect((err) => {
+  if (err) {
+    console.error('❌ Erro ao conectar no MySQL:', err.message);
+    process.exit(1);
+  }
+  console.log('✅ Conectado ao banco MySQL!');
+});
+
+app.get('/', (req, res) => {
+  connection.query('SELECT NOW() AS agora', (err, results) => {
+    if (err) {
+      return res.status(500).send('Erro na consulta ao banco.');
+    }
+    res.send(`Calculadora funcionando! Hora do banco: ${results[0].agora}`);
+  });
 });
 
 app.listen(port, () => {
-    console.log(`App rodando em http://localhost:${port}`);
+  console.log(`🚀 App rodando em http://localhost:${port}`);
 });
+
