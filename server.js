@@ -25,6 +25,7 @@ app.set('views', path.join(__dirname, 'templates'));
 
 
 const motos = require('./dados/dados_motos');
+const motores = require('./dados/dados_motores');
 const usuarios = require('./dados/user');
 const taxas = require('./dados/taxa');
 
@@ -53,6 +54,10 @@ const filiais = [
   "Cachoeirinha", "Compensa", "Cidade Nova", "Grande Circular",
   "Max Teixeira", "Humaitá", "Itacoatiara", "Iranduba",
   "Manacapuru", "Coari", "Tefé"
+];
+
+const filiaisNautica = [
+  "Centro", "Marina"
 ];
 
 const origemMoto = ["Capital", "Interior"];
@@ -95,7 +100,7 @@ app.get('/segmentos', (req, res) => {
 
 
 
-app.get('/painel', (req, res) => {
+app.get('/motos', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   if (!usuarioLogado) {
     return res.redirect('/');
@@ -106,12 +111,35 @@ app.get('/painel', (req, res) => {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  res.render('painel', {
+  res.render('motos', {
     usuario: usuarioFormatado,
     motos,
     formasPagamentos,
     bancos,
     filiais,
+    bancoRetorno,
+    origemMoto,
+    taxas
+  });
+});
+
+app.get('/nautica', (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+
+  const usuarioFormatado = usuarioLogado.replace('_', ' ').toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  res.render('nautica', {
+    usuario: usuarioFormatado,
+    motores,
+    formasPagamentos,
+    bancos,
+    filiaisNautica,
     bancoRetorno,
     origemMoto,
     taxas
@@ -124,6 +152,15 @@ app.get('/dados_moto/:nome_moto', (req, res) => {
     res.json(motos[nomeMoto]);
   } else {
     res.status(404).json({ error: 'Moto não encontrada' });
+  }
+});
+
+app.get('/dados_motor/:nome_motor', (req, res) => {
+  const nomeMotor = decodeURIComponent(req.params.nome_motor);
+  if (motores[nomeMotor]) {
+    res.json(motores[nomeMotor]);
+  } else {
+    res.status(404).json({ error: 'Motor não encontrada' });
   }
 });
 

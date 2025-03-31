@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/painel.css">
+  <link rel="stylesheet" href="/css/nautica.css">
   <title>MOTORS SIMULATOR</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap"
     rel="stylesheet">
@@ -15,7 +15,7 @@
   <div class="top-container">
     <div class="logo-container">
       <a href="/segmentos">
-        <img src="/images/tvlar_motors.png" alt="TVLAR MOTORS" class="logo">
+        <img src="/images/tvlar_nautica.png" alt="TVLAR NAUTICA" class="logo">
       </a>
     </div>
 
@@ -24,7 +24,7 @@
 
       <select id="filialTipo" name="filialTipo">
         <option value="">Loja</option>
-        <% filiais.forEach(filial=> { %>
+        <% filiaisNautica.forEach(filial=> { %>
           <option value="<%= filial %>">
             <%= filial %>
           </option>
@@ -42,28 +42,18 @@
   <div id="formContainer" class="form-container">
     <div class="card" id="card1">
 
-      <label for="localizacaoMoto">ORIGEM DA MOTO</label>
-      <select id="locMoto" name="locMoto">
+      <label for="yahMotor">MOTOR YAMAHA</label>
+      <select id="motor_yamaha" name="motor_yamaha">
         <option value="">Selecione</option>
-        <% origemMoto.forEach(origem=> { %>
-          <option value="<%= origem %>">
-            <%= origem %>
+        <% Object.keys(motores).forEach((motor)=> { %>
+          <option value="<%= motor %>">
+            <%= motor %>
           </option>
           <% }); %>
       </select>
 
-
-      <label for="yahMotos">MOTOS YAMAHA</label>
-      <select id="motos_yamaha" name="motos_yamaha">
-        <option value="">Selecione</option>
-        <% Object.keys(motos).forEach((moto)=> { %>
-          <option value="<%= moto %>">
-            <%= moto %>
-          </option>
-          <% }); %>
-      </select>
-
-
+      <label for="freteDespesas">CUSTO MOTOR</label>
+      <input type="text" id="custo_motor" placeholder="R$00,00">
 
       <label for="cliente">CLIENTE</label>
       <input type="text" id="cliente" placeholder="Nome do Cliente">
@@ -110,9 +100,6 @@
       <label for="entradaBonificada">ENTRADA BONIFICADA</label>
       <input type="text" id="entrada_bonificada" placeholder="R$00,00" disabled>
 
-      <label for="revisao">REVISÃO</label>
-      <input type="text" id="revisao" placeholder="R$00,00" disabled>
-
 
     </div>
 
@@ -135,33 +122,20 @@
         </select>
       </div>
 
-      <div class="box-container">
-        <label for="emplacamento" style="margin-right: 5px;">EMPLACAMENTO</label>
-        <input type="checkbox" id="enableEmplacamento" onclick="toggleEmplacamento()" style="margin-left: -2px;">
-      </div>
-      <input type="text" id="retorno_emplacamento" placeholder="R$00,00" disabled>
-
-      <div id="freteManaus"
-        style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
-
-        <label for="freteDespesas" style="margin-bottom: 10px;">FRETE DESPESA</label>
-        <input type="text" id="frete_despesa" name="frete_despesa" placeholder="R$00,00" style="width: 250px;">
-      </div>
+      <label for="freteDespesas">FRETE DESPESAS</label>
+      <input type="text" id="frete_despesa" placeholder="R$00,00" disabled>
 
       <label for="freteReceitas">FRETE RECEITA</label>
       <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
 
-      <div class="box-container">
-        <label for="acessorio" style="margin-right: 5px;">ACESSÓRIOS VENDIDOS</label>
-        <input type="checkbox" id="enableAcessorio" onclick="toggleEmplacamento()">
-      </div>
+      <label for="acessorio" style="margin-right: 5px;">ACESSÓRIOS VENDIDOS</label>
       <input type="text" id="retorno_acessorio" placeholder="R$00,00" disabled>
 
       <div class="box-container">
-        <label for="brinde" style="margin-right: 5px;">BRINDE</label>
-        <input type="checkbox" id="enableBrinde" onclick="toggleEmplacamento()">
+        <label for="taxa" style="margin-right: 5px;">TAXAS</label>
+        <input type="checkbox" id="enabletaxa" onclick="toggleEmplacamento()">
       </div>
-      <input type="text" id="retorno_brinde" placeholder="R$00,00" disabled>
+      <input type="text" id="taxa" placeholder="R$00,00" disabled>
     </div>
   </div>
 
@@ -181,10 +155,9 @@
 
     <p style="text-align: center; margin-left: -15px"><strong>DESPESAS</strong></p>
     <div id="caixa_destacada2" class="caixa-destacada">
-      <p><strong>Emplacamento Custo:</strong> <span id="custo_emplacamento"></span></p>
       <p><strong>Frete Custo:</strong> <span id="custo_frete"></span></p>
       <p id="custo_acessorio"></p>
-      <p id="resultado_brinde"></p>
+      <p id="resultado_taxa"></p>
       <p id="taxa_cartao"></p>
       <p><strong>Despesas Operacionais:</strong> <span id="despesas_ope_fin_mkt"></span></p>
       <p><strong>Total de Despesas:</strong> <span id="resultado_despesas"></span></p>
@@ -193,7 +166,6 @@
     <p style="text-align: center; margin-left: -15px;"><strong>RECEITAS</strong></p>
     <div id="caixa_destacada3" class="caixa-destacada">
       <p id="resultado_banco"> </p>
-      <p><strong>Emplacamento Receita:</strong> <span id="receita_emplacamento"></span></p>
       <p><strong>Frete Receita:</strong> <span id="receita_frete"></span></p>
       <p id="receita_acessorio"></p>
       <p><strong>Total de Receitas:</strong> <span id="resultado_receitas"></span></p>
@@ -219,7 +191,7 @@
   </footer>
 
 
-  <script src="/js/painel.js"></script>
+  <script src="/js/nautica.js"></script>
 </body>
 
 </html>

@@ -9,5 +9,9 @@ document.querySelectorAll('.card').forEach(card => {
 
 
 document.getElementById('motos').addEventListener('click', () => {
-  window.location.href = '/painel';
+  window.location.href = '/motos';
+});
+
+document.getElementById('nautica').addEventListener('click', () => {
+  window.location.href = '/nautica';
 });
