@@ -262,6 +262,11 @@ body {
   margin-bottom: 5px;
 }
 
+#card4 strong {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.3rem;
+}
+
 #mensagemFilial {
   text-align: center;
 }

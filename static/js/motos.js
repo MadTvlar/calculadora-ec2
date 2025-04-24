@@ -221,6 +221,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
   let margem_bruta = 0;
   let valor_op = 0;
   let resultadoBanco = 0;
+  let comissao = 0;
 
 
   camposCard.forEach(campo => {
@@ -399,7 +400,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
               `${'.'.repeat(91)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
 
             if (checkboxEmplacamento.checked) {
-              despEmplacamento = (valorVendaReal * 0.025) + 140.75 + 290 + 227.08;
+              despEmplacamento = (valorVendaReal * valorMesAtual) + 140.75 + 290 + 227.08;
               document.getElementById('custo_emplacamento').innerText =
                 `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
 
@@ -432,8 +433,14 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
               `${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
             var comissao = margemLiquida * 0.085;
-            document.getElementById('comissao').innerText =
-              `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`;
+            if (comissao < 0) {
+              comissao = 0
+              document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+            } else {
+              document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+            }
           });
         }
 
@@ -446,12 +453,12 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
 
         const checkboxEmplacamento = document.getElementById('enableEmplacamento');
         if (checkboxEmplacamento.checked && formaPagamento === "Financiado") {
-          despEmplacamento = (precoNegociado * 0.025) + 140.75 + 290 + 335.52;
+          despEmplacamento = (precoNegociado * valorMesAtual) + 140.75 + 290 + 335.52;
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
         } else if (checkboxEmplacamento.checked && formaPagamento === "À Vista") {
-          despEmplacamento = (entradaReal * 0.025) + 140.75 + 290 + 227.08;
+          despEmplacamento = (entradaReal * valorMesAtual) + 140.75 + 290 + 227.08;
           document.getElementById('custo_emplacamento').innerText = `${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
           document.getElementById('receita_emplacamento').innerText = `${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
@@ -477,8 +484,15 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
           const margemLiquida = margemBruta - totalDespesas + totalReceitas;
           document.getElementById('resultado_liquido').innerText = `${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
-          const comissao = margemLiquida * 0.085;
-          document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+          comissao = margemLiquida * 0.085;
+          if (comissao < 0) {
+            comissao = 0
+            document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+          } else {
+            document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+          }
         }
 
         setTimeout(() => {
@@ -538,7 +552,7 @@ function enviarFormulario() {
   const comissao = converterDecimal(document.getElementById('comissao').innerText);
 
   // Enviar os dados usando fetch
-  fetch('/venda', {
+  fetch('/venda_moto', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

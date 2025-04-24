@@ -28,6 +28,15 @@ const motos = require('./dados/dados_motos');
 const motores = require('./dados/dados_motores');
 const usuarios = require('./dados/user');
 const taxas = require('./dados/taxa');
+const emplacamento = require('./dados/emplacamento');
+
+
+function obterValorMesAtual() {
+  const dataAtual = new Date();
+  const nomeMes = dataAtual.toLocaleString('pt-BR', { month: 'long' }).toLowerCase();
+  return emplacamento[nomeMes] || 0;
+}
+
 
 const formasPagamentos = [
   "À Vista",
@@ -60,7 +69,8 @@ const filiaisNautica = [
   "Centro", "Marina"
 ];
 
-const origemMoto = ["Capital", "Interior"];
+const origemMoto = ["Capital", "Interior"
+];
 
 
 
@@ -99,7 +109,6 @@ app.get('/segmentos', (req, res) => {
 });
 
 
-
 app.get('/motos', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   if (!usuarioLogado) {
@@ -111,6 +120,8 @@ app.get('/motos', (req, res) => {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
+  const valorMesAtual = obterValorMesAtual();
+
   res.render('motos', {
     usuario: usuarioFormatado,
     motos,
@@ -119,7 +130,8 @@ app.get('/motos', (req, res) => {
     filiais,
     bancoRetorno,
     origemMoto,
-    taxas
+    taxas,
+    valorMesAtual
   });
 });
 
@@ -178,7 +190,7 @@ app.get('/obter_taxa/:nome_parcela', (req, res) => {
 });
 
 // Rota para receber os dados do formulário e inserir no banco
-app.post('/venda', (req, res) => {
+app.post('/venda_moto', (req, res) => {
   const {
     nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento,
     filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
@@ -194,7 +206,7 @@ app.post('/venda', (req, res) => {
 
   // Query para inserir os dados na tabela "vendas"
   const query = `
-    INSERT INTO vendas (
+    INSERT INTO vendas_motos (
       nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento, 
       filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto, 
       margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplcamento_custo, 
@@ -221,6 +233,58 @@ app.post('/venda', (req, res) => {
   });
 });
 
+
+
+
+
+
+app.post('/venda_motor', (req, res) => {
+  const {
+    nome_vendedor, nome_cliente, cpf_cnpj_cliente, motor_selecionado, chassi, forma_pagamento,
+    filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_motor,
+    margem_bruta, acessorio, valor_retorno, icms, taxa_cartao, despesa_operacionais, total_despesas,
+    total_receitas, margem_liquida, comissao
+  } = req.body;
+
+  if (!nome_vendedor || !nome_cliente || !cpf_cnpj_cliente || !motor_selecionado) {
+    return res.status(400).send('Todos os campos são obrigatórios');
+  }
+
+  const query = `
+    INSERT INTO vendas_motores (
+      nome_vendedor, nome_cliente, cpf_cnpj_cliente, motor_selecionado, chassi,
+      forma_pagamento, filial_escolhida, banco_selecionado, retorno_selecionado,
+      valor_bem, valor_venda_real, custo_motor, margem_bruta, acessorio, valor_retorno,
+      icms, taxa_cartao, despesa_operacionais, total_despesas, total_receitas,
+      margem_liquida, comissao
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    nome_vendedor, nome_cliente, cpf_cnpj_cliente, motor_selecionado, chassi,
+    forma_pagamento, filial_escolhida, banco_selecionado, retorno_selecionado,
+    valor_bem, valor_venda_real, custo_motor, margem_bruta, acessorio, valor_retorno,
+    icms, taxa_cartao, despesa_operacionais, total_despesas, total_receitas,
+    margem_liquida, comissao
+  ];
+
+  connection.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Erro ao salvar venda:', err);
+      return res.status(500).send('Erro ao salvar venda.');
+    }
+
+    res.send('Venda salva com sucesso!');
+  });
+});
+
+
+
+
+
+
+
+
 app.get('/logout', (req, res) => {
   res.clearCookie('usuario_logado').redirect('/');
 });
@@ -232,3 +296,4 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+

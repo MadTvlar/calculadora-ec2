@@ -264,6 +264,12 @@ body {
   margin-bottom: 5px;
 }
 
+#card4 strong {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.3rem;
+}
+
+
 #mensagemFilial {
   text-align: center;
 }
@@ -355,16 +361,6 @@ body {
     page-break-after: avoid;
   }
 
-  .card h1,
-  .card h2,
-  .card h3,
-  .card h4,
-  .card p,
-  .card span {
-    font-size: 0.85rem;
-    margin-bottom: 6px;
-  }
-
   .card input,
   .card select,
   .card button {
@@ -453,7 +449,7 @@ body {
   }
 
   .caixa-destacada {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     margin: 4px 0;
   }
 
@@ -475,4 +471,33 @@ body {
     font-size: 0.85rem;
     margin-right: 6px;
   }
+}
+
+.input-group-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-group-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.input-group-row label {
+  min-width: 100px;
+  /* você pode ajustar conforme necessário para alinhar os labels */
+}
+
+.input-group-row input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 0.9rem;
+  width: 150px;
+  opacity: 1;
 }

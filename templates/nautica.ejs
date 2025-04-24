@@ -52,8 +52,11 @@
           <% }); %>
       </select>
 
-      <label for="freteDespesas">CUSTO MOTOR</label>
-      <input type="text" id="custo_motor" placeholder="R$00,00">
+      <div id="motores-data" data-motores='<%- JSON.stringify(motores) %>' style="display: none;"></div>
+      <label for="custo_motor">CUSTO</label>
+      <select id="custo_motor" name="custo_motor">
+        <option value="">Selecione um custo</option>
+      </select>
 
       <label for="cliente">CLIENTE</label>
       <input type="text" id="cliente" placeholder="Nome do Cliente">
@@ -105,6 +108,9 @@
 
     <div class="card disabled" id="card3">
 
+      <label for="chassi">CHASSI MOTOR</label>
+      <input type="text" id="chassi" placeholder="Nº do Chassi" disabled>
+
       <span id="entradaAlter"
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem;"></span>
       <input type="text" id="entrada_real" placeholder="R$00,00" disabled>
@@ -122,25 +128,35 @@
         </select>
       </div>
 
-      <label for="freteDespesas">FRETE DESPESAS</label>
-      <input type="text" id="frete_despesa" placeholder="R$00,00" disabled>
 
-      <label for="freteReceitas">FRETE RECEITA</label>
-      <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
+      <div class="input-group-column">
+        <div class="input-group-row">
+          <label for="frete_despesa">FRETE DESPESA:</label>
+          <input type="text" id="frete_despesa" placeholder="R$00,00" disabled>
+        </div>
 
-      <label for="acessorio" style="margin-right: 5px;">ACESSÓRIOS VENDIDOS</label>
-      <input type="text" id="retorno_acessorio" placeholder="R$00,00" disabled>
-
-      <div class="box-container">
-        <label for="taxa" style="margin-right: 5px;">TAXAS</label>
-        <input type="checkbox" id="enabletaxa" onclick="toggleEmplacamento()">
+        <div class="input-group-row">
+          <label for="frete_receita">FRETE RECEITA:</label>
+          <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
+        </div>
       </div>
-      <input type="text" id="taxa" placeholder="R$00,00" disabled>
+
+      <div class="input-group-row">
+        <label for="acessorio">ACESSÓRIOS VENDIDOS:</label>
+        <input type="text" id="retorno_acessorio" placeholder="R$00,00" disabled>
+      </div>
+
+      <div class="input-group-row">
+        <label for="icms">ICMS SOBRE VENDA:</label>
+        <input type="text" id="taxa" placeholder="R$00,00" disabled>
+      </div>
+
     </div>
   </div>
 
+
   <div id="card4" style="display: none; margin-left: -15px">
-    <p style="text-align: center;"><strong>RELATÓRIO - </strong> <span id="mensagemFilial"
+    <p style="text-align: center;"><strong>RELATÓRIO NÁUTICA - </strong> <span id="mensagemFilial"
         style="text-transform: uppercase;"></span></p>
 
 
@@ -148,32 +164,31 @@
       <p id="valor_bem"></p>
       <p id="valor_venda_real"></p>
       <p id="parcelas_taxa"></p>
-
-      <p><strong>Custo da Moto:</strong> <span id="custo_produto"></span></p>
-      <p><strong>Margem Bruta:</strong> <span id="margem_bruta"></span></p>
+      <p id="custo_produto"></p>
+      <p id="margem_bruta"></p>
     </div>
 
     <p style="text-align: center; margin-left: -15px"><strong>DESPESAS</strong></p>
     <div id="caixa_destacada2" class="caixa-destacada">
-      <p><strong>Frete Custo:</strong> <span id="custo_frete"></span></p>
+      <p id="custo_frete"></p>
       <p id="custo_acessorio"></p>
       <p id="resultado_taxa"></p>
       <p id="taxa_cartao"></p>
-      <p><strong>Despesas Operacionais:</strong> <span id="despesas_ope_fin_mkt"></span></p>
-      <p><strong>Total de Despesas:</strong> <span id="resultado_despesas"></span></p>
+      <p id="despesas_ope_fin_mkt"></p>
+      <p id="resultado_despesas"></p>
     </div>
 
     <p style="text-align: center; margin-left: -15px;"><strong>RECEITAS</strong></p>
     <div id="caixa_destacada3" class="caixa-destacada">
-      <p id="resultado_banco"> </p>
-      <p><strong>Frete Receita:</strong> <span id="receita_frete"></span></p>
+      <p id="resultado_banco"></p>
+      <p id="receita_frete"></p>
       <p id="receita_acessorio"></p>
-      <p><strong>Total de Receitas:</strong> <span id="resultado_receitas"></span></p>
+      <p id="resultado_receitas"></p>
     </div>
 
     <div id="caixa_destacada4" class="caixa-destacada">
-      <p><strong>Margem Líquida:</strong> <span id="resultado_liquido"></span></p>
-      <p><strong>Comissão Aproximada:</strong> <span id="comissao"></span></p>
+      <p id="resultado_liquido"></p>
+      <p id="comissao"></p>
     </div>
   </div>
   <footer class="footer">
@@ -189,7 +204,6 @@
       <span class="animate scroll" style="--i:3;"></span>
     </div>
   </footer>
-
 
   <script src="/js/nautica.js"></script>
 </body>

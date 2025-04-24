@@ -1,6 +1,7 @@
 function verificarCamposCard1() {
   const filialSelecionada = document.getElementById('filialTipo').value.trim();
   const motorYamaha = document.getElementById('motor_yamaha').value.trim();
+  const custoMotor = document.getElementById('custo_motor').value.trim();
   const formaPagamento = document.getElementById('forma_pagamento').value.trim();
   const cliente = document.getElementById('cliente').value;
   const cpfCnpj = document.getElementById('cpf').value;
@@ -30,7 +31,7 @@ function verificarCamposCard1() {
     document.getElementById('card3').classList.remove('active');
   }
 
-  if (filialSelecionada && motorYamaha && cliente && cpfCnpjValido && formaPagamento) {
+  if (filialSelecionada && motorYamaha && cliente && cpfCnpjValido && custoMotor) {
     if (formaPagamento === "À Vista" || formaPagamento === "Cartão de Crédito") {
       document.getElementById('card2').classList.add('suspended');
       document.getElementById('card2').classList.remove('active');
@@ -51,6 +52,36 @@ function verificarCamposCard1() {
     document.getElementById('card3').classList.remove('active');
   }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const motoresData = document.getElementById("motores-data").dataset.motores;
+  const motores = JSON.parse(motoresData);
+
+  const selectMotor = document.getElementById("motor_yamaha");
+  const custoSelect = document.getElementById("custo_motor");
+
+  if (selectMotor && custoSelect) {
+    selectMotor.addEventListener("change", function () {
+      const motorSelecionado = this.value;
+
+      // Limpa opções anteriores
+      custoSelect.innerHTML = '<option value="">Selecione um custo</option>';
+
+      if (motores[motorSelecionado]) {
+        const custos = Object.values(motores[motorSelecionado]);
+        custos.forEach((custo) => {
+          const option = document.createElement("option");
+          option.value = custo;
+          option.textContent = custo.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+          });
+          custoSelect.appendChild(option);
+        });
+      }
+    });
+  }
+});
 
 document.getElementById('entradaAlter').innerText = `ENTRADA REAL`;
 
@@ -193,8 +224,7 @@ document.getElementById('forma_pagamento').addEventListener('change', verificarC
 
 document.getElementById('showCard4Button').addEventListener('click', function () {
 
-  const camposCard = document.querySelectorAll('#card2 input:not([disabled]):not([type="select-one"]), #card3 input:not([disabled]):not([type="select-one"])');
-
+  const camposCard = document.querySelectorAll('#card1 input:not([disabled]):not([type="select-one"]), #card2 input:not([disabled]):not([type="select-one"]), #card3 input:not([disabled]):not([type="select-one"])');
 
   let precoNegociado = 0;
   let entradaBonificada = 0;
@@ -203,10 +233,11 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
   let despesaFrete = 0;
   let receitaFrete = 0;
   let retornoAcessorio = 0;
-  let retornoTaxa = 0;
+  let comissao = 0;
   let margem_bruta = 0;
   let valor_op = 0;
   let resultadoBanco = 0;
+  let icmsSaida = 0;
 
 
   camposCard.forEach(campo => {
@@ -225,15 +256,13 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
     } else if (campo.id === 'retorno_acessorio') {
       retornoAcessorio = valor;
     } else if (campo.id === 'taxa') {
-      retornoTaxa = valor;
+      icmsSaida = valor;
     };
   });
 
   const valorVendaReal = precoNegociado - entradaBonificada;
 
   document.getElementById('card4').style.display = 'block';
-
-  const checkboxAcessorio = document.getElementById('enableAcessorio');
 
   if (retornoAcessorio !== 0) {
     const receitaAcessorio = retornoAcessorio;
@@ -247,17 +276,8 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
     document.getElementById('custo_acessorio').innerText = '';
   }
 
-  const checkboxTaxa = document.getElementById('enabletaxa');
-
-  if (checkboxTaxa.checked) {
-    const resultadoTaxa = retornoTaxa;
-    resultTaxa = retornoTaxa;
-
-    document.getElementById('resultado_taxa').innerText = `Taxas:${'.'.repeat(105)} R$ -${resultadoTaxa.toFixed(2).replace('.', ',')}`;
-  } else {
-    resultTaxa = 0;
-    document.getElementById('resultado_taxa').innerText = '';
-  }
+  const resultadoTaxa = icmsSaida;
+  document.getElementById('resultado_taxa').innerHTML = `Taxas: ${'.'.repeat(106)} R$ -${resultadoTaxa.toFixed(2).replace('.', ',')}`;
 
   var filialSelecionada = document.getElementById('filialTipo').value.trim();
   var motorSelecionada = $('#motor_yamaha').val().trim();
@@ -270,9 +290,12 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
       } else {
         document.getElementById('mensagemFilial').innerText = `${filialSelecionada}`;
 
-        $('#custo_produto').text(`${'.'.repeat(90)} R$ -${data.custo_produto.toFixed(2).replace('.', ',')}`);
-        custoProduto = data.custo_produto;
+        const custoSelect = document.getElementById("custo_motor");
+        const custoSelecionado = custoSelect.value;
+        custoProduto = Number(custoSelecionado)
+        console.log("Custo selecionado:", custoProduto);
 
+        document.getElementById('custo_produto').innerText = `Custo da Moto: ${'.'.repeat(90)} R$ ${custoProduto.toFixed(2).replace('.', ',')}`;
 
         const formaPagamento = document.getElementById('forma_pagamento').value.trim();
 
@@ -362,53 +385,67 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
               `Taxa do Cartão: ${'.'.repeat(90)} R$ -${taxaCartao.toFixed(2).replace('.', ',')}`;
 
             document.getElementById('margem_bruta').innerText =
-              `${'.'.repeat(91)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
+              `Margem Bruta: ${'.'.repeat(91)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
 
             var despOpeFinMkt = entradaReal * 0.06;
             document.getElementById('despesas_ope_fin_mkt').innerText =
-              `${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
+              `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
 
-            var totalDespesas = despOpeFinMkt + resultTaxa + despesaFrete + retornoAcessorio * 0.7 + taxaCartao;
+            var totalDespesas = despOpeFinMkt + despesaFrete + retornoAcessorio * 0.7 + taxaCartao + icmsSaida;
             document.getElementById('resultado_despesas').innerText =
-              `${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
+              `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
 
             var totalReceitas = retornoAcessorio + receitaFrete;
             document.getElementById('resultado_receitas').innerText =
-              `${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+              `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
 
             var margemLiquida = margem_bruta - totalDespesas + totalReceitas;
             document.getElementById('resultado_liquido').innerText =
-              `${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+              `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
-            var comissao = margemLiquida * 0.085;
-            document.getElementById('comissao').innerText =
-              `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`;
+            var comissao = margemLiquida * 0.05;
+            if (comissao < 0) {
+              comissao = 0
+              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+            } else {
+              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+            }
           });
         }
 
         const margemBruta = margem_bruta
-        document.getElementById('margem_bruta').innerText = `${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
+        document.getElementById('margem_bruta').innerText = `Margem Bruta: ${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
 
-        document.getElementById('custo_frete').innerText = `${'.'.repeat(96)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
-        document.getElementById('receita_frete').innerText = `${'.'.repeat(93)} R$ ${receitaFrete.toFixed(2).replace('.', ',')}`;
+        document.getElementById('custo_frete').innerText = `Frete Custo: ${'.'.repeat(96)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
+        document.getElementById('receita_frete').innerText = `Frete Receita: ${'.'.repeat(93)} R$ ${receitaFrete.toFixed(2).replace('.', ',')}`;
 
 
         if (formaPagamento !== "Cartão de Crédito") {
 
           const despOpeFinMkt = valor_op * 0.06;
-          document.getElementById('despesas_ope_fin_mkt').innerText = `${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
+          document.getElementById('despesas_ope_fin_mkt').innerText = `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
 
-          const totalDespesas = despOpeFinMkt + resultTaxa + despesaFrete + retornoAcessorio * 0.7;
-          document.getElementById('resultado_despesas').innerText = `${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
+          const totalDespesas = despOpeFinMkt + despesaFrete + retornoAcessorio * 0.7 + icmsSaida;
+          document.getElementById('resultado_despesas').innerText = `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
 
           const totalReceitas = retornoAcessorio + resultadoBanco + receitaFrete;
-          document.getElementById('resultado_receitas').innerText = `${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+          document.getElementById('resultado_receitas').innerText = `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
 
           const margemLiquida = margemBruta - totalDespesas + totalReceitas;
-          document.getElementById('resultado_liquido').innerText = `${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+          document.getElementById('resultado_liquido').innerText = `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
-          const comissao = margemLiquida * 0.085;
-          document.getElementById('comissao').innerText = `${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+          comissao = margemLiquida * 0.05;
+          if (comissao < 0) {
+            comissao = 0
+            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+          } else {
+            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+          }
+
         }
 
         setTimeout(() => {
@@ -433,17 +470,17 @@ function enviarFormulario() {
   const vendedor = document.getElementById('vendedor').value;
   const cliente = document.getElementById('cliente').value;
   const cpf = document.getElementById('cpf').value;
-  const moto = document.getElementById('motos_yamaha').value;
+  const motorYamaha = document.getElementById('motor_yamaha').value.trim();
   const filialTipo = document.getElementById('filialTipo').value;
   const formaPagamento = document.getElementById('forma_pagamento').value.trim();
-  const localizacaomoto = document.getElementById('locMoto').value.trim();
   const bancoSelecionado = document.getElementById('forma_banco').value;
   const retornoSelecionado = document.getElementById('banco_retorno').value;
+  const chassi = document.getElementById('chassi').value;
 
 
 
   // Verifica se todos os campos obrigatórios estão preenchidos
-  if (!vendedor || !cliente || !cpf || !moto || !filialTipo || !formaPagamento || !localizacaomoto) {
+  if (!vendedor || !cliente || !cpf || !filialTipo || !formaPagamento || !motorYamaha) {
     alert('Todos os campos devem ser preenchidos!');
     return;
   }
@@ -451,16 +488,14 @@ function enviarFormulario() {
   // Pega e converte todos os DECIMAL (xx,xx -> xx.xx)
   const valor_bem = converterDecimal(document.getElementById('valor_bem').innerText);
   const valor_venda_real = converterDecimal(document.getElementById('valor_venda_real').innerText);
-  const custo_moto = converterDecimal(document.getElementById('custo_produto').innerText);
+  const custo_motor = converterDecimal(document.getElementById('custo_produto').innerText);
   const margem_bruta = converterDecimal(document.getElementById('margem_bruta').innerText);
-  const emplacamento_receita = converterDecimal(document.getElementById('receita_emplacamento').innerText);
   const frete_receita = converterDecimal(document.getElementById('receita_frete').innerText);
   const acessorio = converterDecimal(document.getElementById('receita_acessorio').innerText);
   const valor_retorno = converterDecimal(document.getElementById('resultado_banco').innerText);
-  const emplcamento_custo = converterDecimal(document.getElementById('custo_emplacamento').innerText);
   const frete_custo = converterDecimal(document.getElementById('custo_frete').innerText);
+  const icms = converterDecimal(document.getElementById('resultado_taxa').innerText)
   const taxa_cartao = converterDecimal(document.getElementById('taxa_cartao').innerText);
-  const brinde = converterDecimal(document.getElementById('resultado_brinde').innerText);
   const despesa_operacionais = converterDecimal(document.getElementById('despesas_ope_fin_mkt').innerText);
   const total_despesas = converterDecimal(document.getElementById('resultado_despesas').innerText);
   const total_receitas = converterDecimal(document.getElementById('resultado_receitas').innerText);
@@ -468,7 +503,7 @@ function enviarFormulario() {
   const comissao = converterDecimal(document.getElementById('comissao').innerText);
 
   // Enviar os dados usando fetch
-  fetch('/venda', {
+  fetch('/venda_motor', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -477,24 +512,22 @@ function enviarFormulario() {
       nome_vendedor: vendedor,
       nome_cliente: cliente,
       cpf_cnpj_cliente: cpf,
-      moto_selecionada: moto,
-      origiem_moto: localizacaomoto,
+      motor_selecionado: motorYamaha,
       forma_pagamento: formaPagamento,
       filial_escolhida: filialTipo,
       banco_selecionado: bancoSelecionado,
       retorno_selecionado: retornoSelecionado,
+      chassi: chassi,
       valor_bem,
       valor_venda_real,
-      custo_moto,
+      custo_motor,
       margem_bruta,
-      emplacamento_receita,
       frete_receita,
       acessorio,
       valor_retorno,
-      emplcamento_custo,
       frete_custo,
+      icms,
       taxa_cartao,
-      brinde,
       despesa_operacionais,
       total_despesas,
       total_receitas,

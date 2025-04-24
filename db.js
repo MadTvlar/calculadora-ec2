@@ -18,8 +18,8 @@ connection.connect((err) => {
 });
 
 // Criar a tabela 'vendas' caso não exista
-const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS vendas (
+const createVendasMotos = `
+  CREATE TABLE IF NOT EXISTS vendas_motos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_vendedor VARCHAR(50),
     nome_cliente VARCHAR(50),
@@ -51,12 +51,50 @@ const createTableQuery = `
   );
 `;
 
-connection.query(createTableQuery, (err) => {
+connection.query(createVendasMotos, (err) => {
   if (err) {
     console.error('Erro ao criar a tabela: ', err);
     return;
   }
   console.log('Tabela "vendas" criada ou já existe');
 });
+
+const createVendasMotores = `
+  CREATE TABLE IF NOT EXISTS vendas_motores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_vendedor VARCHAR(50),
+    nome_cliente VARCHAR(50),
+    cpf_cnpj_cliente VARCHAR(20),
+    motor_selecionado VARCHAR(50),
+    chassi VARCHAR(12),
+    forma_pagamento VARCHAR(20),
+    filial_escolhida VARCHAR(20),
+    banco_selecionado VARCHAR(10),
+    retorno_selecionado VARCHAR(2),
+    valor_bem DECIMAL(7,2),
+    valor_venda_real DECIMAL(7,2),
+    custo_motor DECIMAL(7,2),
+    margem_bruta DECIMAL(7,2),
+    acessorio DECIMAL(7,2),
+    valor_retorno DECIMAL(7,2),
+    icms DECIMAL(7,2),
+    taxa_cartao DECIMAL(7,2),
+    despesa_operacionais DECIMAL(7,2),
+    total_despesas DECIMAL(7,2),
+    total_receitas DECIMAL(7,2),
+    margem_liquida DECIMAL(7,2),
+    comissao DECIMAL(7,2),
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
+connection.query(createVendasMotores, (err) => {
+  if (err) {
+    console.error('Erro ao criar a tabela "vendas_motores": ', err);
+    return;
+  }
+  console.log('Tabela "vendas_motores" criada ou já existe');
+});
+
 
 module.exports = connection;
