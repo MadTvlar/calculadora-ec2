@@ -1,7 +1,11 @@
+
+
+
+
+
 function verificarCamposCard1() {
   const filialSelecionada = document.getElementById('filialTipo').value.trim();
   const motorYamaha = document.getElementById('motor_yamaha').value.trim();
-  const custoMotor = document.getElementById('custo_motor').value.trim();
   const formaPagamento = document.getElementById('forma_pagamento').value.trim();
   const cliente = document.getElementById('cliente').value;
   const cpfCnpj = document.getElementById('cpf').value;
@@ -31,7 +35,7 @@ function verificarCamposCard1() {
     document.getElementById('card3').classList.remove('active');
   }
 
-  if (filialSelecionada && motorYamaha && cliente && cpfCnpjValido && custoMotor) {
+  if (filialSelecionada && motorYamaha && cliente && cpfCnpjValido) {
     if (formaPagamento === "À Vista" || formaPagamento === "Cartão de Crédito") {
       document.getElementById('card2').classList.add('suspended');
       document.getElementById('card2').classList.remove('active');
@@ -42,6 +46,12 @@ function verificarCamposCard1() {
     } else if (formaPagamento === "Financiado") {
       habilitarCamposCard2e3(true);
       document.getElementById('entradaAlter').innerText = `ENTRADA REAL`;
+    } else {
+      habilitarCamposCard2e3(false);
+      document.getElementById('card2').classList.add('suspended');
+      document.getElementById('card2').classList.remove('active');
+      document.getElementById('card3').classList.add('suspended');
+      document.getElementById('card3').classList.remove('active');
     }
 
   } else {
@@ -52,36 +62,6 @@ function verificarCamposCard1() {
     document.getElementById('card3').classList.remove('active');
   }
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-  const motoresData = document.getElementById("motores-data").dataset.motores;
-  const motores = JSON.parse(motoresData);
-
-  const selectMotor = document.getElementById("motor_yamaha");
-  const custoSelect = document.getElementById("custo_motor");
-
-  if (selectMotor && custoSelect) {
-    selectMotor.addEventListener("change", function () {
-      const motorSelecionado = this.value;
-
-      // Limpa opções anteriores
-      custoSelect.innerHTML = '<option value="">Selecione um custo</option>';
-
-      if (motores[motorSelecionado]) {
-        const custos = Object.values(motores[motorSelecionado]);
-        custos.forEach((custo) => {
-          const option = document.createElement("option");
-          option.value = custo;
-          option.textContent = custo.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-          });
-          custoSelect.appendChild(option);
-        });
-      }
-    });
-  }
-});
 
 document.getElementById('entradaAlter').innerText = `ENTRADA REAL`;
 
@@ -157,6 +137,8 @@ function formatarDocumento(campo) {
 }
 
 function validarDocumento(documento) {
+  if (!documento) return false; // evita erro de undefined
+
   documento = documento.replace(/[^\d]+/g, '');
 
   if (documento.length === 11) { // CPF
@@ -167,6 +149,7 @@ function validarDocumento(documento) {
     return false;
   }
 }
+
 
 function validarCPF(cpf) {
 
@@ -214,15 +197,58 @@ function validarCNPJ(cnpj) {
   return true;
 }
 
+document.getElementById("user-button").addEventListener("click", function () {
+  document.getElementById("user-dropdown").classList.toggle("show");
+});
+
+window.onclick = function (event) {
+  if (!event.target.matches('#user-button')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    for (var i = 0; i < dropdowns.length; i++) {
+      if (dropdowns[i].classList.contains('show')) {
+        dropdowns[i].classList.remove('show');
+      }
+    }
+  }
+};
+
+document.getElementById('save-pdf').addEventListener('click', function (event) {
+  event.preventDefault();
+
+  // Esconde o menu
+  const menu = document.getElementById('menu'); // ajusta o id se for diferente
+  if (menu) {
+    menu.style.display = 'none';
+  }
+
+  // Aguarda um pouquinho e depois chama o print
+  setTimeout(function () {
+    window.print();
+
+    // Depois do print, mostra o menu de volta
+    if (menu) {
+      menu.style.display = 'block';
+    }
+  }, 200); // 200ms de atraso para dar tempo de esconder o menu
+});
+
 document.getElementById('cpf').addEventListener('input', function () {
   formatarDocumento(this);
 });
 
 document.getElementById('motor_yamaha').addEventListener('change', verificarCamposCard1);
 document.getElementById('cliente').addEventListener('input', verificarCamposCard1);
+document.getElementById('cpf').addEventListener('input', verificarCamposCard1);
 document.getElementById('forma_pagamento').addEventListener('change', verificarCamposCard1);
 
-document.getElementById('showCard4Button').addEventListener('click', function () {
+
+
+
+
+
+
+
+document.getElementById('showCard4Button').addEventListener('click', async function () {
 
   const camposCard = document.querySelectorAll('#card1 input:not([disabled]):not([type="select-one"]), #card2 input:not([disabled]):not([type="select-one"]), #card3 input:not([disabled]):not([type="select-one"])');
 
@@ -238,7 +264,7 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
   let valor_op = 0;
   let resultadoBanco = 0;
   let icmsSaida = 0;
-
+  let chassiProduto = 0;
 
   camposCard.forEach(campo => {
     const valor = parseFloat(campo.value.replace('R$', '').replace('.', '').replace(',', '.') || 0);
@@ -255,8 +281,6 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
       despesaFrete = valor;
     } else if (campo.id === 'retorno_acessorio') {
       retornoAcessorio = valor;
-    } else if (campo.id === 'taxa') {
-      icmsSaida = valor;
     };
   });
 
@@ -276,184 +300,221 @@ document.getElementById('showCard4Button').addEventListener('click', function ()
     document.getElementById('custo_acessorio').innerText = '';
   }
 
-  const resultadoTaxa = icmsSaida;
-  document.getElementById('resultado_taxa').innerHTML = `Taxas: ${'.'.repeat(106)} R$ -${resultadoTaxa.toFixed(2).replace('.', ',')}`;
+  const chassiSelect = document.getElementById('chassi_motor');
+  const chassiSelecionado = chassiSelect.value;
 
-  var filialSelecionada = document.getElementById('filialTipo').value.trim();
-  var motorSelecionada = $('#motor_yamaha').val().trim();
+  if (!chassiSelecionado) {
+    alert('Selecione um chassi primeiro.');
+    return;
+  }
 
-  if (motorSelecionada) {
+  try {
+    const res = await fetch(`/api/nautica/detalhes-chassi?chassi=${encodeURIComponent(chassiSelecionado)}`);
+    const dados = await res.json();
 
-    $.getJSON('/dados_motor/' + encodeURIComponent(motorSelecionada), function (data) {
-      if (data.error) {
-        alert(data.error);
+    if (dados.error) {
+      alert('Erro: ' + dados.error);
+      return;
+    }
+
+    custoProduto = Number(dados.custo_contabil);
+    icms_compra = Number(dados.icms_compra)
+    chassiProduto = dados.chassi
+
+  } catch (err) {
+    console.error('Erro ao buscar detalhes do chassi:', err);
+  }
+
+
+
+
+
+
+
+  const icmsSelecionado = document.getElementById('icms_venda').value;
+  icms_venda = parseFloat(icmsSelecionado)
+
+  icmsSaida = icms_venda * entradaReal - icms_compra;
+
+  document.getElementById('resultado_taxa').innerHTML = `ICMS: ${'.'.repeat(107)} R$ -${icmsSaida.toFixed(2).replace('.', ',')}`;
+
+
+  document.getElementById('chassiProduto').innerText = `${chassiProduto}`;
+
+  document.getElementById('custo_produto').innerHTML = `Custo do Motor: ${'.'.repeat(89)} R$ ${custoProduto.toFixed(2).replace('.', ',')}`;
+
+  const formaPagamento = document.getElementById('forma_pagamento').value.trim();
+
+  document.getElementById('parcelas_taxa').innerText = '';
+  document.getElementById('taxa_cartao').innerText = '';
+  document.getElementById('resultado_banco').innerText = '';
+
+  if (formaPagamento === "Financiado") {
+    margem_bruta = valorVendaReal - custoProduto;
+    valor_op = valorVendaReal
+
+    const valor_bem = precoNegociado;
+
+    document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+
+    document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+
+
+
+
+    const icmsSelecionado = document.getElementById('icms_venda').value;
+    icms_venda = parseFloat(icmsSelecionado)
+
+    icmsSaida = icms_venda * precoNegociado - icms_compra;
+
+    document.getElementById('resultado_taxa').innerHTML = `ICMS: ${'.'.repeat(107)} R$ -${icmsSaida.toFixed(2).replace('.', ',')}`;
+
+
+
+
+
+    const bancoRetorno = document.getElementById('banco_retorno').value.trim();
+    const resultBanco = precoNegociado - entradaReal - entradaBonificada;
+
+    resultadoBanco = resultBanco;
+
+    if (bancoRetorno === "R0") {
+      resultadoBanco = resultBanco * 0;
+      document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+    } else if (bancoRetorno === "R1") {
+      resultadoBanco = resultBanco * 0.012;
+      document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+    } else if (bancoRetorno === "R2") {
+      resultadoBanco = resultBanco * 0.024;
+      document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+    } else if (bancoRetorno === "R3") {
+      resultadoBanco = resultBanco * 0.036;
+      document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+    } else if (bancoRetorno === "R4") {
+      resultadoBanco = resultBanco * 0.048;
+      document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+    } else {
+      resultadoBanco = 0;
+      document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+    }
+
+  } if (formaPagamento === "À Vista") {
+    margem_bruta = entradaReal - custoProduto;
+    const valorVendaReal = entradaReal;
+    valor_op = entradaReal
+
+    const valor_bem = entradaReal;
+
+    document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+
+    document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+  } if (formaPagamento === "Cartão de Crédito") {
+
+    // Pega o valor selecionado no select de parcelas
+    var nomeParcela = $('#parcelas').val();
+
+    // Realiza a requisição para obter a taxa associada à parcela
+    $.getJSON('/obter_taxa/' + encodeURIComponent(nomeParcela), function (data) {
+
+      // Garantir que os valores de entrada são numéricos
+
+      // Calcular os valores corretamente
+      var taxaCartao = entradaReal * data.valor;
+      var valorVendaReal = taxaCartao + entradaReal;
+      var parcelaCartao = valorVendaReal / data.parcela;
+      var margem_bruta = valorVendaReal - custoProduto;
+
+      // Atualiza os valores no HTML
+
+      $('#parcelas_taxa').text(`Parcelas de ${data.parcela}x: ${'.'.repeat(88)} R$ ${parcelaCartao.toFixed(2).replace('.', ',')} `);
+
+      const valor_bem = entradaReal;
+
+      document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+
+      document.getElementById('valor_venda_real').innerText =
+        `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+
+      document.getElementById('taxa_cartao').innerText =
+        `Taxa do Cartão: ${'.'.repeat(90)} R$ -${taxaCartao.toFixed(2).replace('.', ',')}`;
+
+      document.getElementById('margem_bruta').innerText =
+        `Margem Bruta: ${'.'.repeat(91)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
+
+      var despOpeFinMkt = entradaReal * 0.06;
+      document.getElementById('despesas_ope_fin_mkt').innerText =
+        `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
+
+      var totalDespesas = despOpeFinMkt + despesaFrete + retornoAcessorio * 0.7 + taxaCartao + icmsSaida;
+      document.getElementById('resultado_despesas').innerText =
+        `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
+
+      var totalReceitas = retornoAcessorio + receitaFrete;
+      document.getElementById('resultado_receitas').innerText =
+        `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+
+      var margemLiquida = margem_bruta - totalDespesas + totalReceitas;
+      document.getElementById('resultado_liquido').innerText =
+        `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+
+      var comissao = margemLiquida * 0.05;
+      if (comissao < 0) {
+        comissao = 0
+        document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
       } else {
-        document.getElementById('mensagemFilial').innerText = `${filialSelecionada}`;
+        document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
 
-        const custoSelect = document.getElementById("custo_motor");
-        const custoSelecionado = custoSelect.value;
-        custoProduto = Number(custoSelecionado)
-        console.log("Custo selecionado:", custoProduto);
-
-        document.getElementById('custo_produto').innerText = `Custo da Moto: ${'.'.repeat(90)} R$ ${custoProduto.toFixed(2).replace('.', ',')}`;
-
-        const formaPagamento = document.getElementById('forma_pagamento').value.trim();
-
-        document.getElementById('parcelas_taxa').innerText = '';
-        document.getElementById('taxa_cartao').innerText = '';
-        document.getElementById('resultado_banco').innerText = '';
-
-        if (formaPagamento === "Financiado") {
-          margem_bruta = valorVendaReal - custoProduto;
-          valor_op = valorVendaReal
-
-          const valor_bem = precoNegociado;
-
-          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
-
-          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
-
-          const bancoRetorno = document.getElementById('banco_retorno').value.trim();
-          const resultBanco = precoNegociado - entradaReal - entradaBonificada;
-
-          resultadoBanco = resultBanco;
-
-          if (bancoRetorno === "R0") {
-            resultadoBanco = resultBanco * 0;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-          } else if (bancoRetorno === "R1") {
-            resultadoBanco = resultBanco * 0.012;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-          } else if (bancoRetorno === "R2") {
-            resultadoBanco = resultBanco * 0.024;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-          } else if (bancoRetorno === "R3") {
-            resultadoBanco = resultBanco * 0.036;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-          } else if (bancoRetorno === "R4") {
-            resultadoBanco = resultBanco * 0.048;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-
-          } else {
-            resultadoBanco = 0;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
-          }
-
-        } if (formaPagamento === "À Vista") {
-          margem_bruta = entradaReal - custoProduto;
-          const valorVendaReal = entradaReal;
-          valor_op = entradaReal
-
-          const valor_bem = entradaReal;
-
-          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
-
-          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
-
-        } if (formaPagamento === "Cartão de Crédito") {
-
-          // Pega o valor selecionado no select de parcelas
-          var nomeParcela = $('#parcelas').val();
-
-          // Realiza a requisição para obter a taxa associada à parcela
-          $.getJSON('/obter_taxa/' + encodeURIComponent(nomeParcela), function (data) {
-
-            // Garantir que os valores de entrada são numéricos
-
-            // Calcular os valores corretamente
-            var taxaCartao = entradaReal * data.valor;
-            var valorVendaReal = taxaCartao + entradaReal;
-            var parcelaCartao = valorVendaReal / data.parcela;
-            var margem_bruta = valorVendaReal - custoProduto;
-
-            // Atualiza os valores no HTML
-
-            $('#parcelas_taxa').text(`Parcelas de ${data.parcela}x: ${'.'.repeat(88)} R$ ${parcelaCartao.toFixed(2).replace('.', ',')} `);
-
-            const valor_bem = entradaReal;
-
-            document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
-
-            document.getElementById('valor_venda_real').innerText =
-              `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
-
-            document.getElementById('taxa_cartao').innerText =
-              `Taxa do Cartão: ${'.'.repeat(90)} R$ -${taxaCartao.toFixed(2).replace('.', ',')}`;
-
-            document.getElementById('margem_bruta').innerText =
-              `Margem Bruta: ${'.'.repeat(91)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
-
-            var despOpeFinMkt = entradaReal * 0.06;
-            document.getElementById('despesas_ope_fin_mkt').innerText =
-              `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
-
-            var totalDespesas = despOpeFinMkt + despesaFrete + retornoAcessorio * 0.7 + taxaCartao + icmsSaida;
-            document.getElementById('resultado_despesas').innerText =
-              `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
-
-            var totalReceitas = retornoAcessorio + receitaFrete;
-            document.getElementById('resultado_receitas').innerText =
-              `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
-
-            var margemLiquida = margem_bruta - totalDespesas + totalReceitas;
-            document.getElementById('resultado_liquido').innerText =
-              `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
-
-            var comissao = margemLiquida * 0.05;
-            if (comissao < 0) {
-              comissao = 0
-              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
-
-            } else {
-              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
-
-            }
-          });
-        }
-
-        const margemBruta = margem_bruta
-        document.getElementById('margem_bruta').innerText = `Margem Bruta: ${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
-
-        document.getElementById('custo_frete').innerText = `Frete Custo: ${'.'.repeat(96)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
-        document.getElementById('receita_frete').innerText = `Frete Receita: ${'.'.repeat(93)} R$ ${receitaFrete.toFixed(2).replace('.', ',')}`;
-
-
-        if (formaPagamento !== "Cartão de Crédito") {
-
-          const despOpeFinMkt = valor_op * 0.06;
-          document.getElementById('despesas_ope_fin_mkt').innerText = `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
-
-          const totalDespesas = despOpeFinMkt + despesaFrete + retornoAcessorio * 0.7 + icmsSaida;
-          document.getElementById('resultado_despesas').innerText = `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
-
-          const totalReceitas = retornoAcessorio + resultadoBanco + receitaFrete;
-          document.getElementById('resultado_receitas').innerText = `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
-
-          const margemLiquida = margemBruta - totalDespesas + totalReceitas;
-          document.getElementById('resultado_liquido').innerText = `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
-
-          comissao = margemLiquida * 0.05;
-          if (comissao < 0) {
-            comissao = 0
-            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
-
-          } else {
-            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
-
-          }
-
-        }
-
-        setTimeout(() => {
-          enviarFormulario();
-        }, 50);
       }
     });
   }
+
+  const margemBruta = margem_bruta
+  document.getElementById('margem_bruta').innerText = `Margem Bruta: ${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
+
+  document.getElementById('custo_frete').innerText = `Frete Custo: ${'.'.repeat(96)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
+  document.getElementById('receita_frete').innerText = `Frete Receita: ${'.'.repeat(93)} R$ ${receitaFrete.toFixed(2).replace('.', ',')}`;
+
+
+  if (formaPagamento !== "Cartão de Crédito") {
+
+    const despOpeFinMkt = valor_op * 0.06;
+    document.getElementById('despesas_ope_fin_mkt').innerText = `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
+
+    const totalDespesas = despOpeFinMkt + despesaFrete + retornoAcessorio * 0.7 + icmsSaida;
+    document.getElementById('resultado_despesas').innerText = `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
+
+    const totalReceitas = retornoAcessorio + resultadoBanco + receitaFrete;
+    document.getElementById('resultado_receitas').innerText = `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+
+    const margemLiquida = margemBruta - totalDespesas + totalReceitas;
+    document.getElementById('resultado_liquido').innerText = `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+
+    comissao = margemLiquida * 0.05;
+    if (comissao < 0) {
+      comissao = 0
+      document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+    } else {
+      document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+
+    }
+
+  }
+
+  setTimeout(() => {
+    enviarFormulario();
+  }, 50);
+
+
+
 
 });
 
@@ -467,7 +528,7 @@ function converterDecimal(valor) {
 }
 
 function enviarFormulario() {
-  const vendedor = document.getElementById('vendedor').value;
+  const vendedor = document.getElementById('user-button').innerText;
   const cliente = document.getElementById('cliente').value;
   const cpf = document.getElementById('cpf').value;
   const motorYamaha = document.getElementById('motor_yamaha').value.trim();
@@ -475,12 +536,13 @@ function enviarFormulario() {
   const formaPagamento = document.getElementById('forma_pagamento').value.trim();
   const bancoSelecionado = document.getElementById('forma_banco').value;
   const retornoSelecionado = document.getElementById('banco_retorno').value;
-  const chassi = document.getElementById('chassi').value;
+  const chassiEscolhido = document.getElementById('chassi_motor').value.trim();
+  const chassi = document.getElementById('chassiProduto').innerText;
 
 
 
   // Verifica se todos os campos obrigatórios estão preenchidos
-  if (!vendedor || !cliente || !cpf || !filialTipo || !formaPagamento || !motorYamaha) {
+  if (!vendedor || !cliente || !cpf || !filialTipo || !formaPagamento || !motorYamaha || !chassiEscolhido) {
     alert('Todos os campos devem ser preenchidos!');
     return;
   }

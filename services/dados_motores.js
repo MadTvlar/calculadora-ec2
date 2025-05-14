@@ -22,6 +22,7 @@ const motores = {
     'custo1': 11697.54,
     'custo2': 12282.51,
     'custo3': 12714.96,
+    'custo4': 12957.69,
   },
 
   '0496 CC: 30HWHS': {

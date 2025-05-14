@@ -48,7 +48,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   position: absolute;
   right: 10px;
   top: 10px;
@@ -187,4 +186,121 @@ body {
 
 .show {
   display: block;
+}
+
+.form-container {
+  max-width: 400px;
+  margin: 40px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-container form label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.form-container form input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.form-container form button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-container form select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+
+.form-container {
+  float: left;
+  width: 45%;
+  padding: 20px;
+  margin-left: -30px;
+  /* Ajuste o valor conforme necessário */
+}
+
+.lista-usuarios {
+  width: 50%;
+  max-height: 400px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.lista-usuarios table {
+  display: block;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lista-usuarios th,
+.lista-usuarios td {
+  border: 1px solid #ddd;
+  padding: 8px 20px;
+}
+
+.lista-usuarios th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.tabela-scroll {
+  max-height: 350px;
+  /* ajuste conforme necessário */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+}
+
+.tabela-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-scroll th,
+.tabela-scroll td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabela-scroll td {
+  font-size: 14px;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabela-scroll thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f5f5f5;
+  /* ou a cor do seu tema */
+  z-index: 1;
 }

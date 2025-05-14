@@ -31,46 +31,41 @@
           <% }); %>
       </select>
 
-      <input type="text" id="vendedor" value="<%= usuario %>" placeholder="Nome do Usuario" readonly>
+      <div class="user-menu">
+        <button id="user-button">
+          <%= usuario %>
+        </button>
+        <div id="user-dropdown" class="dropdown-content">
+          <a href="#" id="save-pdf">Salvar em PDF</a>
+          <a href="/rankmotos">Rank Vendas</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+
     </div>
 
-    <div class="btn-container" id="btnContainer">
-      <button class="btn" onclick="window.location.href='/'"> Logout </button>
-    </div>
+
   </div>
 
   <div id="formContainer" class="form-container">
     <div class="card" id="card1">
 
-      <label for="localizacaoMoto">ORIGEM DA MOTO</label>
-      <select id="locMoto" name="locMoto">
-        <option value="">Selecione</option>
-        <% origemMoto.forEach(origem=> { %>
-          <option value="<%= origem %>">
-            <%= origem %>
-          </option>
-          <% }); %>
-      </select>
-
-
-      <label for="yahMotos">MOTOS YAMAHA</label>
+      <label for="motos_yamaha">MOTOS YAMAHA</label>
       <select id="motos_yamaha" name="motos_yamaha">
-        <option value="">Selecione</option>
-        <% Object.keys(motos).forEach((moto)=> { %>
-          <option value="<%= moto %>">
-            <%= moto %>
-          </option>
-          <% }); %>
+        <option value="">Selecione um modelo</option>
       </select>
 
-
+      <label for="chassi_moto">CHASSI</label>
+      <select id="chassi_moto" name="chassi_moto">
+        <option value="">Selecione uma moto</option>
+      </select>
 
       <label for="cliente">CLIENTE</label>
       <input type="text" id="cliente" placeholder="Nome do Cliente">
 
       <label for="cpfCliente">CPF</label>
       <input type="text" id="cpf" placeholder="CPF ou CNPJ do Cliente" maxlength="17" oninput="formatarDocumento(this);"
-        onblur="validarDocumento();">
+        onblur="validarDocumento(this.value);">
 
       <label for="formaPagamento">FORMA DE PAGAMENTO</label>
       <select id="forma_pagamento" name="formas_pagamentos">
@@ -137,72 +132,86 @@
 
       <div class="box-container">
         <label for="emplacamento" style="margin-right: 5px;">EMPLACAMENTO</label>
-        <input type="checkbox" id="enableEmplacamento" onclick="toggleEmplacamento()" style="margin-left: -2px;">
+        <input type="checkbox" id="enableEmplacamento" style="margin-left: -2px;">
       </div>
       <input type="text" id="retorno_emplacamento" placeholder="R$00,00" disabled>
+
+
+
+
 
       <div id="freteManaus"
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
 
-        <label for="freteDespesas" style="margin-bottom: 10px;">FRETE DESPESA</label>
-        <input type="text" id="frete_despesa" name="frete_despesa" placeholder="R$00,00" style="width: 250px;">
+        <div class="input-group-row">
+          <label for="frete_despesa">FRETE DESPESA:</label>
+          <input type="text" id="frete_despesa" placeholder="R$00,00" disabled>
+        </div>
+
       </div>
 
-      <label for="freteReceitas">FRETE RECEITA</label>
-      <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
-
-      <div class="box-container">
-        <label for="acessorio" style="margin-right: 5px;">ACESSÓRIOS VENDIDOS</label>
-        <input type="checkbox" id="enableAcessorio" onclick="toggleEmplacamento()">
+      <div class="input-group-row">
+        <label for="frete_receita">FRETE RECEITA:</label>
+        <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
       </div>
-      <input type="text" id="retorno_acessorio" placeholder="R$00,00" disabled>
 
-      <div class="box-container">
-        <label for="brinde" style="margin-right: 5px;">BRINDE</label>
-        <input type="checkbox" id="enableBrinde" onclick="toggleEmplacamento()">
+
+      <div class="input-group-row">
+        <label for="acessorio">ACESSÓRIOS VENDIDOS:</label>
+        <input type="text" id="retorno_acessorio" placeholder="R$00,00" disabled>
       </div>
-      <input type="text" id="retorno_brinde" placeholder="R$00,00" disabled>
+
+      <div class="input-group-row">
+        <label for="brinde">BRINDE:</label>
+        <input type="text" id="retorno_brinde" placeholder="R$00,00" disabled>
+      </div>
+
+
+
+
+
+
     </div>
   </div>
 
   <div id="card4" style="display: none; margin-left: -15px">
-    <p style="text-align: center;"><strong>RELATÓRIO - </strong> <span id="mensagemFilial"
+    <p style="text-align: center;"><strong>RELATÓRIO - CHASSI </strong> <span id="mensagemFilial"
         style="text-transform: uppercase;"></span></p>
 
     <div id="caixa_destacada1" class="caixa-destacada">
       <p id="valor_bem"></p>
       <p id="valor_venda_real"></p>
       <p id="parcelas_taxa"></p>
-
-      <p><strong>Custo da Moto:</strong> <span id="custo_produto"></span></p>
-      <p><strong>Margem Bruta:</strong> <span id="margem_bruta"></span></p>
+      <p id="custo_produto"></p>
+      <p id="margem_bruta"></p>
     </div>
 
     <p style="text-align: center; margin-left: -15px"><strong>DESPESAS</strong></p>
     <div id="caixa_destacada2" class="caixa-destacada">
-      <p><strong>Emplacamento Custo:</strong> <span id="custo_emplacamento"></span></p>
-      <p><strong>Frete Custo:</strong> <span id="custo_frete"></span></p>
+      <p id="custo_emplacamento"></p>
+      <p id="custo_frete"></p>
       <p id="custo_acessorio"></p>
       <p id="resultado_brinde"></p>
       <p id="taxa_cartao"></p>
-      <p><strong>Despesas Operacionais:</strong> <span id="despesas_ope_fin_mkt"></span></p>
-      <p><strong>Total de Despesas:</strong> <span id="resultado_despesas"></span></p>
+      <p id="despesas_ope_fin_mkt"></p>
+      <p id="resultado_despesas"></p>
     </div>
 
     <p style="text-align: center; margin-left: -15px;"><strong>RECEITAS</strong></p>
     <div id="caixa_destacada3" class="caixa-destacada">
       <p id="resultado_banco"> </p>
-      <p><strong>Emplacamento Receita:</strong> <span id="receita_emplacamento"></span></p>
-      <p><strong>Frete Receita:</strong> <span id="receita_frete"></span></p>
+      <p id="receita_emplacamento"></p>
+      <p id="receita_frete"></p>
       <p id="receita_acessorio"></p>
-      <p><strong>Total de Receitas:</strong> <span id="resultado_receitas"></span></p>
+      <p id="resultado_receitas"></p>
     </div>
 
     <div id="caixa_destacada4" class="caixa-destacada">
-      <p><strong>Margem Líquida:</strong> <span id="resultado_liquido"></span></p>
-      <p><strong>Comissão Aproximada:</strong> <span id="comissao"></span></p>
+      <p id="resultado_liquido"></p>
+      <p id="comissao"></p>
     </div>
   </div>
+
   <footer class="footer">
     <div class="footer-text">
       <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
@@ -217,6 +226,61 @@
     </div>
   </footer>
 
+  <div id="dados_emplacamento" data-valor="<%= valorMesAtual %>"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const motoSelect = document.getElementById('motos_yamaha');
+      const chassiSelect = document.getElementById('chassi_moto');
+      const labelChassi = document.querySelector('label[for="chassi_moto"]'); // Pega o label do chassi
+
+      try {
+        const res = await fetch('/api/motos/modelos-motos-disponiveis');
+        const modelos = [...new Set(await res.json())]; // remove duplicatas direto
+
+        motoSelect.innerHTML = '<option value="">Selecione</option>';
+
+        modelos.forEach(modelo => {
+          motoSelect.insertAdjacentHTML('beforeend',
+            `<option value="${modelo}">${modelo}</option>`);
+        });
+
+      } catch (err) {
+        console.error('Erro ao carregar modelos:', err);
+      }
+
+
+      motoSelect.addEventListener('change', async () => {
+        const modeloSelecionado = motoSelect.value;
+        chassiSelect.innerHTML = '<option value="">Carregando...</option>';
+
+        try {
+          const res = await fetch(`/api/motos/chassis-por-modelo?modelo=${encodeURIComponent(modeloSelecionado)}`);
+          const chassis = await res.json();
+
+          chassiSelect.innerHTML = '<option value="">Selecione</option>';
+
+          // Atualiza o label com a quantidade de chassis
+          labelChassi.textContent = `CHASSI (${chassis.length})`;
+
+          chassis.forEach(chassi => {
+
+            const option = document.createElement('option');
+            // Combinando chassi, cor, pátio e dias_estoque para exibir
+            const textoExibido = `${chassi.chassi || 'N/A'} - ${chassi.cor || 'N/A'} - ${chassi.patio || 'N/A'} - ${chassi.ano || 'N/A'} - ${chassi.dias_estoque || 'N/A'} dias`;
+
+            option.value = chassi.chassi; // valor do chassi
+            option.textContent = textoExibido; // texto exibido no select
+            chassiSelect.appendChild(option);
+          });
+        } catch (err) {
+          console.error('Erro ao carregar chassis:', err);
+          chassiSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+          labelChassi.textContent = 'CHASSI (0)';
+        }
+      });
+    });
+  </script>
   <script src="/js/motos.js"></script>
 
 </body>

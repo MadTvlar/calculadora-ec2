@@ -17,11 +17,17 @@
     </div>
 
     <div class="filial-container">
-      <input type="text" id="vendedor" value="<%= usuario %>" placeholder="Nome do Usuario" readonly>
-    </div>
-
-    <div class="btn-container" id="btnContainer">
-      <button class="btn" onclick="window.location.href='/'"> Logout </button>
+      <div class="user-menu">
+        <button id="user-button">
+          <%= usuario %>
+        </button>
+        <div id="user-dropdown" class="dropdown-content">
+          <% if (grupo==='admin' ) { %>
+            <a href="/usuarios">Usuários</a>
+            <% } %>
+              <a href="/logout">Logout</a>
+        </div>
+      </div>
     </div>
   </div>
 

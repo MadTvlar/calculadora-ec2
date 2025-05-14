@@ -31,32 +31,31 @@
           <% }); %>
       </select>
 
-      <input type="text" id="vendedor" value="<%= usuario %>" placeholder="Nome do Usuario" readonly>
-    </div>
-
-    <div class="btn-container" id="btnContainer">
-      <button class="btn" onclick="window.location.href='/'"> Logout </button>
+      <div class="user-menu">
+        <button id="user-button">
+          <%= usuario %>
+        </button>
+        <div id="user-dropdown" class="dropdown-content">
+          <a href="#" id="save-pdf">Salvar em PDF</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
     </div>
   </div>
 
   <div id="formContainer" class="form-container">
     <div class="card" id="card1">
 
-      <label for="yahMotor">MOTOR YAMAHA</label>
+      <label for="motor_yamaha">MOTOR YAMAHA</label>
       <select id="motor_yamaha" name="motor_yamaha">
         <option value="">Selecione</option>
-        <% Object.keys(motores).forEach((motor)=> { %>
-          <option value="<%= motor %>">
-            <%= motor %>
-          </option>
-          <% }); %>
       </select>
 
-      <div id="motores-data" data-motores='<%- JSON.stringify(motores) %>' style="display: none;"></div>
-      <label for="custo_motor">CUSTO</label>
-      <select id="custo_motor" name="custo_motor">
-        <option value="">Selecione um custo</option>
+      <label for="chassi_motor">CHASSI</label>
+      <select id="chassi_motor" name="chassi_motor">
+        <option value="">Selecione um motor</option>
       </select>
+
 
       <label for="cliente">CLIENTE</label>
       <input type="text" id="cliente" placeholder="Nome do Cliente">
@@ -108,9 +107,6 @@
 
     <div class="card disabled" id="card3">
 
-      <label for="chassi">CHASSI MOTOR</label>
-      <input type="text" id="chassi" placeholder="Nº do Chassi" disabled>
-
       <span id="entradaAlter"
         style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem;"></span>
       <input type="text" id="entrada_real" placeholder="R$00,00" disabled>
@@ -129,17 +125,17 @@
       </div>
 
 
-      <div class="input-group-column">
-        <div class="input-group-row">
-          <label for="frete_despesa">FRETE DESPESA:</label>
-          <input type="text" id="frete_despesa" placeholder="R$00,00" disabled>
-        </div>
 
-        <div class="input-group-row">
-          <label for="frete_receita">FRETE RECEITA:</label>
-          <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
-        </div>
+      <div class="input-group-row">
+        <label for="frete_despesa">FRETE DESPESA:</label>
+        <input type="text" id="frete_despesa" placeholder="R$00,00" disabled>
       </div>
+
+      <div class="input-group-row">
+        <label for="frete_receita">FRETE RECEITA:</label>
+        <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
+      </div>
+
 
       <div class="input-group-row">
         <label for="acessorio">ACESSÓRIOS VENDIDOS:</label>
@@ -147,16 +143,22 @@
       </div>
 
       <div class="input-group-row">
-        <label for="icms">ICMS SOBRE VENDA:</label>
-        <input type="text" id="taxa" placeholder="R$00,00" disabled>
+        <label for="icms_venda">ICMS SOBRE VENDA:</label>
+        <select id="icms_venda" name="icms">
+          <% Object.entries(icms_venda).forEach(([label, valor])=> { %>
+            <option value="<%= valor %>">
+              <%= label %>
+            </option>
+            <% }) %>
+        </select>
       </div>
-
     </div>
+
   </div>
 
 
   <div id="card4" style="display: none; margin-left: -15px">
-    <p style="text-align: center;"><strong>RELATÓRIO NÁUTICA - </strong> <span id="mensagemFilial"
+    <p style="text-align: center;"><strong>RELATÓRIO NÁUTICA - CHASSI </strong> <span id="chassiProduto"
         style="text-transform: uppercase;"></span></p>
 
 
@@ -204,6 +206,68 @@
       <span class="animate scroll" style="--i:3;"></span>
     </div>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const motorSelect = document.getElementById('motor_yamaha');
+      const chassiSelect = document.getElementById('chassi_motor');
+      const labelChassi = document.querySelector('label[for="chassi_motor"]'); // Pega o label do chassi
+
+      try {
+        const res = await fetch('/api/nautica/modelos-motores-disponiveis');
+        const modelos = await res.json();
+
+        motorSelect.innerHTML = '<option value="">Selecione</option>';
+        const vistos = new Set();
+
+        modelos.forEach(modelo => {
+          const textoFormatado = modelo.includes('MOD')
+            ? 'MOTOR ' + modelo.split('MOD')[1].trim()
+            : modelo;
+
+          if (!vistos.has(textoFormatado)) {
+            vistos.add(textoFormatado);
+            const option = document.createElement('option');
+            option.value = modelo; // valor original
+            option.textContent = textoFormatado; // texto exibido
+            motorSelect.appendChild(option);
+          }
+        });
+      } catch (err) {
+        console.error('Erro ao carregar modelos:', err);
+      }
+
+      motorSelect.addEventListener('change', async () => {
+        const modeloSelecionado = motorSelect.value;
+        chassiSelect.innerHTML = '<option value="">Carregando...</option>';
+
+        try {
+          const res = await fetch(`/api/nautica/chassis-por-modelo?modelo=${encodeURIComponent(modeloSelecionado)}`);
+          const chassis = await res.json();
+
+          chassiSelect.innerHTML = '<option value="">Selecione</option>';
+
+          // Atualiza o label com a quantidade de chassis
+          labelChassi.textContent = `CHASSI (${chassis.length})`;
+
+          chassis.forEach(chassi => {
+
+            const option = document.createElement('option');
+            // Combinando chassi, cor, pátio e dias_estoque para exibir
+            const textoExibido = `${chassi.chassi || 'N/A'} - ${chassi.cor || 'N/A'} - ${chassi.patio || 'N/A'} - ${chassi.dias_estoque || 'N/A'} dias`;
+
+            option.value = chassi.chassi; // valor do chassi
+            option.textContent = textoExibido; // texto exibido no select
+            chassiSelect.appendChild(option);
+          });
+        } catch (err) {
+          console.error('Erro ao carregar chassis:', err);
+          chassiSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+          labelChassi.textContent = 'CHASSI (0)';
+        }
+      });
+    });
+  </script>
 
   <script src="/js/nautica.js"></script>
 </body>
