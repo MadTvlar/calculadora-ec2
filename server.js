@@ -145,20 +145,29 @@ app.get('/usuarios', async (req, res) => {
 app.get('/reservasmotos', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(`
-      SELECT DISTINCT modelo FROM estoque_motos
-      WHERE situacao_reserva = 'Ativa' ORDER BY modelo ASC`);
+  SELECT patio, modelo, chassi, situacao_reserva, data_reserva, destino_reserva, observacao_reserva, dias_reserva
+  FROM estoque_motos
+  WHERE situacao_reserva = 'Ativa'
+  ORDER BY data_reserva DESC
+  `);
 
-    const modelos = rows.map(row => row.modelo);
+    const motos = rows.map(moto => ({
+      ...moto,
+      data_reserva_formatada: moto.data_reserva
+        ? new Date(moto.data_reserva).toLocaleDateString('pt-BR')
+        : '-'
+    }));
 
     res.render('reservasmotos', {
       usuario: req.cookies.usuario_logado,
-      modelos
+      motos
     });
   } catch (err) {
-    console.error('Erro ao buscar modelos:', err);
-    res.status(500).render('erro', { mensagem: 'Erro ao buscar modelos' });
+    console.error('Erro ao buscar reservas de motos:', err);
+    res.status(500).render('erro', { mensagem: 'Erro ao buscar reservas de motos' });
   }
 });
+
 
 
 // CHAMADO PARA O BOTÃO DE ADICIONAR USUÁRIO

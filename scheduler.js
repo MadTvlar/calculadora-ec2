@@ -17,9 +17,9 @@ const pool = mysql.createPool({
 });
 
 // Executa imediatamente
-//fetchEstoqueMotores(pool);
-//fetchEstoqueMotos(pool);
-//fetchMkVendasMotos(pool)
+fetchEstoqueMotores(pool);
+fetchEstoqueMotos(pool);
+fetchMkVendasMotos(pool)
 
 // Agenda para rodar às 12:27h da manhã todos os dias
 cron.schedule('27 12 * * *', () => {
