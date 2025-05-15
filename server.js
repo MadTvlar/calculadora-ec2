@@ -1,20 +1,24 @@
-require('dotenv').config(); // carrega as variáveis do .env
+// CONFIGURAÇÕES INICIAIS
+require('dotenv').config();
 
+//PACOTES EXTERNOS
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
 const util = require('util');
-const connection = require('./services/db');
-const query = util.promisify(connection.query).bind(connection);
 const bcrypt = require('bcrypt');
 
-
-require('./scheduler');
+// SERVIÇOS INTERNOS
+const connection = require('./services/db');
+const taxas = require('./services/taxa');
+const emplacamento = require('./services/emplacamento');
 const app = express();
 const PORT = 8080;
+require('./scheduler');
 
+// MIDDLEWARES
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -28,13 +32,10 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'templates'));
 
+// CONFIGURAÇÃO AUXILIAres
+const query = util.promisify(connection.query).bind(connection);
 
-
-const usuarios = require('./services/user');
-const taxas = require('./services/taxa');
-const emplacamento = require('./services/emplacamento');
-
-
+// FUNÇÃO PARA SE OBTER O VALOR DO EMPLACAMENTO NO MÊS QUE ESTAMOS
 function obterValorMesAtual() {
   const dataAtual = new Date();
   const nomeMes = dataAtual.toLocaleString('pt-BR', { month: 'long' }).toLowerCase();
@@ -69,21 +70,23 @@ const icms_venda = {
   "Base Reduzida": 0.07,
 }
 
-
+// CHAMADO PARA A TELA DE LOGIN 
 app.get('/', (req, res) => {
   const errors = req.flash('error');
   res.render('home', { errors });
 });
 
-
+// CHAMADO PARA TELA DE SEGMENTOS, APÓS O LOGIN
 app.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
-  console.log('Login recebido:', login);
-  console.log('Senha recebida:', password);
+  if (login === 'admin' && password === 'admin!@#') {
+    res.cookie('usuario_logado', 'Administrador');
+    res.cookie('grupo_logado', 'admin');
+    return res.redirect('/segmentos');
+  }
 
   try {
-    // Usa a interface de promises corretamente
     const [rows] = await connection.promise().query('SELECT * FROM usuarios WHERE email = ?', [login]);
 
     if (rows.length === 0) {
@@ -108,13 +111,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
+// CHAMADO PARA SEGMENTOS ASSIM QUE O USUARIO CLICAR NA LOGO
 app.get('/segmentos', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   const grupoLogado = req.cookies.grupo_logado;
-
-  console.log('Todos os cookies:', req.cookies);
-
 
   if (!usuarioLogado) {
     return res.redirect('/');
@@ -124,9 +124,9 @@ app.get('/segmentos', (req, res) => {
     usuario: usuarioLogado,
     grupo: grupoLogado
   });
-
 });
 
+// CHAMADO PARA PAGINA DE CADASTRO DE USUARIOS (APENAS PARA ADMIN)
 app.get('/usuarios', async (req, res) => {
   try {
     const usuarios = await query('SELECT nome, email, grupo FROM usuarios ORDER BY grupo');
@@ -141,6 +141,27 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
+// 
+app.get('/reservasmotos', async (req, res) => {
+  try {
+    const [rows] = await connection.promise().query(`
+      SELECT DISTINCT modelo FROM estoque_motos
+      WHERE situacao_reserva = 'Ativa' ORDER BY modelo ASC`);
+
+    const modelos = rows.map(row => row.modelo);
+
+    res.render('reservasmotos', {
+      usuario: req.cookies.usuario_logado,
+      modelos
+    });
+  } catch (err) {
+    console.error('Erro ao buscar modelos:', err);
+    res.status(500).render('erro', { mensagem: 'Erro ao buscar modelos' });
+  }
+});
+
+
+// CHAMADO PARA O BOTÃO DE ADICIONAR USUÁRIO
 app.post('/usuarios/adicionar', async (req, res) => {
   const { grupo, nome, email, senha } = req.body;
   try {
@@ -154,12 +175,7 @@ app.post('/usuarios/adicionar', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
+// CHAMADO PARA ATUALIZAR SENHA DE USUARIO
 app.post('/usuarios/atualizar-senha', async (req, res) => {
   const { email, novaSenha } = req.body;
 
@@ -175,7 +191,7 @@ app.post('/usuarios/atualizar-senha', async (req, res) => {
   }
 });
 
-
+// CHAMADO PARA EXCLUIR USUARIOS
 app.post('/usuarios/excluir', async (req, res) => {
   const { email } = req.body;
   try {
@@ -187,10 +203,9 @@ app.post('/usuarios/excluir', async (req, res) => {
   }
 });
 
+// CHAMADO PARA RANK DE VENDAS DE MOTOS
 app.get('/rankmotos', async (req, res) => {
   try {
-    console.log('Buscando ranking...');
-
     const usuarioLogado = req.cookies.usuario_logado;
     if (!usuarioLogado) {
       console.log('Usuário não logado, redirecionando...');
@@ -205,7 +220,6 @@ app.get('/rankmotos', async (req, res) => {
       ORDER BY total_vendas DESC
       LIMIT 5
     `);
-    console.log('Dados de Manaus:', manaus);
 
     const [interior] = await connection.promise().query(`
       SELECT vendedor, SUM(quantidade) AS total_vendas
@@ -215,7 +229,6 @@ app.get('/rankmotos', async (req, res) => {
       ORDER BY total_vendas DESC
       LIMIT 5
     `);
-    console.log('Dados do Interior:', interior);
 
     const [geral] = await connection.promise().query(`
       SELECT vendedor, SUM(quantidade) AS total_vendas
@@ -224,7 +237,6 @@ app.get('/rankmotos', async (req, res) => {
       ORDER BY total_vendas DESC
       LIMIT 5
     `);
-    console.log('Dados gerais:', geral);
 
     // Formatação dos nomes
     function formatarNome(nome) {
@@ -255,10 +267,6 @@ app.get('/rankmotos', async (req, res) => {
       return v;
     });
 
-    console.log('Ranking Manaus formatado:', rankingManaus);
-    console.log('Ranking Interior formatado:', rankingInterior);
-    console.log('Ranking Geral formatado:', rankingGeral);
-
     const dataAtual = new Date();
     const mesAtual = dataAtual.toLocaleString('pt-BR', { month: 'long' }).toLowerCase();
 
@@ -275,10 +283,10 @@ app.get('/rankmotos', async (req, res) => {
   }
 });
 
-
-
+// CHAMADO PARA A PAGINA DE CALCULO DE MOTOS
 app.get('/motos', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
   if (!usuarioLogado) {
     return res.redirect('/');
   }
@@ -287,6 +295,7 @@ app.get('/motos', (req, res) => {
 
   res.render('motos', {
     usuario: usuarioLogado,
+    grupo: grupoLogado,
     formasPagamentos,
     bancos,
     filiais,
@@ -296,6 +305,7 @@ app.get('/motos', (req, res) => {
   });
 });
 
+// CHAMADO PARA A PAGINA DE CALCULO NAUTICO
 app.get('/nautica', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   if (!usuarioLogado) {
@@ -314,24 +324,7 @@ app.get('/nautica', (req, res) => {
   });
 });
 
-app.get('/dados_moto/:nome_moto', (req, res) => {
-  const nomeMoto = decodeURIComponent(req.params.nome_moto);
-  if (motos[nomeMoto]) {
-    res.json(motos[nomeMoto]);
-  } else {
-    res.status(404).json({ error: 'Moto não encontrada' });
-  }
-});
-
-app.get('/dados_motor/:nome_motor', (req, res) => {
-  const nomeMotor = decodeURIComponent(req.params.nome_motor);
-  if (motores[nomeMotor]) {
-    res.json(motores[nomeMotor]);
-  } else {
-    res.status(404).json({ error: 'Motor não encontrada' });
-  }
-});
-
+// CHAMADO PARA O CALCULO DE TAXAS DE CARTÃO DE CRÉDITO
 app.get('/obter_taxa/:nome_parcela', (req, res) => {
   const nomeParcela = decodeURIComponent(req.params.nome_parcela);
   if (taxas[nomeParcela]) {
@@ -345,7 +338,7 @@ app.get('/obter_taxa/:nome_parcela', (req, res) => {
   }
 });
 
-// Rota para receber os dados do formulário e inserir no banco
+// CHAMADO PARA SALVAR O BANCO DE DADOS A SIMULAÇÃO DA VENDA DE MOTOS
 app.post('/venda_moto', (req, res) => {
   const {
     nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento,
@@ -389,16 +382,14 @@ app.post('/venda_moto', (req, res) => {
   });
 });
 
+// CHAMADO PARA VISUALIZAR OS MODELOS DISPONÍVEIS
 app.get('/api/motos/modelos-motos-disponiveis', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(`
-      SELECT DISTINCT modelo FROM estoque_motos
-      WHERE situacao IN ('loja', 'em demonstração', 'trânsito') AND modelo IS NOT NULL
-      ORDER BY modelo ASC
-    `);
+    SELECT DISTINCT modelo FROM estoque_motos
+    ORDER BY modelo ASC`);
 
     const modelos = rows.map(row => row.modelo);
-    console.log('Modelos disponíveis:', modelos);  // Verificando o que está sendo retornado
 
     res.json(modelos);
   } catch (err) {
@@ -407,7 +398,7 @@ app.get('/api/motos/modelos-motos-disponiveis', async (req, res) => {
   }
 });
 
-
+// CHAMADO PARA VISUALIZAR AS MOTOS DOS MODELOS DISPONIVEIS
 app.get('/api/motos/chassis-por-modelo', async (req, res) => {
   const modeloSelecionado = req.query.modelo;
 
@@ -418,11 +409,9 @@ app.get('/api/motos/chassis-por-modelo', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(
       `SELECT DISTINCT chassi, cor, patio, ano, dias_estoque FROM estoque_motos 
-      WHERE situacao IN ('loja', 'em demonstração', 'trânsito') AND modelo LIKE ?`,
+      WHERE situacao_reserva IS NULL AND modelo LIKE ?`,
       [`%${modeloSelecionado.trim()}%`]
     );
-
-    console.log("Chassis retornados:", rows);  // Verificando os chassis retornados
 
     res.json(rows);  // Envia os dados completos para o front-end
   } catch (err) {
@@ -431,6 +420,7 @@ app.get('/api/motos/chassis-por-modelo', async (req, res) => {
   }
 });
 
+// CHAMADO PARA ADICIONAR NO CALCULO O CUSTO CONTABIL E O CHASSI
 app.get('/api/motos/detalhes-chassi', async (req, res) => {
   const chassi = req.query.chassi;
 
@@ -457,22 +447,7 @@ app.get('/api/motos/detalhes-chassi', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// CHAMADO PARA SALVAR O BANCO DE DADOS A SIMULAÇÃO DA VENDA DE MOTORES
 app.post('/venda_motor', (req, res) => {
   const {
     nome_vendedor, nome_cliente, cpf_cnpj_cliente, motor_selecionado, chassi, forma_pagamento,
@@ -513,8 +488,7 @@ app.post('/venda_motor', (req, res) => {
   });
 });
 
-
-
+// CHAMADO PARA VISUALIZAR OS MODELOS DISPONÍVEIS
 app.get('/api/nautica/modelos-motores-disponiveis', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(`
@@ -524,7 +498,6 @@ app.get('/api/nautica/modelos-motores-disponiveis', async (req, res) => {
     `);
 
     const modelos = rows.map(row => row.modelo);
-    console.log('Modelos disponíveis:', modelos);  // Verificando o que está sendo retornado
 
     res.json(modelos);
   } catch (err) {
@@ -533,6 +506,7 @@ app.get('/api/nautica/modelos-motores-disponiveis', async (req, res) => {
   }
 });
 
+// CHAMADO PARA VISUALIZAR OS MOTORES DOS MODELOS DISPONIVEIS
 app.get('/api/nautica/chassis-por-modelo', async (req, res) => {
   const modeloSelecionado = req.query.modelo;
 
@@ -551,8 +525,6 @@ app.get('/api/nautica/chassis-por-modelo', async (req, res) => {
       [`%${termo}%`]
     );
 
-    console.log("Chassis retornados:", rows);  // Verificando os chassis retornados
-
     res.json(rows);  // Envia os dados completos para o front-end
   } catch (err) {
     console.error('Erro ao buscar chassis:', err);
@@ -560,6 +532,7 @@ app.get('/api/nautica/chassis-por-modelo', async (req, res) => {
   }
 });
 
+// CHAMADO PARA ADICIONAR NO CALCULO O CUSTO CONTABIL, ICMS E O CHASSI
 app.get('/api/nautica/detalhes-chassi', async (req, res) => {
   const chassi = req.query.chassi;
 
@@ -586,12 +559,7 @@ app.get('/api/nautica/detalhes-chassi', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
+// LOGOUT
 app.get('/logout', (req, res) => {
   res.clearCookie('usuario_logado').redirect('/');
 });

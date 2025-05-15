@@ -281,7 +281,8 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
       despesaFrete = valor;
     } else if (campo.id === 'retorno_acessorio') {
       retornoAcessorio = valor;
-    };
+    } else if (campo.id === 'icms_venda')
+      icmsSaida = valor;
   });
 
   const valorVendaReal = precoNegociado - entradaBonificada;
@@ -331,10 +332,10 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
 
 
-  const icmsSelecionado = document.getElementById('icms_venda').value;
-  icms_venda = parseFloat(icmsSelecionado)
+  //const icmsSelecionado = document.getElementById('icms_venda').value;
+  //icms_venda = parseFloat(icmsSelecionado)
 
-  icmsSaida = icms_venda * entradaReal - icms_compra;
+  //icmsSaida = icms_venda * entradaReal - icms_compra;
 
   document.getElementById('resultado_taxa').innerHTML = `ICMS: ${'.'.repeat(107)} R$ -${icmsSaida.toFixed(2).replace('.', ',')}`;
 
@@ -363,10 +364,11 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
 
 
-    const icmsSelecionado = document.getElementById('icms_venda').value;
-    icms_venda = parseFloat(icmsSelecionado)
+    //const icmsSelecionado = document.getElementById('icms_venda').value;
+    //icms_venda = parseFloat(icmsSelecionado)
 
-    icmsSaida = icms_venda * precoNegociado - icms_compra;
+    //icmsSaida = icms_venda * precoNegociado - icms_compra;
+
 
     document.getElementById('resultado_taxa').innerHTML = `ICMS: ${'.'.repeat(107)} R$ -${icmsSaida.toFixed(2).replace('.', ',')}`;
 

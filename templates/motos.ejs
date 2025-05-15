@@ -38,7 +38,10 @@
         <div id="user-dropdown" class="dropdown-content">
           <a href="#" id="save-pdf">Salvar em PDF</a>
           <a href="/rankmotos">Rank Vendas</a>
-          <a href="/logout">Logout</a>
+          <% if (grupo==='admin' || grupo==='sup' ) { %>
+            <a href="/reservasmotos">Reservas</a>
+            <% } %>
+              <a href="/logout">Logout</a>
         </div>
       </div>
 
