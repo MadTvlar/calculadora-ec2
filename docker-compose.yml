@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_DATABASE: dados_vendas
+      MYSQL_USER: motors
+      MYSQL_PASSWORD: Motors!@#3223
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  calculadora:
+    build: .
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      retries: 3
+    environment:
+      DB_HOST: mysql
+      DB_USER: motors
+      DB_PASS: Motors!@#3223
+      DB_NAME: dados_vendas
+
+volumes:
+  mysql_data:
