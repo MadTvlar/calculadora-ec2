@@ -10,6 +10,9 @@ const session = require('express-session');
 const util = require('util');
 const bcrypt = require('bcrypt');
 
+
+
+
 // SERVIÇOS INTERNOS
 const connection = require('./services/db');
 const taxas = require('./services/taxa');
@@ -31,6 +34,9 @@ app.use(session({
 }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'templates'));
+
+const rotaNPS = require('./routes/nps');
+app.use('/nps', rotaNPS);
 
 // CONFIGURAÇÃO AUXILIAres
 const query = util.promisify(connection.query).bind(connection);
@@ -83,6 +89,7 @@ app.post('/login', async (req, res) => {
   if (login === 'admin' && password === 'admin!@#') {
     res.cookie('usuario_logado', 'Administrador');
     res.cookie('grupo_logado', 'admin');
+    res.cookie('id_logado', '76639');
     return res.redirect('/segmentos');
   }
 
@@ -104,6 +111,7 @@ app.post('/login', async (req, res) => {
 
     res.cookie('usuario_logado', usuario.nome);
     res.cookie('grupo_logado', usuario.grupo);
+    res.cookie('id_logado', usuario.id_microwork);
     res.redirect('/segmentos');
   } catch (err) {
     console.error('Erro no login:', err);
@@ -116,6 +124,9 @@ app.get('/segmentos', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   const grupoLogado = req.cookies.grupo_logado;
 
+  console.log(req.cookies)
+
+
   if (!usuarioLogado) {
     return res.redirect('/');
   }
@@ -126,10 +137,28 @@ app.get('/segmentos', (req, res) => {
   });
 });
 
+// CHAMADO PARA SEGMENTOS ASSIM QUE O USUARIO CLICAR NA LOGO
+app.get('/apresentacao', (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+
+  console.log(req.cookies)
+
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+
+  res.render('apresentacao', {
+    usuario: usuarioLogado,
+    grupo: grupoLogado
+  });
+});
+
 // CHAMADO PARA PAGINA DE CADASTRO DE USUARIOS (APENAS PARA ADMIN)
 app.get('/usuarios', async (req, res) => {
   try {
-    const usuarios = await query('SELECT nome, email, grupo FROM usuarios ORDER BY grupo');
+    const usuarios = await query('SELECT nome, id_microwork, email, grupo FROM usuarios ORDER BY grupo');
 
     res.render('usuarios', {
       usuarios,
@@ -141,22 +170,48 @@ app.get('/usuarios', async (req, res) => {
   }
 });
 
-// 
+// CHAMADO PARA AS MOTOS RESERVADAS
 app.get('/reservasmotos', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(`
-  SELECT patio, modelo, chassi, situacao_reserva, data_reserva, destino_reserva, observacao_reserva, dias_reserva
-  FROM estoque_motos
-  WHERE situacao_reserva = 'Ativa'
-  ORDER BY data_reserva DESC
-  `);
+      SELECT patio, modelo, chassi, data_reserva, destino_reserva, observacao_reserva, dias_reserva
+      FROM estoque_motos
+      WHERE situacao_reserva = 'Ativa'
+      ORDER BY data_reserva DESC
+    `);
+
+    // Função para formatar nomes
+    function formatarNome(nome) {
+      if (!nome) return '';
+
+      // Remove qualquer coisa antes do primeiro nome real (que começa com letra)
+      const nomeSemNumeros = nome.replace(/^[^A-Za-zÀ-ÿ]+/, '');
+
+      // Remove caracteres especiais, mantendo letras e espaços
+      const nomeLimpo = nomeSemNumeros.replace(/[^A-Za-zÀ-ÿ\s]/g, '').trim();
+
+      // Divide o nome e seleciona o primeiro e o último
+      const partes = nomeLimpo.split(/\s+/);
+      const primeiroNome = partes[0] || '';
+      const ultimoNome = partes[partes.length - 1] || '';
+
+      return (
+        primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase()
+      ) + ' ' + (
+          ultimoNome.charAt(0).toUpperCase() + ultimoNome.slice(1).toLowerCase()
+        );
+    }
+
+
 
     const motos = rows.map(moto => ({
       ...moto,
       data_reserva_formatada: moto.data_reserva
         ? new Date(moto.data_reserva).toLocaleDateString('pt-BR')
-        : '-'
+        : '-',
+      destino_reserva: formatarNome(moto.destino_reserva)
     }));
+
 
     res.render('reservasmotos', {
       usuario: req.cookies.usuario_logado,
@@ -169,14 +224,15 @@ app.get('/reservasmotos', async (req, res) => {
 });
 
 
-
 // CHAMADO PARA O BOTÃO DE ADICIONAR USUÁRIO
 app.post('/usuarios/adicionar', async (req, res) => {
-  const { grupo, nome, email, senha } = req.body;
+  console.log(req.body);
+
+  const { grupo, nome, id_microwork, email, senha } = req.body;
   try {
     const senhaCriptografada = await bcrypt.hash(senha, 10); // 10 é o número de salt rounds
-    const sql = 'INSERT INTO usuarios (grupo, nome, email, senha) VALUES (?, ?, ?, ?)';
-    await connection.execute(sql, [grupo, nome, email, senhaCriptografada]);
+    const sql = 'INSERT INTO usuarios (grupo, nome, id_microwork, email, senha) VALUES (?, ?, ?, ?, ?)';
+    await connection.execute(sql, [grupo, nome, id_microwork, email, senhaCriptografada]);
     res.redirect('/usuarios');
   } catch (err) {
     console.error('Erro ao adicionar usuário:', err);
@@ -212,66 +268,224 @@ app.post('/usuarios/excluir', async (req, res) => {
   }
 });
 
-// CHAMADO PARA RANK DE VENDAS DE MOTOS
+// CHAMADO PARA MOSTRAR AS VENDAS FATURADAS DO USUARIO
+app.get('/minhasvendas', (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+  const idLogado = req.cookies.id_logado;
+
+  const query = `
+    SELECT *
+    FROM mk_vendas_motos
+    WHERE id_microwork = ?
+    ORDER BY data_venda DESC
+  `;
+
+  connection.query(query, [idLogado], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar vendas:', err);
+      return res.status(500).send('Erro ao buscar vendas');
+    }
+
+    res.render('minhasvendas', {
+      usuario: usuarioLogado,
+      grupo: grupoLogado,
+      id: idLogado,
+      vendas: results
+    });
+  });
+});
+
+// CHAMADO PARA O MEU RANK DE MOTOS POR PONTO
 app.get('/rankmotos', async (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+
+  try {
+    const [rankingGeral] = await connection.promise().query(`
+      SELECT 
+        vendedor,
+        pontos AS val_pontos,
+        vendas AS val_vendas,
+        llo AS val_lucro,
+        captacao AS val_captacao,
+        contrato AS val_contratos,
+        retorno AS val_retorno,
+        nps AS nota_oficial
+      FROM ranking_pontos
+      ORDER BY pontos DESC
+    `);
+
+    const [ultimaAtualizacaoRows] = await connection.promise().query(`
+      SELECT MAX(atualizado_em) AS ultimaAtualizacao FROM ranking_pontos
+    `);
+
+    const ultimaAtualizacao = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
+
+    const meses = [
+      'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
+      'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
+    ];
+    const mesAtual = meses[new Date().getMonth()];
+
+    res.render('rankvendasmotos', {
+      usuario: usuarioLogado,
+      rankingGeral,
+      ultimaAtualizacao,
+      mesAtual
+    });
+
+  } catch (error) {
+    console.error("Erro ao buscar ranking de motos:", error);
+    res.status(500).send("Erro ao carregar o ranking.");
+  }
+});
+
+
+
+
+
+
+// CHAMADO PARA CADA KPI NA PAGINA REUMO MêS
+app.get('/resumomotos', async (req, res) => {
   try {
     const usuarioLogado = req.cookies.usuario_logado;
+    const idLogado = req.cookies.id_logado;
+
     if (!usuarioLogado) {
       console.log('Usuário não logado, redirecionando...');
       return res.redirect('/');
     }
 
-    const [manaus] = await connection.promise().query(`
-      SELECT vendedor, SUM(quantidade) AS total_vendas
-      FROM mk_vendas_motos
-      WHERE empresa IN ('COM', 'CAC', 'CID', 'GRA')
-      GROUP BY vendedor
-      ORDER BY total_vendas DESC
-      LIMIT 5
-    `);
+    // IDs dos representantes a serem excluídos
+    const representante = new Set([
+      7808,  // 53.562.394 HUDSON SANTOS DE LIMA
+      63703, // 53.338.753 KEDMA NASCIMENTO MORAES
+      55641, // JANDERSON MOCAMBIQUE DE SOUZA
+      69987, // C J T SIMAO TRANSPORTE POR NAVEGACAO FLUVIAL LTDA
+      64650, // 53.017.883 LUCIDALVA GARCIA DE SOUZA
+      78357, // 53.376.541 MATHEUS SILVA DE SOUZA
+      65986, // A C DE ALMEIDA
+      67901, // C J T SIMAO TRANSPORTE POR NAVEGACAO FLUVIAL LTDA
+      49623, // K. S. S. CARDOSO
+      78848, // L. C. M. DOS SANTOS
+      68098, // M A P ANGELIN CORPORATE LTDA
+      55705, // ODUÉNAVI DE MELO RIBEIRO PEREIRA
+      22062, // MOTO AMIL EIRELLI-ME
+    ]);
 
-    const [interior] = await connection.promise().query(`
-      SELECT vendedor, SUM(quantidade) AS total_vendas
-      FROM mk_vendas_motos
-      WHERE empresa NOT IN ('COM', 'CAC', 'CID', 'GRA')
-      GROUP BY vendedor
-      ORDER BY total_vendas DESC
-      LIMIT 5
+    // Coleta os nomes dos representantes para filtro por nome
+    const [vendedoresBloqueadosRows] = await connection.promise().query(`
+      SELECT DISTINCT vendedor FROM mk_vendas_motos
+      WHERE id_microwork IN (${[...representante].join(',')})
     `);
+    const vendedoresBloqueados = new Set(
+      vendedoresBloqueadosRows.map(v => v.vendedor.trim().toLowerCase())
+    );
 
-    const [geral] = await connection.promise().query(`
-      SELECT vendedor, SUM(quantidade) AS total_vendas
-      FROM mk_vendas_motos
-      GROUP BY vendedor
-      ORDER BY total_vendas DESC
-      LIMIT 5
-    `);
+    // Funções de filtro
+    const filterReprePorID = lista => lista.filter(v => !representante.has(v.id_microwork));
+    const filterReprePorNome = lista => lista.filter(v => !vendedoresBloqueados.has(v.vendedor.trim().toLowerCase()));
 
-    // Formatação dos nomes
-    function formatarNome(nome) {
+    const formatarNome = nome => {
       const nomeLimpo = nome.replace(/[^\p{L}\s]/gu, '').trim();
-
       const partes = nomeLimpo.split(' ');
       const primeiroNome = partes[0];
       const sobrenome = partes[partes.length - 1];
+      return (
+        primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase()
+      ) + ' ' + (
+          sobrenome.charAt(0).toUpperCase() + sobrenome.slice(1).toLowerCase()
+        );
+    };
 
-      const nomeFormatado = (primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase()) + ' ' +
-        (sobrenome.charAt(0).toUpperCase() + sobrenome.slice(1).toLowerCase());
+    // Coleta dos dados
+    const [rankVolume] = await connection.promise().query(`
+      SELECT id_microwork, vendedor, SUM(quantidade) AS total_vendas
+      FROM mk_vendas_motos
+      GROUP BY id_microwork, vendedor
+      ORDER BY total_vendas DESC;
+    `);
 
-      return nomeFormatado;
-    }
+    const [rankLLO] = await connection.promise().query(`
+      SELECT 
+      vendedor,
+      ROUND(SUM(lucro_ope) / SUM(valor_venda) * 100, 2) AS percentual_lucro
+      FROM mk_vendas_motos
+      GROUP BY vendedor
+      ORDER BY percentual_lucro DESC;
+`);
 
-    const rankingManaus = manaus.map(v => {
+
+    const [rankCaptacao] = await connection.promise().query(`
+      SELECT 
+      TRIM(vendedor) AS vendedor,
+      COUNT(*) AS totalCaptado
+      FROM captacao_motos
+      GROUP BY vendedor
+      ORDER BY totalCaptado DESC;
+    `);
+
+    const [rankContrato] = await connection.promise().query(`
+      SELECT 
+      TRIM(vendedor) AS vendedor,
+      COUNT(*) AS totalContratos
+      FROM contratos_motos
+      GROUP BY vendedor
+      ORDER BY totalContratos DESC;
+    `);
+
+    const [rankRetorno] = await connection.promise().query(`
+      SELECT 
+      TRIM(vendedor) AS vendedor,
+      COUNT(*) AS quantidadeRetorno
+      FROM mk_vendas_motos
+      WHERE retorno_porcent >= 2
+      GROUP BY vendedor
+      ORDER BY quantidadeRetorno DESC;
+    `);
+
+    const [rankNPS] = await connection.promise().query(`
+      SELECT 
+      TRIM(vendedores) AS vendedor,
+      nota_oficial
+      FROM nps
+      ORDER BY nota_oficial DESC;
+`);
+
+
+    const [atualizacaoResult] = await connection.promise().query(`
+      SELECT atualizado_em FROM updates WHERE id = 1
+    `);
+
+    const ultimaAtualizacao = atualizacaoResult.length ? atualizacaoResult[0].atualizado_em : null;
+
+    // Aplica filtros e formata os nomes
+    const rankingVolume = filterReprePorID(rankVolume).map(v => {
       v.vendedor = formatarNome(v.vendedor);
       return v;
     });
 
-    const rankingInterior = interior.map(v => {
+    const rankingLLO = filterReprePorNome(rankLLO).map(v => {
       v.vendedor = formatarNome(v.vendedor);
       return v;
     });
 
-    const rankingGeral = geral.map(v => {
+    const rankingCaptacao = filterReprePorNome(rankCaptacao).map(v => {
+      v.vendedor = formatarNome(v.vendedor);
+      return v;
+    });
+
+    const rankingContratos = filterReprePorNome(rankContrato).map(v => {
+      v.vendedor = formatarNome(v.vendedor);
+      return v;
+    });
+
+    const rankingRetornos = filterReprePorNome(rankRetorno).map(v => {
+      v.vendedor = formatarNome(v.vendedor);
+      return v;
+    });
+
+    const rankingNPS = filterReprePorNome(rankNPS).map(v => {
       v.vendedor = formatarNome(v.vendedor);
       return v;
     });
@@ -279,18 +493,126 @@ app.get('/rankmotos', async (req, res) => {
     const dataAtual = new Date();
     const mesAtual = dataAtual.toLocaleString('pt-BR', { month: 'long' }).toLowerCase();
 
-    res.render('rankvendasmotos', {
+    const [dadosUsuario] = await connection.promise().query(`
+      SELECT 
+        SUM(quantidade) AS volume,
+        SUM(lucro_ope) AS totalOpe,
+        SUM(valor_venda_real) AS totalVendaReal
+      FROM mk_vendas_motos
+      WHERE id_microwork = ?
+    `, [idLogado]);
+
+    const [retornos] = await connection.promise().query(`
+      SELECT retorno_porcent 
+      FROM mk_vendas_motos 
+      WHERE id_microwork = ?
+    `, [idLogado]);
+
+    const listaRetornos = retornos.map(r => r.retorno_porcent);
+
+    const dadosGrafico = dadosUsuario.length ? {
+      ...dadosUsuario[0],
+      listaRetornos,
+      quantidadeRetorno: listaRetornos.filter(v => v !== null && parseFloat(v) >= 2).length
+    } : {
+      volume: 0,
+      totalOpe: 0,
+      totalVendaReal: 0,
+      listaRetornos: [],
+      quantidadeRetorno: 0
+    };
+
+    const [contagemcaptacao] = await connection.promise().query(`
+      SELECT COUNT(*) AS totalCaptado
+      FROM captacao_motos
+      WHERE CAST(SUBSTRING_INDEX(TRIM(vendedor), ' ', 1) AS UNSIGNED) = ?
+    `, [idLogado]);
+
+    const totalCaptado = contagemcaptacao[0]?.totalCaptado || 0;
+
+    const [vendedorResult] = await connection.promise().query(`
+      SELECT vendedor
+      FROM mk_vendas_motos
+      WHERE id_microwork = ?
+      LIMIT 1
+    `, [idLogado]);
+
+    const nomeVendedor = vendedorResult.length ? vendedorResult[0].vendedor.trim() : null;
+
+    let totalContratos = 0;
+    if (nomeVendedor) {
+      const [contagemContratos] = await connection.promise().query(`
+        SELECT COUNT(*) AS totalContratos
+        FROM contratos_motos
+        WHERE vendedor = ?
+      `, [nomeVendedor]);
+
+      totalContratos = contagemContratos[0]?.totalContratos || 0;
+    }
+
+    res.render('resumomotos', {
       usuario: usuarioLogado,
-      rankingManaus,
-      rankingInterior,
-      rankingGeral,
-      mesAtual
+      rankingVolume,
+      rankingLLO,
+      rankingCaptacao,
+      rankingContratos,
+      rankingRetornos,
+      rankingNPS,
+      mesAtual,
+      ultimaAtualizacao,
+      dadosGrafico,
+      totalCaptado,
+      totalContratos
     });
+
   } catch (err) {
     console.error('Erro no servidor:', err);
     res.status(500).send("Erro ao gerar ranking.");
   }
 });
+
+// PAGINA ONDE FAZ O UPLOAD DAS INFORMAÇÕES DE NPS -> GABRIEL
+app.get('/nps', async (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+
+  try {
+    const [dadosNPS] = await connection.promise().query('SELECT * FROM nps ORDER BY id DESC');
+
+    res.render('nps', {
+      usuario: usuarioLogado,
+      grupo: grupoLogado,
+      npsData: dadosNPS
+    });
+
+  } catch (error) {
+    console.error('Erro ao buscar dados NPS:', error);
+    res.status(500).send('Erro interno ao buscar dados do NPS.');
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // CHAMADO PARA A PAGINA DE CALCULO DE MOTOS
 app.get('/motos', (req, res) => {
@@ -578,6 +900,6 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://0.0.0.0:${PORT}`);
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 

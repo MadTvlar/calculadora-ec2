@@ -5,51 +5,63 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/home.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <title>MOTORS SIMULATOR</title>
 </head>
 
 <body>
-  <header>
-    <div class="logo-container">
-      <img src="/images/tvlar-motors.png" alt="Logo TVLar Motors">
-    </div>
-  </header>
-
-  <main>
-    <div class="form-container">
-      <form action="/login" method="POST" id="loginForm">
-        <div class="input-group">
-          <label for="login">Login</label>
-          <input type="text" id="login" name="login" required placeholder="Digite seu login">
+  <div class="container">
+    <!-- Lado esquerdo - Imagem -->
+    <div class="left-side">
+      <div class="image-overlay">
+        <img src="/images/moto-banner.jpeg" alt="Motos em exposição" class="background-image">
+        <div class="overlay-content">
+          <h2>Bem-vindo ao Motors Simulator</h2>
+          <p>Sistema de gestão de vendas de motos</p>
         </div>
-
-        <div class="input-group">
-          <label for="password">Senha</label>
-          <input type="password" id="password" name="password" required placeholder="Digite sua senha">
-        </div>
-
-        <div class="form-actions">
-          <input type="submit" value="Entrar">
-        </div>
-      </form>
-
-      <% if (errors && errors.length> 0) { %>
-        <div class="message">
-          <%= errors[0] %>
-        </div>
-        <% } %>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-text">
-      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+      </div>
     </div>
 
-    <div class="footer-iconTop">
-      <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+    <!-- Lado direito - Login -->
+    <div class="right-side">
+      <div class="login-container">
+        <div class="logo-container">
+          <img src="/images/tvlar-motors.png" alt="Logo TVLar Motors">
+        </div>
+
+        <div class="form-container">
+          <h2>Login</h2>
+          <form action="/login" method="POST" id="loginForm">
+            <div class="input-group">
+              <i class='bx bx-user'></i>
+              <input type="text" id="login" name="login" required placeholder="Digite seu login">
+            </div>
+
+            <div class="input-group">
+              <i class='bx bx-lock-alt'></i>
+              <input type="password" id="password" name="password" required placeholder="Digite sua senha">
+            </div>
+
+            <div class="form-actions">
+              <input type="submit" value="Entrar">
+            </div>
+          </form>
+
+          <% if (errors && errors.length> 0) { %>
+            <div class="message">
+              <%= errors[0] %>
+            </div>
+            <% } %>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <div class="footer-text">
+          <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+        </div>
+      </footer>
     </div>
-  </footer>
+  </div>
 </body>
 
 </html>

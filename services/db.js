@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 
-// Configure a conexão com o banco de dados
-const connection = mysql.createConnection({
+// Configure o pool de conexões com o banco de dados
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'motors',
   password: 'Motors!@#3223',
@@ -9,15 +9,6 @@ const connection = mysql.createConnection({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
-});
-
-// Conectar ao banco de dados
-connection.connect((err) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados: ', err);
-    return;
-  }
-  console.log('Conectado ao banco de dados "dados_vendas"!');
 });
 
 // Criar a tabela 'vendas' caso não exista
@@ -54,148 +45,348 @@ const createSimulacaoMotos = `
   );
 `;
 
-connection.query(createSimulacaoMotos, (err) => {
+// Conectar ao banco de dados
+pool.getConnection((err, connection) => {
   if (err) {
-    console.error('Erro ao criar a tabela: ', err);
+    console.error('Erro ao conectar ao banco de dados: ', err);
     return;
   }
-  console.log('Tabela "vendas" criada ou já existe');
-});
+  console.log('Conectado ao banco de dados "dados_vendas"!');
 
-const createSimulacaoMotores = `
-  CREATE TABLE IF NOT EXISTS simulacao_motores (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome_vendedor VARCHAR(50),
-    nome_cliente VARCHAR(50),
-    cpf_cnpj_cliente VARCHAR(20),
-    motor_selecionado VARCHAR(100),
-    chassi VARCHAR(20),
-    forma_pagamento VARCHAR(20),
-    filial_escolhida VARCHAR(20),
-    banco_selecionado VARCHAR(10),
-    retorno_selecionado VARCHAR(2),
-    valor_bem DECIMAL(10,2),
-    valor_venda_real DECIMAL(10,2),
-    custo_motor DECIMAL(10,2),
-    margem_bruta DECIMAL(10,2),
-    acessorio DECIMAL(10,2),
-    valor_retorno DECIMAL(10,2),
-    icms DECIMAL(10,2),
-    taxa_cartao DECIMAL(10,2),
-    despesa_operacionais DECIMAL(10,2),
-    total_despesas DECIMAL(10,2),
-    total_receitas DECIMAL(10,2),
-    margem_liquida DECIMAL(10,2),
-    comissao DECIMAL(10,2),
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  );
-`;
+  // Inicializar as tabelas
+  connection.query(createSimulacaoMotos, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela: ', err);
+      return;
+    }
+    console.log('Tabela "vendas" criada ou já existe');
+  });
 
-connection.query(createSimulacaoMotores, (err) => {
-  if (err) {
-    console.error('Erro ao criar a tabela "simulacao_motores": ', err);
-    return;
-  }
-  console.log('Tabela "simulacao_motores" criada ou já existe');
-});
 
-const createEstoqueMotores = `
-  CREATE TABLE IF NOT EXISTS estoque_motores (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    patio VARCHAR(100),
-    chassi VARCHAR(50) UNIQUE NOT NULL,
-    modelo VARCHAR(100) NOT NULL,
-    cor VARCHAR(30),
-    dias_estoque INT DEFAULT 0,
-    icms_compra DECIMAL(10,2),
-    situacao VARCHAR(30),
-    custo_contabil DECIMAL(10,2),
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-  );
-`;
 
-connection.query(createEstoqueMotores, (err) => {
-  if (err) {
-    console.error('Erro ao criar a tabela "estoque_motores": ', err);
-    return;
-  }
-  console.log('Tabela "estoque_motores" criada ou já existe');
-});
+  const createSimulacaoMotores = `
+    CREATE TABLE IF NOT EXISTS simulacao_motores (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nome_vendedor VARCHAR(50),
+      nome_cliente VARCHAR(50),
+      cpf_cnpj_cliente VARCHAR(20),
+      motor_selecionado VARCHAR(100),
+      chassi VARCHAR(20),
+      forma_pagamento VARCHAR(20),
+      filial_escolhida VARCHAR(20),
+      banco_selecionado VARCHAR(10),
+      retorno_selecionado VARCHAR(2),
+      valor_bem DECIMAL(10,2),
+      valor_venda_real DECIMAL(10,2),
+      custo_motor DECIMAL(10,2),
+      margem_bruta DECIMAL(10,2),
+      acessorio DECIMAL(10,2),
+      valor_retorno DECIMAL(10,2),
+      icms DECIMAL(10,2),
+      taxa_cartao DECIMAL(10,2),
+      despesa_operacionais DECIMAL(10,2),
+      total_despesas DECIMAL(10,2),
+      total_receitas DECIMAL(10,2),
+      margem_liquida DECIMAL(10,2),
+      comissao DECIMAL(10,2),
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
 
-const creatEstoqueMotos = `
-  CREATE TABLE IF NOT EXISTS estoque_motos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    empresa VARCHAR(5),
-    patio VARCHAR(60),
-    chassi VARCHAR(20) UNIQUE NOT NULL,
-    modelo VARCHAR(60) NOT NULL,
-    cor VARCHAR(30),
-    ano VARCHAR(9),
-    dias_estoque INT DEFAULT 0,
-    situacao VARCHAR(30),
-    custo_contabil DECIMAL(10,2),
-    situacao_reserva VARCHAR(10),
-    data_reserva VARCHAR(10),
-    destino_reserva VARCHAR(60),
-    observacao_reserva VARCHAR(255),
-    dias_reserva INT
-  );
-`;
+  connection.query(createSimulacaoMotores, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "simulacao_motores": ', err);
+      return;
+    }
+    console.log('Tabela "simulacao_motores" criada ou já existe');
+  });
 
-connection.query(creatEstoqueMotos, (err) => {
-  if (err) {
-    console.error('Erro ao criar a tabela "estoque_motos": ', err);
-    return;
-  }
-  console.log('Tabela "estoque_motos" criada ou já existe');
-})
 
-const createMkVendasMotos = `
+
+  const createEstoqueMotores = `
+    CREATE TABLE IF NOT EXISTS estoque_motores (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      patio VARCHAR(100),
+      chassi VARCHAR(50) UNIQUE NOT NULL,
+      modelo VARCHAR(100) NOT NULL,
+      cor VARCHAR(30),
+      dias_estoque INT DEFAULT 0,
+      icms_compra DECIMAL(10,2),
+      situacao VARCHAR(30),
+      custo_contabil DECIMAL(10,2),
+      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+  `;
+
+  connection.query(createEstoqueMotores, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "estoque_motores": ', err);
+      return;
+    }
+    console.log('Tabela "estoque_motores" criada ou já existe');
+  });
+
+
+
+  const creatEstoqueMotos = `
+    CREATE TABLE IF NOT EXISTS estoque_motos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      empresa VARCHAR(5),
+      patio VARCHAR(60),
+      chassi VARCHAR(20) UNIQUE NOT NULL,
+      modelo VARCHAR(60) NOT NULL,
+      cor VARCHAR(30),
+      ano VARCHAR(9),
+      dias_estoque INT DEFAULT 0,
+      situacao VARCHAR(30),
+      custo_contabil DECIMAL(10,2),
+      situacao_reserva VARCHAR(10),
+      data_reserva VARCHAR(10),
+      destino_reserva VARCHAR(60),
+      observacao_reserva VARCHAR(255),
+      dias_reserva INT
+    );
+  `;
+
+  connection.query(creatEstoqueMotos, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "estoque_motos": ', err);
+      return;
+    }
+    console.log('Tabela "estoque_motos" criada ou já existe');
+  });
+
+
+
+  const createMkVendasMotos = `
   CREATE TABLE IF NOT EXISTS mk_vendas_motos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     empresa VARCHAR(5),
     quantidade INT DEFAULT 0,
-    data_venda VARCHAR(20),
-    vendedor VARCHAR(80),
-    modelo VARCHAR(100) NOT NULL,
+    data_venda DATE,
+    id_microwork INT,
+    doc_fiscal VARCHAR(20),
+    vendedor VARCHAR(100),
+    modelo VARCHAR(100),
     cor VARCHAR(30),
-    chassi VARCHAR(50) UNIQUE NOT NULL,
+    chassi VARCHAR(20) NOT NULL,
     ano VARCHAR(9),
     custo_contabil DECIMAL(10,2),
-    dias_estoque INT DEFAULT 0,
-    pedido INT DEFAULT 0,
+    dias_estoque INT,
+    pedido INT,
     tipo_venda VARCHAR(50),
     valor_venda DECIMAL(10,2),
-    lucro_ope DECIMAL(10,2)
+    valor_venda_real DECIMAL(10,2),
+    despesa_ope DECIMAL(10,2),
+    entrada_bonificada DECIMAL(10,2),
+    valor_financiado DECIMAL(10,2),
+    valor_retorno DECIMAL(10,2),
+    retorno_porcent DECIMAL(4,2),
+    lucro_ope DECIMAL(10,2),
+    financiada INT
   );
 `;
 
-connection.query(createMkVendasMotos, (err) => {
-  if (err) {
-    console.error('Erro ao criar a tabela "mk_vendas_motos": ', err);
-    return;
-  }
-  console.log('Tabela "mk_vendas_motos" criada ou já existe');
-});
+  connection.query(createMkVendasMotos, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "mk_vendas_motos": ', err);
+      return;
+    }
+    console.log('Tabela "mk_vendas_motos" criada ou já existe');
+  });
 
 
-const createUsuarios = `
-  CREATE TABLE IF NOT EXISTS usuarios (
+
+  const createUsuarios = `
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        grupo VARCHAR(5) NOT NULL,
+        id_microwork INT,
+        nome VARCHAR(100) NOT NULL,
+        email VARCHAR(50) UNIQUE NOT NULL,
+        senha VARCHAR(100) NOT NULL,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `
+  connection.query(createUsuarios, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "usuarios": ', err);
+      return;
+    }
+    console.log('Tabela "usuarios" criada ou já existe');
+  });
+
+
+
+  const createUpdate = `
+    CREATE TABLE IF NOT EXISTS updates (
+    id INT PRIMARY KEY,
+    atualizado_em DATETIME
+  );
+    `
+  connection.query(createUpdate, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "updates": ', err);
+      return;
+    }
+    console.log('Tabela "updates" criada ou já existe');
+  });
+
+
+
+  const createFiliais = `
+    CREATE TABLE IF NOT EXISTS filiais (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      grupo VARCHAR(5) NOT NULL,
       nome VARCHAR(100) NOT NULL,
-      email VARCHAR(50) UNIQUE NOT NULL,
-      senha VARCHAR(100) NOT NULL,
+      cidade VARCHAR(100),
+      estado VARCHAR(2),
       criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-  `
-connection.query(createUsuarios, (err) => {
-  if (err) {
-    console.error('Erro ao criar a tabela "usuarios": ', err);
-    return;
-  }
-  console.log('Tabela "usuarios" criada ou já existe');
+  `;
+
+  connection.query(createFiliais, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "filiais": ', err);
+      return;
+    }
+    console.log('Tabela "filiais" criada ou já existe');
+  });
+
+
+
+  const createContratosMotos = `
+    CREATE TABLE IF NOT EXISTS contratos_motos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      data_venda DATETIME,
+      quantidade INT,
+      empresa VARCHAR(5),
+      vendedor VARCHAR(255),
+      administrador VARCHAR(20),
+      proposta VARCHAR(50),
+      contrato VARCHAR(50) UNIQUE,
+      cliente VARCHAR(255),
+      ponto_venda VARCHAR(60),
+      modelo VARCHAR(100),
+      parcelas INT,
+      valor_parcela DECIMAL(10,2),
+      valor_credito DECIMAL(10,2)
+    );
+  `;
+
+  connection.query(createContratosMotos, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "contratos_motos": ', err);
+      return;
+    }
+    console.log('Tabela "contratos_motos" criada ou já existe');
+  });
+
+
+
+  const createcaptacaoMotos = `
+    CREATE TABLE IF NOT EXISTS captacao_motos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      empresa VARCHAR(5),
+      n_avaliacao INT,
+      data_conclusao DATETIME,
+      situacao VARCHAR(20),
+      vendedor VARCHAR(255),
+      avaliador VARCHAR(255),
+      tipo VARCHAR(20),
+      pessoa VARCHAR(50),
+      modelo VARCHAR(100),
+      cor VARCHAR(30),
+      placa VARCHAR(10),
+      chassi VARCHAR(20),
+      valor_compra DECIMAL(10,2),
+      data_emissao DATETIME,
+      valor_venda DECIMAL(10,2)
+    );
+  `;
+
+  connection.query(createcaptacaoMotos, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "captacao_motos": ', err);
+      return;
+    }
+    console.log('Tabela "captacao_motos" criada ou já existe');
+  });
+
+
+
+  const createRankingGeral = `
+    CREATE TABLE IF NOT EXISTS ranking_geral (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      tipo VARCHAR(20),
+      vendedor VARCHAR(255),
+      valor DECIMAL(10,2),
+      posicao INT,
+      referente_mes VARCHAR(7),          
+      atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+
+  connection.query(createRankingGeral, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "ranking_geral": ', err);
+      return;
+    }
+    console.log('Tabela "ranking_geral" criada ou já existe');
+  });
+
+
+
+  const createNPSGeral = `
+    CREATE TABLE IF NOT EXISTS nps (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      id_microwork INT,
+      vendedores VARCHAR(255),
+      promotoras INT,
+      neutras INT,
+      detratoras INT,
+      nota_oficial DECIMAL(6,2),          
+      atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+
+  connection.query(createNPSGeral, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "nps": ', err);
+      return;
+    }
+    console.log('Tabela "nps" criada ou já existe');
+  });
+
+
+
+  const createRankingPontos = `
+    CREATE TABLE IF NOT EXISTS ranking_pontos (
+  posicao INT,  -- Será preenchido manualmente com base no ranking
+  vendedor VARCHAR(255),
+  pontos INT,
+  vendas INT,
+  llo FLOAT,
+  captacao INT,
+  contrato INT,
+  retorno INT,
+  NPS INT,
+  referente_mes VARCHAR(7),
+  atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (posicao, referente_mes),
+  UNIQUE KEY vendedor_mes (vendedor, referente_mes)
+);
+  `;
+  connection.query(createRankingPontos, (err) => {
+    if (err) {
+      console.error('Erro ao criar a tabela "ranking_pontos": ', err);
+      return;
+    }
+    console.log('Tabela "ranking_pontos" criada ou já existe');
+  });
+
+  connection.release();
 });
 
-module.exports = connection;
+// Exportar o pool de conexões
+module.exports = pool;

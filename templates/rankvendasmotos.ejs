@@ -2,19 +2,21 @@
 <html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/rankvendasmotos.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MOTORS SIMULATOR</title>
+
+  <link rel="stylesheet" href="/css/rankvendasmotos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+
 </head>
 
 <body>
   <div class="top-container">
     <div class="logo-container">
       <a href="/segmentos">
-        <img src="/images/tvlar_motos.png" alt="TVLAR MOTOS" class="logo">
+        <img src="/images/tvlar_motos.png" alt="TVLAR MOTOS" class="logo" />
       </a>
     </div>
 
@@ -31,108 +33,81 @@
     </div>
   </div>
 
-  <!-- Título com mês dinâmico -->
   <div class="rank-title">
-    <h2>Rank Mensal de Vendas - <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
+    <h2>
+      Ranking Mensal de Vendas - <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
     </h2>
+    <p class="data-atualizacao">
+      Atualizado em:
+      <%= (()=> {
+        const d = new Date(ultimaAtualizacao);
+        const dia = String(d.getDate()).padStart(2, '0');
+        const mes = String(d.getMonth() + 1).padStart(2, '0');
+        const ano = d.getFullYear();
+        const hora = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        return `${dia}/${mes}/${ano} às ${hora}h${min}`;
+        })() %>
+    </p>
   </div>
 
-  <div class="card-container">
-    <div class="card card-1">
-      <h2>RANKING MANAUS</h2>
-      <!-- RANKING MANAUS -->
-      <ul class="rank-list">
-        <% rankingManaus.forEach((v, i)=> { %>
-          <li class="rank-item">
-            <span class="pos">
-              <% if(i===0) { %>
-                <!-- Coroa de ouro para o 1º lugar -->
-                <i class="fas fa-medal gold"></i>
-                <% } else if(i===1) { %>
-                  <!-- Medalha de prata para o 2º lugar -->
-                  <i class="fas fa-medal silver"></i>
-                  <% } else if(i===2) { %>
-                    <!-- Medalha de bronze para o 3º lugar -->
-                    <i class="fas fa-medal bronze"></i>
-                    <% } else { %>
-                      <!-- Exibe a posição normal para os demais -->
-                      <%= i + 1 %>º
-                        <% } %>
-            </span>
-            <span class="name">
-              <%= v.vendedor %>
-            </span>
-            <span class="sales">
-              <%= v.total_vendas %> vendas
-            </span>
-          </li>
-          <% }) %>
-      </ul>
+  <div class="card">
+    <h2>RANKING GERAL - <%= mesAtual %>
+    </h2>
+    <p style="font-size: 0.9rem; color: #666;">Última atualização: <%= new
+        Date(ultimaAtualizacao).toLocaleString('pt-BR') %>
+    </p>
 
-    </div>
-
-    <div class="card card-2">
-      <h2>RANKING GERAL</h2>
-      <ul class="rank-list">
+    <table class="rank-table">
+      <thead>
+        <tr>
+          <th>Posição</th>
+          <th>Pontos</th>
+          <th>Vendedor</th>
+          <th>Vendas</th>
+          <th>LLO (%)</th>
+          <th>Captação</th>
+          <th>Contratos</th>
+          <th>Retorno</th>
+          <th>NPS</th>
+        </tr>
+      </thead>
+      <tbody>
         <% rankingGeral.forEach((v, i)=> { %>
-          <li class="rank-item">
-            <span class="pos">
-              <% if(i===0) { %>
-                <!-- Coroa de ouro para o 1º lugar -->
-                <i class="fas fa-crown gold"></i>
-                <% } else if(i===1) { %>
-                  <!-- Medalha de prata para o 2º lugar -->
-                  <i class="fas fa-crown  silver"></i>
-                  <% } else if(i===2) { %>
-                    <!-- Medalha de bronze para o 3º lugar -->
-                    <i class="fas fa-crown l bronze"></i>
-                    <% } else { %>
-                      <!-- Exibe a posição normal para os demais -->
-                      <%= i + 1 %>º
-                        <% } %>
-            </span>
-            <span class="name">
+          <tr>
+            <td>
+              <%= i + 1 %>º
+            </td>
+            <td>
               <%= v.vendedor %>
-            </span>
-            <span class="sales">
-              <%= v.total_vendas %> vendas
-            </span>
-          </li>
+            </td>
+            <td>
+              <%= v.val_pontos ? Math.floor(v.val_pontos) : '-' %>
+            </td>
+            <td>
+              <%= v.val_vendas ? Math.floor(v.val_vendas) : '-' %>
+            </td>
+            <td>
+              <%= v.val_lucro || '-' %>%
+            </td>
+            <td>
+              <%= v.val_captacao ? Math.floor(v.val_captacao) : '-' %>
+            </td>
+            <td>
+              <%= v.val_contratos ? Math.floor(v.val_contratos) : '-' %>
+            </td>
+            <td>
+              <%= v.val_retorno ? Math.floor(v.val_retorno) : '-' %>
+            </td>
+            <td>
+              <%= v.nota_oficial ? Math.floor(v.nota_oficial) : '-' %>
+            </td>
+          </tr>
           <% }) %>
-      </ul>
-    </div>
-
-    <div class="card card-3">
-      <h2>RANKING INTERIOR</h2>
-      <ul class="rank-list">
-        <% rankingInterior.forEach((v, i)=> { %>
-          <li class="rank-item">
-            <span class="pos">
-              <% if(i===0) { %>
-                <!-- Coroa de ouro para o 1º lugar -->
-                <i class="fas fa-medal gold"></i>
-                <% } else if(i===1) { %>
-                  <!-- Medalha de prata para o 2º lugar -->
-                  <i class="fas fa-medal silver"></i>
-                  <% } else if(i===2) { %>
-                    <!-- Medalha de bronze para o 3º lugar -->
-                    <i class="fas fa-medal bronze"></i>
-                    <% } else { %>
-                      <!-- Exibe a posição normal para os demais -->
-                      <%= i + 1 %>º
-                        <% } %>
-            </span>
-            <span class="name">
-              <%= v.vendedor %>
-            </span>
-            <span class="sales">
-              <%= v.total_vendas %> vendas
-            </span>
-          </li>
-          <% }) %>
-      </ul>
-    </div>
+      </tbody>
+    </table>
   </div>
+
 
   <footer class="footer">
     <div class="footer-text">
@@ -151,18 +126,16 @@
     });
 
     window.onclick = function (event) {
-      if (!event.target.matches('#user-button')) {
+      if (!event.target.matches("#user-button")) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
         for (var i = 0; i < dropdowns.length; i++) {
-          if (dropdowns[i].classList.contains('show')) {
-            dropdowns[i].classList.remove('show');
+          if (dropdowns[i].classList.contains("show")) {
+            dropdowns[i].classList.remove("show");
           }
         }
       }
     };
-
   </script>
-
 </body>
 
 </html>

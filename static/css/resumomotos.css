@@ -95,7 +95,6 @@ body {
 /* Footer */
 .footer {
   position: relative;
-  margin-top: 5%;
   bottom: 0;
   width: 100%;
   background-color: #0203c5;
@@ -176,15 +175,65 @@ body {
   display: block;
 }
 
+dashboard {
+  max-width: 100%;
+  margin: 2rem auto 4rem;
+  padding: 0 1rem;
+}
+
+/* Carta (card) do gráfico */
+.carta {
+  background-color: #fff;
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.07);
+  border: none;
+  overflow: hidden;
+  margin-top: 15%;
+  animation: surgirDeBaixo 0.5s ease-out forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+  margin-bottom: 10%;
+}
+
+/* Cabeçalho da carta */
+.carta-header {
+  background: linear-gradient(90deg, #0002c6, #0387bc);
+  color: #fff;
+  padding: 1.4rem 2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  box-shadow: inset 0 -3px 8px rgba(0, 0, 0, 0.15);
+  user-select: none;
+}
+
+/* Container do gráfico dentro da carta */
+.chart {
+  height: 300px;
+  padding: 2rem 2.5rem;
+  background: linear-gradient(135deg, #f9fbfc, #e9eff3);
+  border-radius: 0 0 1.25rem 1.25rem;
+  box-shadow: inset 0 4px 15px rgba(255, 255, 255, 0.9);
+}
+
+/* Ajuste responsivo para telas menores */
+@media (max-width: 768px) {
+  .chart {
+    height: 320px;
+    padding: 1rem 1.2rem;
+  }
+}
+
 /* --- CARDS --- */
 .card-container {
   display: flex;
   justify-content: center;
-  gap: 450px;
+  gap: 30px;
   margin-top: 0;
   /* removido o espaço extra */
   padding: 20px;
   position: relative;
+  margin-bottom: 2%;
 }
 
 /* Animação cards */
@@ -206,7 +255,7 @@ body {
   border: 2px solid #0002c6;
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 1000px;
+  width: 350px;
   padding: 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: left;
@@ -227,6 +276,11 @@ body {
   list-style: none;
   padding: 0;
   margin: 0;
+  max-height: 300px;
+  /* ajuste conforme necessário */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  /* para navegadores Firefox */
 }
 
 .card li {
@@ -234,6 +288,24 @@ body {
   border-bottom: 1px solid #ccc;
   font-weight: bold;
 }
+
+/* Cards com delays */
+.card-1,
+.card-2,
+.card-3,
+.card-4,
+.card-5,
+.card-6 {
+  margin-top: 0px;
+  /* uniformiza o espaçamento */
+  animation-delay: 0.4s;
+  top: -20px;
+  left: 34.8%;
+  margin-top: 0;
+  gap: -15;
+}
+
+
 
 .card:hover {
   transform: translateY(-15px);
@@ -308,25 +380,21 @@ body {
   color: #cd7f32;
 }
 
-.rank-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-.rank-table th,
-.rank-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-
-.rank-table thead {
-  background-color: #f5f5f5;
+/* Estilo específico para o card-5 (MEU NPS) */
+.card-5 .rank-item {
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  /* Nome e nota */
+  align-items: center;
+  gap: 20px;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 
-.rank-table tbody tr:nth-child(even) {
-  background-color: #fafafa;
+.card-5 .rank-item .name {
+  text-align: left;
+}
+
+.card-5 .rank-item .sales {
+  text-align: right;
 }

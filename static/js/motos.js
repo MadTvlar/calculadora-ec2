@@ -470,6 +470,12 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
         document.getElementById('resultado_liquido').innerText =
           `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
+
+        const margemPercentual = margemLiquida / entradaReal * 100;
+        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(88)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+
+        console.log('valor margem percentual', margemPercentual);
+
         var comissao = margemLiquida * 0.085;
         if (comissao < 0) {
           comissao = 0
@@ -521,6 +527,20 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
       const margemLiquida = margemBruta - totalDespesas + totalReceitas;
       document.getElementById('resultado_liquido').innerText = `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+
+      if (formaPagamento != 'Financiado') {
+
+        const margemPercentual = margemLiquida / entradaReal * 100;
+        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(88)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+
+        console.log('valor margem percentual', margemPercentual);
+      } else {
+
+        const margemPercentual = margemLiquida / valorVendaReal * 100;
+        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(88)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+
+        console.log('valor margem percentual', margemPercentual);
+      }
 
       comissao = margemLiquida * 0.085;
       if (comissao < 0) {

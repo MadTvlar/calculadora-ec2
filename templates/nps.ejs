@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MOTORS SIMULATOR</title>
+
+  <link rel="stylesheet" href="/css/nps.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+
+</head>
+
+<body>
+  <div class="top-container">
+    <div class="logo-container">
+      <a href="/segmentos">
+        <img src="/images/tvlar_motos.png" alt="TVLAR MOTOS" class="logo" />
+      </a>
+    </div>
+
+    <div class="filial-container">
+      <div class="user-menu">
+        <button id="user-button">
+          <%= usuario %>
+        </button>
+        <div id="user-dropdown" class="dropdown-content">
+          <a href="/motos">Voltar</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="upload-container" style="text-align:center; margin: 40px auto;">
+    <h2>Importar Planilha de NPS</h2>
+    <form action="/nps/upload" method="POST" enctype="multipart/form-data" style="text-align: center; margin: 40px 0;">
+      <input type="file" name="excelFile" accept=".xlsx, .xls" required />
+      <br><br>
+      <button type="submit" name="acao" value="atualizar">Atualizar Dados</button>
+      <button type="submit" name="acao" value="resetar">Resetar e Inserir</button>
+    </form>
+    <p id="mensagem" style="margin-top: 20px;"></p>
+  </div>
+
+  <h2 style="text-align: center;">Registros NPS Cadastrados</h2>
+  <table border="1" style="margin: 20px auto; width: 90%; text-align: center; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>ID Microwork</th>
+        <th>Vendedores</th>
+        <th>Promotoras</th>
+        <th>Neutras</th>
+        <th>Detratoras</th>
+        <th>Nota Oficial</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (npsData.length> 0) { %>
+        <% npsData.forEach((item)=> { %>
+          <tr>
+            <td>
+              <%= item.id %>
+            </td>
+            <td>
+              <%= item.id_microwork %>
+            </td>
+            <td>
+              <%= item.vendedores %>
+            </td>
+            <td>
+              <%= item.promotoras %>
+            </td>
+            <td>
+              <%= item.neutras %>
+            </td>
+            <td>
+              <%= item.detratoras %>
+            </td>
+            <td>
+              <%= item.nota_oficial %>
+            </td>
+          </tr>
+          <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="7">Nenhum dado cadastrado.</td>
+              </tr>
+              <% } %>
+    </tbody>
+  </table>
+
+
+  <footer class="footer">
+    <div class="footer-text">
+      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+      <span class="animate scroll" style="--i:1;"></span>
+    </div>
+    <div class="footer-iconTop">
+      <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+      <span class="animate scroll" style="--i:3;"></span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("user-button").addEventListener("click", function () {
+      document.getElementById("user-dropdown").classList.toggle("show");
+    });
+
+    window.onclick = function (event) {
+      if (!event.target.matches("#user-button")) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          if (dropdowns[i].classList.contains("show")) {
+            dropdowns[i].classList.remove("show");
+          }
+        }
+      }
+    };
+
+    document.getElementById("upload-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append("arquivo", document.getElementById("arquivo").files[0]);
+
+      const resposta = await fetch("/nps/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await resposta.text();
+      document.getElementById("mensagem").innerText = result;
+    });
+
+    document.getElementById("resetar-btn").addEventListener("click", async function () {
+      const formData = new FormData();
+      formData.append("arquivo", document.getElementById("arquivo").files[0]);
+
+      const resposta = await fetch("/nps/reset", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await resposta.text();
+      document.getElementById("mensagem").innerText = result;
+    });
+  </script>
+</body>
+
+</html>

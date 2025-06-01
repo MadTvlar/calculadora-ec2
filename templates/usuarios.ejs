@@ -42,6 +42,9 @@
       <label for="nome">Nome:</label>
       <input type="text" id="nome" name="nome" maxlength="100" required>
 
+      <label for="id_microwork">ID Microwork:</label>
+      <input type="text" id="id_microwork" name="id_microwork" maxlength="100" required>
+
       <label for="email">Email:</label>
       <input type="email" id="email" name="email" maxlength="50" required>
 
@@ -60,6 +63,7 @@
           <tr>
             <th>Grupo</th>
             <th>Nome</th>
+            <th>ID</th>
             <th>Email</th>
             <th>Ações</th>
           </tr>
@@ -74,6 +78,9 @@
                 <%= user.nome %>
               </td>
               <td>
+                <%= user.id_microwork %>
+              </td>
+              <td>
                 <%= user.email %>
               </td>
               <td>
@@ -84,7 +91,7 @@
                   <button type="submit">Atualizar Senha</button>
                 </form>
 
-                <% if (user.grupo==='user' ) { %>
+                <% if (user.grupo!='admin' ) { %>
                   <form action="/usuarios/excluir" method="POST" style="display:inline;"
                     onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
                     <input type="hidden" name="email" value="<%= user.email %>">
@@ -99,8 +106,6 @@
       </table>
     </div>
   </div>
-
-
   </div>
 
 

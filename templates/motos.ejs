@@ -37,10 +37,14 @@
         </button>
         <div id="user-dropdown" class="dropdown-content">
           <a href="#" id="save-pdf">Salvar em PDF</a>
-          <a href="/rankmotos">Rank Vendas</a>
+          <a href="/rankmotos">Ranking Vendas</a>
+          <!--<a href="/apresentacao">Apresentação</a> -->
+          <a href="/minhasvendas">Minhas Vendas</a>
           <% if (grupo==='admin' || grupo==='sup' ) { %>
             <a href="/reservasmotos">Reservas</a>
             <% } %>
+              <a href="/resumomotos">Resumo do Mês</a>
+              <a href="/nps">NPS</a>
               <a href="/logout">Logout</a>
         </div>
       </div>
@@ -211,6 +215,7 @@
 
     <div id="caixa_destacada4" class="caixa-destacada">
       <p id="resultado_liquido"></p>
+      <p id="resultado_porcentual"></p>
       <p id="comissao"></p>
     </div>
   </div>

@@ -28,6 +28,7 @@ body {
   z-index: 1000;
   opacity: 0;
   animation: surgindo 2.5s ease-out forwards;
+  flex-wrap: wrap;
 }
 
 /* Logo */
@@ -94,13 +95,13 @@ body {
 
 /* Footer */
 .footer {
-  position: absolute;
-  bottom: 0;
+  position: relative;
   width: 100%;
   background-color: #0203c5;
   color: #fff;
   font-size: 1rem;
   text-align: center;
+  padding: 20px 0;
 }
 
 .footer-iconTop a {
@@ -175,74 +176,151 @@ body {
   display: block;
 }
 
-.tabela-scroll {
-  margin-top: 5%;
-  max-height: 550px;
-  width: 90%;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: white;
-}
-
-.tabela-scroll table {
+/* Dashboard responsivo */
+.dashboard-container {
   width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.dashboard-table {
+  width: 100%;
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-table table {
+  width: 100%;
+  min-width: 700px;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
-.tabela-scroll th,
-.tabela-scroll td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
+.dashboard-table th,
+.dashboard-table td {
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
 }
 
-.tabela-scroll thead th {
-  position: sticky;
-  top: 0;
+.dashboard-table th {
+  background-color: #0002c6;
+  color: white;
+  font-weight: bold;
+}
+
+.dashboard-table tr:nth-child(even) {
   background-color: #f5f5f5;
-  z-index: 1;
 }
 
-.tabela-scroll tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
 }
 
-.col-id {
-  width: 30px;
+/* Botão de rolar para o topo */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #0002c6;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  text-decoration: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+  z-index: 1002;
+}
+
+.scroll-top-btn:hover {
+  background-color: #38bdf8;
+}
+
+/* Responsivo para telas pequenas */
+@media (max-width: 768px) {
+  .top-container {
+    flex-direction: column;
+    padding: 20px;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .logo-container,
+  .filial-container {
+    position: static;
+    margin: 0 auto;
+  }
+
+  .dashboard-container {
+    padding: 10px;
+  }
+
+  .dashboard-table table {
+    font-size: 0.85rem;
+  }
+
+  #user-button {
+    width: 100px;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .dropdown-content {
+    left: 0;
+    right: auto;
+  }
+}
+
+.resumo-totais {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 20px 0 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.card-total {
+  background-color: #0002c6;
+  color: white;
+  padding: 20px;
+  margin-top: 5%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex: 1;
+  min-width: 200px;
   text-align: center;
+  transition: transform 0.2s ease;
 }
 
-.col-patio {
-  width: 200px;
+.card-total h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: normal;
+  color: #ccc;
 }
 
-.col-modelo {
-  width: 240px;
+.card-total p {
+  margin: 8px 0 0;
+  font-size: 1.6rem;
+  font-weight: bold;
 }
 
-.col-chassi {
-  width: 150px;
+.card-total:hover {
+  transform: translateY(-5px);
+  background-color: #38bdf8;
+  color: #fff;
 }
 
-.col-data {
-  width: 75px;
-}
-
-.col-destino {
-  width: 120px;
-}
-
-.col-dias {
-  width: 30px;
-}
-
-.col-observacao {
-  width: 700px;
+.card-total:hover h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #000;
 }

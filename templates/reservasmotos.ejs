@@ -39,7 +39,6 @@
           <th class="col-patio">Pátio</th>
           <th class="col-modelo">Modelo</th>
           <th class="col-chassi">Chassi</th>
-          <th class="col-situacao">Situação</th>
           <th class="col-data">Data</th>
           <th class="col-destino">Destino</th>
           <th class="col-dias">Dias</th>
@@ -60,9 +59,6 @@
             </td>
             <td class="col-chassi">
               <%= moto.chassi %>
-            </td>
-            <td class="col-situacao">
-              <%= moto.situacao_reserva %>
             </td>
             <td class="col-data">
               <%= moto.data_reserva ? new Date(moto.data_reserva).toLocaleDateString('pt-BR') : '-' %>
@@ -94,6 +90,24 @@
       <span class="animate scroll" style="--i:3;"></span>
     </div>
   </footer>
+
+  <script>
+    document.getElementById("user-button").addEventListener("click", function () {
+      document.getElementById("user-dropdown").classList.toggle("show");
+    });
+
+    window.onclick = function (event) {
+      if (!event.target.matches('#user-button')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          if (dropdowns[i].classList.contains('show')) {
+            dropdowns[i].classList.remove('show');
+          }
+        }
+      }
+    };
+
+  </script>
 
 </body>
 

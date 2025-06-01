@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/minhasvendas.css">
+  <title>MOTORS SIMULATOR</title>
+</head>
+
+<body>
+  <div class="top-container">
+    <div class="logo-container">
+      <a href="/segmentos">
+        <img src="/images/tvlar_motos.png" alt="TVLAR MOTOS" class="logo">
+      </a>
+    </div>
+
+    <div class="filial-container">
+      <div class="user-menu">
+        <button id="user-button">
+          <%= usuario %>
+        </button>
+        <div id="user-dropdown" class="dropdown-content">
+          <a href="/motos">Voltar</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="resumo-totais">
+    <div class="card-total">
+      <h4>VOLUME</h4>
+      <% let totalQuantidade=0; %>
+        <% vendas.forEach(venda=> { totalQuantidade += venda.quantidade }) %>
+          <p>
+            <%= totalQuantidade %>
+          </p>
+    </div>
+    <% let totalLucroOperacional=0; let totalValorVenda=0; let comissao=0; vendas.forEach(venda=> {
+      const valorVenda = parseFloat(venda.valor_venda_real);
+      const lucroOpe = parseFloat(venda.lucro_ope);
+      const situacao = parseInt(venda.quantidade);
+
+      totalValorVenda += valorVenda;
+      totalLucroOperacional += lucroOpe;
+
+      if (situacao > 0 && lucroOpe < 0 || situacao < 0 && lucroOpe> 0) { comissao +=0; } else { comissao +=lucroOpe}});
+        const llo=totalValorVenda !==0
+        ? (totalLucroOperacional / totalValorVenda) * 100 : 0; %>
+
+        <div class="card-total">
+          <h4>LLO</h4>
+          <p>
+            <%= llo.toFixed(2) %>%
+          </p>
+        </div>
+
+        <div class="card-total">
+          <h4>COMISSÃO</h4>
+          <p>R$ <%= (comissao * 0.085).toFixed(2) %>
+          </p>
+        </div>
+
+  </div>
+
+
+  <main class="dashboard-container">
+    <div class="dashboard-table">
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Situação</th>
+            <th>Data</th>
+            <th>Modelo</th>
+            <th>Cor</th>
+            <th>Chassi</th>
+            <th>Valor Venda</th>
+            <th>LLO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (vendas.length> 0) { %>
+            <% vendas.forEach(venda=> { %>
+              <tr>
+                <td>
+                  <% if (venda.quantidade> 0) { %>
+                    Vendido
+                    <% } else if (venda.quantidade < 0) { %>
+                      Devolvida
+                      <% } else { %>
+                        -
+                        <% } %>
+                </td>
+                <td>
+                  <%= new Date(venda.data_venda).toLocaleDateString() %>
+                </td>
+                <td>
+                  <%= venda.modelo %>
+                </td>
+                <td>
+                  <%= venda.cor %>
+                </td>
+                <td>
+                  <%= venda.chassi %>
+                </td>
+                <td>
+                  <%= parseFloat(venda.valor_venda_real).toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL'
+                    }) %>
+                </td>
+                <td>
+                  <%= (venda.lucro_ope / venda.valor_venda_real * 100).toFixed(2).replace('.', ',' ) %> %
+                </td>
+              </tr>
+              <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="7">Nenhuma venda encontrada.</td>
+                  </tr>
+                  <% } %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+
+  <footer class="footer">
+    <div class="footer-text">
+      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+      <span class="animate scroll" style="--i:1;"></span>
+    </div>
+    <div class="footer-iconTop">
+      <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+      <span class="animate scroll" style="--i:3;"></span>
+    </div>
+  </footer>
+
+  <!-- Botão para voltar ao topo -->
+  <a href="#" class="scroll-top-btn">↑ Topo</a>
+
+  <script>
+    document.getElementById("user-button").addEventListener("click", function () {
+      document.getElementById("user-dropdown").classList.toggle("show");
+    });
+
+    window.onclick = function (event) {
+      if (!event.target.matches('#user-button')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+          if (dropdowns[i].classList.contains('show')) {
+            dropdowns[i].classList.remove('show');
+          }
+        }
+      }
+    };
+  </script>
+</body>
+
+</html>
