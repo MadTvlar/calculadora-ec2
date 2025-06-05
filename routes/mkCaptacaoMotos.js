@@ -6,9 +6,12 @@ const year = now.getFullYear();
 const month = String(now.getMonth() + 1).padStart(2, '0');
 
 const dataInicial = `${year}-${month}-01 00:00:00`;
-const dataFinal = `${year}-${month}-31 23:59:59`;
+const dataFinal = `${year}-${month}-30 23:59:59`;
 
 async function fetchMkcaptacaoMotos(pool) {
+
+  console.log('Limpando a tabela de captacao_motos')
+  await pool.promise().query('TRUNCATE TABLE microwork.captacao_motos');
 
   console.log('Iniciando a consulta API de Contratos Motos')
 
@@ -41,7 +44,7 @@ async function fetchMkcaptacaoMotos(pool) {
   for (const moto of dados) {
 
     const query = `
-    INSERT INTO captacao_motos (
+    INSERT INTO microwork.captacao_motos (
     empresa, n_avaliacao, data_conclusao, situacao, vendedor, avaliador, tipo, pessoa, modelo, cor, placa, chassi, valor_compra, data_emissao, valor_venda)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
    ON DUPLICATE KEY UPDATE

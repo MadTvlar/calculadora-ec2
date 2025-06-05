@@ -2,11 +2,16 @@ require('dotenv').config();
 
 const representante = new Set([
   '53.562.394 HUDSON SANTOS DE LIMA', 'KEDMA NASCIMENTO MORAES', 'JANDERSON MOCAMBIQUE DE SOUZA', 'C J T SIMAO TRANSPORTE POR NAVEGACAO FLUVIAL LTDA', '53.017.883 LUCIDALVA GARCIA DE SOUZA', '53.376.541 MATHEUS SILVA DE SOUZA',
-  'A C DE ALMEIDA', 'K. S. S. CARDOSO', 'L. C. M. DOS SANTOS', 'M A P ANGELIN CORPORATE LTDA', 'ODUÉNAVI DE MELO RIBEIRO PEREIRA', 'MOTO AMIL EIRELLI-ME', '47.551.394 JULIANA DA COSTA BEZERRA', '47.551.394 JULIANA DA COSTA BEZERRA '
+  'A C DE ALMEIDA', 'K. S. S. CARDOSO', 'L. C. M. DOS SANTOS', 'M A P ANGELIN CORPORATE LTDA', 'ODUÉNAVI DE MELO RIBEIRO PEREIRA', 'MOTO AMIL EIRELLI-ME', '47.551.394 JULIANA DA COSTA BEZERRA', '47.551.394 JULIANA DA COSTA BEZERRA ', '70203 - KLAUSBERG DA SILVA LIMA (000.939.742-64)', 'KLAUSBERG DA SILVA LIMA', 'LUCIANO LINQUEO LESSE DOS SANTOS', 'JACKSON IURY ROCHA DA SILVA', '60.618.200 SHIRLENE PINHO DE SOUZA', '47.551.394 JULIANA DA COSTA BEZERRA', 'JULIANA DA COSTA BEZERRA', 'SHIRLENE PINHO DE SOUZA', 'FRANSUILDO DOS SANTOS SILVA', 'FRANSUILDO DOS SANTOS SILVA'
 ]);
 
 async function atualizarRankings(pool) {
   const referenteMes = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
+
+  console.log('\nLimpando a tabela de ranking_geral')
+  await pool.promise().query('TRUNCATE TABLE ranking_geral');
+
+  console.log('Inserindo dados na tabela de ranking_geral...')
 
   await pool.promise().query('DELETE FROM ranking_geral WHERE referente_mes = ?', [referenteMes]);
 
@@ -39,7 +44,7 @@ async function atualizarRankings(pool) {
       )
     ) AS vendedor,
     SUM(quantidade) AS total_vendas
-  FROM mk_vendas_motos
+  FROM microwork.vendas_motos
   GROUP BY id_microwork, vendedor
   ORDER BY total_vendas DESC;
 `);
@@ -56,8 +61,8 @@ async function atualizarRankings(pool) {
         ''
       )
     ) AS vendedor,
-    ROUND(SUM(lucro_ope) / SUM(valor_venda) * 100, 2) AS percentual_lucro
-  FROM mk_vendas_motos
+    ROUND(SUM(lucro_ope) / SUM(valor_venda_real) * 100, 2) AS percentual_lucro
+  FROM microwork.vendas_motos
   GROUP BY 
     TRIM(
       REGEXP_REPLACE(
@@ -90,7 +95,7 @@ async function atualizarRankings(pool) {
       )
     ) AS vendedor,
     COUNT(*) AS totalCaptado
-  FROM captacao_motos
+  FROM microwork.captacao_motos
   WHERE vendedor IS NOT NULL
   GROUP BY 
     TRIM(
@@ -127,7 +132,7 @@ async function atualizarRankings(pool) {
       )
     ) AS vendedor,
     COUNT(*) AS totalContratos
-  FROM contratos_motos
+  FROM microwork.contratos_motos
   GROUP BY 
     TRIM(
       REGEXP_REPLACE(
@@ -159,7 +164,7 @@ async function atualizarRankings(pool) {
       )
     ) AS vendedor,
     COUNT(*) AS quantidadeRetorno
-  FROM mk_vendas_motos
+  FROM microwork.vendas_motos
   WHERE retorno_porcent >= 2
   GROUP BY 
     TRIM(
@@ -186,7 +191,7 @@ async function atualizarRankings(pool) {
     ) AS vendedor,
     SUM(CASE WHEN retorno_porcent >= 2 AND retorno_porcent < 4 THEN 1 ELSE 0 END) AS r2,
     SUM(CASE WHEN retorno_porcent >= 4 THEN 1 ELSE 0 END) AS r4
-  FROM mk_vendas_motos
+  FROM microwork.vendas_motos
   GROUP BY 
     TRIM(
       REGEXP_REPLACE(
@@ -227,7 +232,7 @@ async function atualizarRankings(pool) {
   await inserirDados(rankContrato, 'contratos', 'totalContratos');
   await inserirDados(rankRetorno, 'retorno', 'quantidadeRetorno');
 
-  console.log('Todos os rankings foram inseridos com sucesso.');
+  console.log('...Tabela de ranking_geral atualizado!');
 }
 
 module.exports = atualizarRankings;

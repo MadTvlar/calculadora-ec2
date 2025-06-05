@@ -63,6 +63,18 @@
           </p>
         </div>
 
+        <div class="card-total">
+          <h4>PROFISSIONAIS DO ANO</h4>
+          <p>R$ <%= pontos %>
+          </p>
+        </div>
+
+        <div class="card-total" style="background-color: green;">
+          <h4>TOTAL PREVISTO</h4>
+          <p>R$ <%= (comissao * 0.085).toFixed(2) + pontos %>
+          </p>
+        </div>
+
   </div>
 
 
@@ -135,9 +147,6 @@
       <span class="animate scroll" style="--i:3;"></span>
     </div>
   </footer>
-
-  <!-- Botão para voltar ao topo -->
-  <a href="#" class="scroll-top-btn">↑ Topo</a>
 
   <script>
     document.getElementById("user-button").addEventListener("click", function () {

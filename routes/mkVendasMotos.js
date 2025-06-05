@@ -4,13 +4,14 @@ require('dotenv').config();
 const now = new Date();
 const year = now.getFullYear();
 const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
 
 const dataInicial = `${year}-${month}-01 00:00:00`;
-const dataFinal = `${year}-${month}-31 23:59:59`;
+const dataFinal = `${year}-${month}-${day} 23:59:59`;
 
 async function fetchMkVendasMotos(pool) {
 
-  console.log('Iniciando a consulta API de Vendas Motos')
+  console.log('Iniciando a consulta API de para a tabela microwork.vendas_motos')
 
   const filtros = `DesconsiderarEstornadoDevolvido=False;
         SemAutorizacaoExpedicao=True;
@@ -60,13 +61,13 @@ async function fetchMkVendasMotos(pool) {
     const dataVendaFormatada = moto.datavenda ? moto.datavenda.substring(0, 10) : null;
 
     const [rows] = await pool.promise().query(
-      'SELECT quantidade FROM mk_vendas_motos WHERE doc_fiscal = ?',
+      'SELECT quantidade FROM microwork.vendas_motos WHERE doc_fiscal = ?',
       [moto.docfiscal]
     );
 
     if (rows.length === 0 || rows[0].quantidade !== moto.quantidade) {
       const query = `
-  INSERT INTO mk_vendas_motos (
+  INSERT INTO microwork.vendas_motos (
     empresa, quantidade, data_venda, id_microwork, doc_fiscal, vendedor, modelo,
     cor, chassi, ano, custo_contabil, dias_estoque, pedido,
     tipo_venda, valor_venda, entrada_bonificada, valor_venda_real, despesa_ope, valor_financiado,

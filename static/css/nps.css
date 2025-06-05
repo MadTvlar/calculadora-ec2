@@ -175,3 +175,90 @@ body {
 .show {
   display: block;
 }
+
+/* Upload container */
+.upload-container h2 {
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #0002c6;
+}
+
+.upload-container form {
+  margin: 40px 0;
+  text-align: center;
+}
+
+.upload-container input[type="file"] {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #0002c6;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #0002c6;
+  font-weight: bold;
+}
+
+/* Botões de submit no form */
+.upload-container button[type="submit"] {
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 5px;
+  border: 1px solid #0002c6;
+  background-color: #0002c6;
+  color: white;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.upload-container button[type="submit"]:last-child {
+  margin-right: 0;
+  border-color: #c50000;
+  background-color: #c50000;
+}
+
+.upload-container button[type="submit"]:hover {
+  background-color: #084bcf;
+}
+
+.upload-container button[type="submit"]:last-child:hover {
+  background-color: #a70000;
+}
+
+/* Mensagem após upload */
+#mensagem {
+  margin-top: 20px;
+  font-weight: bold;
+  color: green;
+}
+
+/* Tabela NPS */
+table {
+  width: 90%;
+  margin: 20px auto 60px;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+thead {
+  background-color: #0002c6;
+  color: white;
+}
+
+thead th {
+  padding: 8px;
+  font-weight: bold;
+}
+
+tbody td {
+  padding: 6px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Mensagem no corpo da tabela quando vazia */
+tbody tr td[colspan="7"] {
+  padding: 20px;
+  font-style: italic;
+  color: #666;
+}

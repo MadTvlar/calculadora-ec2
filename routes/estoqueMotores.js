@@ -3,8 +3,9 @@ require('dotenv').config();
 
 async function fetchEstoqueMotores(pool) {
 
-  await pool.promise().query('TRUNCATE TABLE estoque_motores');
-  console.log('Tabela estoque_motores limpa com sucesso.');
+  console.log('\nLimpando estoque_motores.');
+  await pool.promise().query('TRUNCATE TABLE microwork.estoque_motores');
+
 
   const filtros = `ESemProposta=False;
 FabricacaoInicial=0;
@@ -44,7 +45,7 @@ FabricacaoFinal=9999`;
 
   for (const motor of dados) {
     const query = `
-      INSERT INTO estoque_motores (patio, chassi, modelo, cor, dias_estoque, icms_compra, situacao, custo_contabil)
+      INSERT INTO microwork.estoque_motores (patio, chassi, modelo, cor, dias_estoque, icms_compra, situacao, custo_contabil)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE 
         patio = VALUES(patio),
@@ -70,6 +71,8 @@ FabricacaoFinal=9999`;
     await pool.promise().query(query, values);
     console.log(`Chassi ${motor.chassi} inserido com sucesso.`);
   }
+
+  console.log('Tabela estoque_motores, Atualizado!')
 }
 
 module.exports = fetchEstoqueMotores;

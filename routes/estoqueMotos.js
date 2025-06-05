@@ -3,7 +3,7 @@ require('dotenv').config();
 
 async function fetchEstoqueMotos(pool) {
 
-  await pool.promise().query('TRUNCATE TABLE estoque_motos');
+  await pool.promise().query('TRUNCATE TABLE microwork.estoque_motos');
   console.log('Tabela estoque_motos limpa com sucesso.');
 
   const filtros = `ESemProposta=False;
@@ -43,7 +43,7 @@ async function fetchEstoqueMotos(pool) {
 
   for (const moto of dados) {
     const query = `
-      INSERT INTO estoque_motos (empresa, patio, chassi, modelo, cor, ano, dias_estoque, situacao, custo_contabil, situacao_reserva, data_reserva, destino_reserva, observacao_reserva, dias_reserva)
+      INSERT INTO microwork.estoque_motos (empresa, patio, chassi, modelo, cor, ano, dias_estoque, situacao, custo_contabil, situacao_reserva, data_reserva, destino_reserva, observacao_reserva, dias_reserva)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         empresa = VALUES(empresa), 

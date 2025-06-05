@@ -2,17 +2,25 @@ const mysql = require('mysql2');
 
 // Configure o pool de conexões com o banco de dados
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'motors',
-  password: 'Motors!@#3223',
-  database: 'dados_vendas',
+  host: '10.9.100.20',
+  user: 'tvlar',
+  password: 'Motors.3223',
+  database: 'tropa_azul',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
 });
 
-// Criar a tabela 'vendas' caso não exista
-const createSimulacaoMotos = `
+// Conectar ao banco de dados
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Erro ao conectar ao banco de dados: ', err);
+    return;
+  }
+  console.log('Conectado ao banco de dados "tropa_azul"!');
+
+  // Criar a tabela 'vendas' caso não exista
+  const createSimulacaoMotos = `
   CREATE TABLE IF NOT EXISTS simulacao_motos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_vendedor VARCHAR(50),
@@ -45,22 +53,7 @@ const createSimulacaoMotos = `
   );
 `;
 
-// Conectar ao banco de dados
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados: ', err);
-    return;
-  }
-  console.log('Conectado ao banco de dados "dados_vendas"!');
-
-  // Inicializar as tabelas
-  connection.query(createSimulacaoMotos, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela: ', err);
-      return;
-    }
-    console.log('Tabela "vendas" criada ou já existe');
-  });
+  connection.query(createSimulacaoMotos);
 
 
 
@@ -93,18 +86,12 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createSimulacaoMotores, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "simulacao_motores": ', err);
-      return;
-    }
-    console.log('Tabela "simulacao_motores" criada ou já existe');
-  });
+  connection.query(createSimulacaoMotores);
 
 
 
   const createEstoqueMotores = `
-    CREATE TABLE IF NOT EXISTS estoque_motores (
+    CREATE TABLE IF NOT EXISTS microwork.estoque_motores (
       id INT AUTO_INCREMENT PRIMARY KEY,
       patio VARCHAR(100),
       chassi VARCHAR(50) UNIQUE NOT NULL,
@@ -119,18 +106,12 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createEstoqueMotores, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "estoque_motores": ', err);
-      return;
-    }
-    console.log('Tabela "estoque_motores" criada ou já existe');
-  });
+  connection.query(createEstoqueMotores);
 
 
 
   const creatEstoqueMotos = `
-    CREATE TABLE IF NOT EXISTS estoque_motos (
+    CREATE TABLE IF NOT EXISTS microwork.estoque_motos (
       id INT AUTO_INCREMENT PRIMARY KEY,
       empresa VARCHAR(5),
       patio VARCHAR(60),
@@ -149,19 +130,12 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(creatEstoqueMotos, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "estoque_motos": ', err);
-      return;
-    }
-    console.log('Tabela "estoque_motos" criada ou já existe');
-  });
+  connection.query(creatEstoqueMotos);
 
 
 
   const createMkVendasMotos = `
-  CREATE TABLE IF NOT EXISTS mk_vendas_motos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+  CREATE TABLE IF NOT EXISTS microwork.vendas_motos (
     empresa VARCHAR(5),
     quantidade INT DEFAULT 0,
     data_venda DATE,
@@ -188,13 +162,7 @@ pool.getConnection((err, connection) => {
   );
 `;
 
-  connection.query(createMkVendasMotos, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "mk_vendas_motos": ', err);
-      return;
-    }
-    console.log('Tabela "mk_vendas_motos" criada ou já existe');
-  });
+  connection.query(createMkVendasMotos);
 
 
 
@@ -209,13 +177,7 @@ pool.getConnection((err, connection) => {
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `
-  connection.query(createUsuarios, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "usuarios": ', err);
-      return;
-    }
-    console.log('Tabela "usuarios" criada ou já existe');
-  });
+  connection.query(createUsuarios);
 
 
 
@@ -225,39 +187,12 @@ pool.getConnection((err, connection) => {
     atualizado_em DATETIME
   );
     `
-  connection.query(createUpdate, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "updates": ', err);
-      return;
-    }
-    console.log('Tabela "updates" criada ou já existe');
-  });
-
-
-
-  const createFiliais = `
-    CREATE TABLE IF NOT EXISTS filiais (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      nome VARCHAR(100) NOT NULL,
-      cidade VARCHAR(100),
-      estado VARCHAR(2),
-      criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-
-  connection.query(createFiliais, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "filiais": ', err);
-      return;
-    }
-    console.log('Tabela "filiais" criada ou já existe');
-  });
+  connection.query(createUpdate);
 
 
 
   const createContratosMotos = `
-    CREATE TABLE IF NOT EXISTS contratos_motos (
-      id INT AUTO_INCREMENT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS microwork.contratos_motos (
       data_venda DATETIME,
       quantidade INT,
       empresa VARCHAR(5),
@@ -274,19 +209,12 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createContratosMotos, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "contratos_motos": ', err);
-      return;
-    }
-    console.log('Tabela "contratos_motos" criada ou já existe');
-  });
+  connection.query(createContratosMotos);
 
 
 
   const createcaptacaoMotos = `
-    CREATE TABLE IF NOT EXISTS captacao_motos (
-      id INT AUTO_INCREMENT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS microwork.captacao_motos (
       empresa VARCHAR(5),
       n_avaliacao INT,
       data_conclusao DATETIME,
@@ -305,19 +233,12 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createcaptacaoMotos, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "captacao_motos": ', err);
-      return;
-    }
-    console.log('Tabela "captacao_motos" criada ou já existe');
-  });
+  connection.query(createcaptacaoMotos);
 
 
 
   const createRankingGeral = `
     CREATE TABLE IF NOT EXISTS ranking_geral (
-      id INT AUTO_INCREMENT PRIMARY KEY,
       tipo VARCHAR(20),
       vendedor VARCHAR(255),
       valor DECIMAL(10,2),
@@ -327,19 +248,12 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createRankingGeral, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "ranking_geral": ', err);
-      return;
-    }
-    console.log('Tabela "ranking_geral" criada ou já existe');
-  });
+  connection.query(createRankingGeral);
 
 
 
   const createNPSGeral = `
     CREATE TABLE IF NOT EXISTS nps (
-      id INT AUTO_INCREMENT PRIMARY KEY,
       id_microwork INT,
       vendedores VARCHAR(255),
       promotoras INT,
@@ -350,40 +264,35 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createNPSGeral, (err) => {
-    if (err) {
-      console.error('Erro ao criar a tabela "nps": ', err);
-      return;
-    }
-    console.log('Tabela "nps" criada ou já existe');
-  });
+  connection.query(createNPSGeral);
 
 
 
   const createRankingPontos = `
-    CREATE TABLE IF NOT EXISTS ranking_pontos (
-  posicao INT,  -- Será preenchido manualmente com base no ranking
-  vendedor VARCHAR(255),
-  pontos INT,
-  vendas INT,
-  llo FLOAT,
-  captacao INT,
-  contrato INT,
-  retorno INT,
-  NPS INT,
-  referente_mes VARCHAR(7),
-  atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (posicao, referente_mes),
-  UNIQUE KEY vendedor_mes (vendedor, referente_mes)
-);
-  `;
-  connection.query(createRankingPontos, (err) => {
+  CREATE TABLE IF NOT EXISTS ranking_pontos (
+    id_microwork INT NULL,
+    vendedor VARCHAR(255) NULL,
+    pontos INT NULL,
+    vendas INT NULL,
+    llo DECIMAL(5,2) NULL,
+    captacao INT NULL,
+    contrato INT NULL,
+    retorno INT NULL,
+    NPS INT NULL,
+    referente_mes VARCHAR(7),
+    atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+  connection.query(createRankingPontos, (err, results) => {
     if (err) {
-      console.error('Erro ao criar a tabela "ranking_pontos": ', err);
-      return;
+      console.error('Erro ao criar a tabela ranking_pontos:', err);
+    } else {
+      // Como é CREATE TABLE IF NOT EXISTS, se a tabela já existir, não cria de novo e não retorna erro
+      console.log('Tabela ranking_pontos criada ou já existe.');
     }
-    console.log('Tabela "ranking_pontos" criada ou já existe');
   });
+
 
   connection.release();
 });

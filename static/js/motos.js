@@ -61,6 +61,58 @@ function verificarCamposCard1() {
   }
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+  const motoSelect = document.getElementById('motos_yamaha');
+  const chassiSelect = document.getElementById('chassi_moto');
+  const labelChassi = document.querySelector('label[for="chassi_moto"]'); // Pega o label do chassi
+
+  try {
+    const res = await fetch('/api/motos/modelos-motos-disponiveis');
+    const modelos = [...new Set(await res.json())]; // remove duplicatas direto
+
+    motoSelect.innerHTML = '<option value="">Selecione</option>';
+
+    modelos.forEach(modelo => {
+      motoSelect.insertAdjacentHTML('beforeend',
+        `<option value="${modelo}">${modelo}</option>`);
+    });
+
+  } catch (err) {
+    console.error('Erro ao carregar modelos:', err);
+  }
+
+
+  motoSelect.addEventListener('change', async () => {
+    const modeloSelecionado = motoSelect.value;
+    chassiSelect.innerHTML = '<option value="">Carregando...</option>';
+
+    try {
+      const res = await fetch(`/api/motos/chassis-por-modelo?modelo=${encodeURIComponent(modeloSelecionado)}`);
+      const chassis = await res.json();
+
+      chassiSelect.innerHTML = '<option value="">Selecione</option>';
+
+      // Atualiza o label com a quantidade de chassis
+      labelChassi.textContent = `CHASSI (${chassis.length})`;
+
+      chassis.forEach(chassi => {
+
+        const option = document.createElement('option');
+        // Combinando chassi, cor, pátio e dias_estoque para exibir
+        const textoExibido = `${chassi.chassi || 'N/A'} - ${chassi.cor || 'N/A'} - ${chassi.patio || 'N/A'} - ${chassi.ano || 'N/A'} - ${chassi.dias_estoque || 'N/A'} dias`;
+
+        option.value = chassi.chassi; // valor do chassi
+        option.textContent = textoExibido; // texto exibido no select
+        chassiSelect.appendChild(option);
+      });
+    } catch (err) {
+      console.error('Erro ao carregar chassis:', err);
+      chassiSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+      labelChassi.textContent = 'CHASSI (0)';
+    }
+  });
+});
+
 document.getElementById('entradaAlter').innerText = `ENTRADA REAL`;
 
 
@@ -472,7 +524,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
 
         const margemPercentual = margemLiquida / entradaReal * 100;
-        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(88)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(84)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
         console.log('valor margem percentual', margemPercentual);
 
@@ -531,13 +583,13 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
       if (formaPagamento != 'Financiado') {
 
         const margemPercentual = margemLiquida / entradaReal * 100;
-        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(88)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(84)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
         console.log('valor margem percentual', margemPercentual);
       } else {
 
         const margemPercentual = margemLiquida / valorVendaReal * 100;
-        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(88)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(84)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
         console.log('valor margem percentual', margemPercentual);
       }

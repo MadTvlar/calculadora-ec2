@@ -8,8 +8,6 @@
 
   <link rel="stylesheet" href="/css/nps.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-
-
 </head>
 
 <body>
@@ -33,22 +31,22 @@
     </div>
   </div>
 
-  <div class="upload-container" style="text-align:center; margin: 40px auto;">
+  <div class="upload-container" style="text-align:center; margin: 40px auto; margin-top: 5%;">
     <h2>Importar Planilha de NPS</h2>
-    <form action="/nps/upload" method="POST" enctype="multipart/form-data" style="text-align: center; margin: 40px 0;">
-      <input type="file" name="excelFile" accept=".xlsx, .xls" required />
-      <br><br>
+    <form id="upload-form" action="/nps/upload" method="POST" enctype="multipart/form-data"
+      style="text-align: center; margin: 40px 0;">
+      <input id="excelFile" type="file" name="excelFile" accept=".xlsx, .xls" required />
+      <br /><br />
       <button type="submit" name="acao" value="atualizar">Atualizar Dados</button>
       <button type="submit" name="acao" value="resetar">Resetar e Inserir</button>
     </form>
-    <p id="mensagem" style="margin-top: 20px;"></p>
+    <p id="mensagem"></p>
   </div>
 
   <h2 style="text-align: center;">Registros NPS Cadastrados</h2>
-  <table border="1" style="margin: 20px auto; width: 90%; text-align: center; border-collapse: collapse;">
+  <table border="1">
     <thead>
       <tr>
-        <th>ID</th>
         <th>ID Microwork</th>
         <th>Vendedores</th>
         <th>Promotoras</th>
@@ -61,9 +59,6 @@
       <% if (npsData.length> 0) { %>
         <% npsData.forEach((item)=> { %>
           <tr>
-            <td>
-              <%= item.id %>
-            </td>
             <td>
               <%= item.id_microwork %>
             </td>
@@ -92,7 +87,6 @@
     </tbody>
   </table>
 
-
   <footer class="footer">
     <div class="footer-text">
       <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
@@ -120,31 +114,36 @@
       }
     };
 
-    document.getElementById("upload-form").addEventListener("submit", async function (e) {
+
+    const uploadForm = document.getElementById('upload-form');
+    const mensagem = document.getElementById('mensagem');
+
+    uploadForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData();
-      formData.append("arquivo", document.getElementById("arquivo").files[0]);
 
-      const resposta = await fetch("/nps/upload", {
-        method: "POST",
-        body: formData
-      });
+      const formData = new FormData(uploadForm);
 
-      const result = await resposta.text();
-      document.getElementById("mensagem").innerText = result;
-    });
+      try {
+        const response = await fetch('/nps/upload', {
+          method: 'POST',
+          body: formData
+        });
 
-    document.getElementById("resetar-btn").addEventListener("click", async function () {
-      const formData = new FormData();
-      formData.append("arquivo", document.getElementById("arquivo").files[0]);
+        if (!response.ok) {
+          throw new Error('Erro na requisição');
+        }
 
-      const resposta = await fetch("/nps/reset", {
-        method: "POST",
-        body: formData
-      });
+        const resultText = await response.text();
 
-      const result = await resposta.text();
-      document.getElementById("mensagem").innerText = result;
+        // Mostra pop-up com o resultado
+        alert(resultText);
+
+        // Opcional: atualizar a página para buscar dados novos ou atualizar a tabela via AJAX
+        // location.reload();
+
+      } catch (error) {
+        alert('Erro ao enviar o arquivo: ' + error.message);
+      }
     });
   </script>
 </body>

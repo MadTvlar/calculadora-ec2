@@ -220,26 +220,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Botão de rolar para o topo */
-.scroll-top-btn {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background-color: #0002c6;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 50px;
-  font-size: 1.2rem;
-  text-decoration: none;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  transition: background 0.3s ease;
-  z-index: 1002;
-}
-
-.scroll-top-btn:hover {
-  background-color: #38bdf8;
-}
-
 /* Responsivo para telas pequenas */
 @media (max-width: 768px) {
   .top-container {

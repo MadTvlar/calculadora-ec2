@@ -20,7 +20,6 @@
     </div>
 
     <div class="filial-container">
-      <button class="btn" id="showCard4Button">Simular</button>
 
       <select id="filialTipo" name="filialTipo">
         <option value="">Loja</option>
@@ -37,7 +36,7 @@
         </button>
         <div id="user-dropdown" class="dropdown-content">
           <a href="#" id="save-pdf">Salvar em PDF</a>
-          <a href="/rankmotos">Ranking Vendas</a>
+          <a href="/rankmotos">Ranking Geral</a>
           <!--<a href="/apresentacao">Apresentação</a> -->
           <a href="/minhasvendas">Minhas Vendas</a>
           <% if (grupo==='admin' || grupo==='sup' ) { %>
@@ -213,6 +212,7 @@
       <p id="resultado_receitas"></p>
     </div>
 
+    <p style="text-align: center; margin-left: -15px;"><strong>TOTAIS</strong></p>
     <div id="caixa_destacada4" class="caixa-destacada">
       <p id="resultado_liquido"></p>
       <p id="resultado_porcentual"></p>
@@ -220,7 +220,7 @@
     </div>
   </div>
 
-  <footer class="footer">
+  <footer class="footer" id="fim-da-pagina">
     <div class="footer-text">
       <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
 
@@ -234,61 +234,11 @@
     </div>
   </footer>
 
+  <a href="#fim-da-pagina" id="showCard4Button" class="scroll-top-btn">Simular</a>
+
+
   <div id="dados_emplacamento" data-valor="<%= valorMesAtual %>"></div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const motoSelect = document.getElementById('motos_yamaha');
-      const chassiSelect = document.getElementById('chassi_moto');
-      const labelChassi = document.querySelector('label[for="chassi_moto"]'); // Pega o label do chassi
-
-      try {
-        const res = await fetch('/api/motos/modelos-motos-disponiveis');
-        const modelos = [...new Set(await res.json())]; // remove duplicatas direto
-
-        motoSelect.innerHTML = '<option value="">Selecione</option>';
-
-        modelos.forEach(modelo => {
-          motoSelect.insertAdjacentHTML('beforeend',
-            `<option value="${modelo}">${modelo}</option>`);
-        });
-
-      } catch (err) {
-        console.error('Erro ao carregar modelos:', err);
-      }
-
-
-      motoSelect.addEventListener('change', async () => {
-        const modeloSelecionado = motoSelect.value;
-        chassiSelect.innerHTML = '<option value="">Carregando...</option>';
-
-        try {
-          const res = await fetch(`/api/motos/chassis-por-modelo?modelo=${encodeURIComponent(modeloSelecionado)}`);
-          const chassis = await res.json();
-
-          chassiSelect.innerHTML = '<option value="">Selecione</option>';
-
-          // Atualiza o label com a quantidade de chassis
-          labelChassi.textContent = `CHASSI (${chassis.length})`;
-
-          chassis.forEach(chassi => {
-
-            const option = document.createElement('option');
-            // Combinando chassi, cor, pátio e dias_estoque para exibir
-            const textoExibido = `${chassi.chassi || 'N/A'} - ${chassi.cor || 'N/A'} - ${chassi.patio || 'N/A'} - ${chassi.ano || 'N/A'} - ${chassi.dias_estoque || 'N/A'} dias`;
-
-            option.value = chassi.chassi; // valor do chassi
-            option.textContent = textoExibido; // texto exibido no select
-            chassiSelect.appendChild(option);
-          });
-        } catch (err) {
-          console.error('Erro ao carregar chassis:', err);
-          chassiSelect.innerHTML = '<option value="">Erro ao carregar</option>';
-          labelChassi.textContent = 'CHASSI (0)';
-        }
-      });
-    });
-  </script>
   <script src="/js/motos.js"></script>
 
 </body>

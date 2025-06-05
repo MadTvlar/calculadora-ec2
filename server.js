@@ -11,8 +11,6 @@ const util = require('util');
 const bcrypt = require('bcrypt');
 
 
-
-
 // SERVIÇOS INTERNOS
 const connection = require('./services/db');
 const taxas = require('./services/taxa');
@@ -89,7 +87,7 @@ app.post('/login', async (req, res) => {
   if (login === 'admin' && password === 'admin!@#') {
     res.cookie('usuario_logado', 'Administrador');
     res.cookie('grupo_logado', 'admin');
-    res.cookie('id_logado', '76639');
+    res.cookie('id_logado', '51014');
     return res.redirect('/segmentos');
   }
 
@@ -175,7 +173,7 @@ app.get('/reservasmotos', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(`
       SELECT patio, modelo, chassi, data_reserva, destino_reserva, observacao_reserva, dias_reserva
-      FROM estoque_motos
+      FROM microwork.estoque_motos
       WHERE situacao_reserva = 'Ativa'
       ORDER BY data_reserva DESC
     `);
@@ -274,27 +272,49 @@ app.get('/minhasvendas', (req, res) => {
   const grupoLogado = req.cookies.grupo_logado;
   const idLogado = req.cookies.id_logado;
 
-  const query = `
+  const queryVendas = `
     SELECT *
-    FROM mk_vendas_motos
+    FROM microwork.vendas_motos
     WHERE id_microwork = ?
     ORDER BY data_venda DESC
   `;
 
-  connection.query(query, [idLogado], (err, results) => {
-    if (err) {
-      console.error('Erro ao buscar vendas:', err);
-      return res.status(500).send('Erro ao buscar vendas');
-    }
+  const queryPontos = `
+    SELECT pontos
+    FROM ranking_pontos
+    WHERE id_microwork = ?
+  `;
 
-    res.render('minhasvendas', {
-      usuario: usuarioLogado,
-      grupo: grupoLogado,
-      id: idLogado,
-      vendas: results
+  // Executa as duas consultas em paralelo
+  Promise.all([
+    new Promise((resolve, reject) => {
+      connection.query(queryVendas, [idLogado], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    }),
+    new Promise((resolve, reject) => {
+      connection.query(queryPontos, [idLogado], (err, results) => {
+        if (err) return reject(err);
+        resolve(results[0] ? results[0].pontos : 0); // Se não tiver resultado, retorna 0
+      });
+    })
+  ])
+    .then(([vendas, pontos]) => {
+      res.render('minhasvendas', {
+        usuario: usuarioLogado,
+        grupo: grupoLogado,
+        id: idLogado,
+        vendas: vendas,
+        pontos: pontos
+      });
+    })
+    .catch(err => {
+      console.error('Erro ao buscar dados:', err);
+      res.status(500).send('Erro ao buscar dados');
     });
-  });
 });
+
 
 // CHAMADO PARA O MEU RANK DE MOTOS POR PONTO
 app.get('/rankmotos', async (req, res) => {
@@ -340,11 +360,6 @@ app.get('/rankmotos', async (req, res) => {
   }
 });
 
-
-
-
-
-
 // CHAMADO PARA CADA KPI NA PAGINA REUMO MêS
 app.get('/resumomotos', async (req, res) => {
   try {
@@ -361,7 +376,7 @@ app.get('/resumomotos', async (req, res) => {
       7808,  // 53.562.394 HUDSON SANTOS DE LIMA
       63703, // 53.338.753 KEDMA NASCIMENTO MORAES
       55641, // JANDERSON MOCAMBIQUE DE SOUZA
-      69987, // C J T SIMAO TRANSPORTE POR NAVEGACAO FLUVIAL LTDA
+      69987, // 47.551.394 JULIANA DA COSTA BEZERRA 
       64650, // 53.017.883 LUCIDALVA GARCIA DE SOUZA
       78357, // 53.376.541 MATHEUS SILVA DE SOUZA
       65986, // A C DE ALMEIDA
@@ -371,11 +386,13 @@ app.get('/resumomotos', async (req, res) => {
       68098, // M A P ANGELIN CORPORATE LTDA
       55705, // ODUÉNAVI DE MELO RIBEIRO PEREIRA
       22062, // MOTO AMIL EIRELLI-ME
+      78420, // 60.618.200 SHIRLENE PINHO DE SOUZA
+      46429, // FRANSUILDO DOS SANTOS SILVA
     ]);
 
     // Coleta os nomes dos representantes para filtro por nome
     const [vendedoresBloqueadosRows] = await connection.promise().query(`
-      SELECT DISTINCT vendedor FROM mk_vendas_motos
+      SELECT DISTINCT vendedor FROM microwork.vendas_motos
       WHERE id_microwork IN (${[...representante].join(',')})
     `);
     const vendedoresBloqueados = new Set(
@@ -401,7 +418,7 @@ app.get('/resumomotos', async (req, res) => {
     // Coleta dos dados
     const [rankVolume] = await connection.promise().query(`
       SELECT id_microwork, vendedor, SUM(quantidade) AS total_vendas
-      FROM mk_vendas_motos
+      FROM microwork.vendas_motos
       GROUP BY id_microwork, vendedor
       ORDER BY total_vendas DESC;
     `);
@@ -410,7 +427,7 @@ app.get('/resumomotos', async (req, res) => {
       SELECT 
       vendedor,
       ROUND(SUM(lucro_ope) / SUM(valor_venda) * 100, 2) AS percentual_lucro
-      FROM mk_vendas_motos
+      FROM microwork.vendas_motos
       GROUP BY vendedor
       ORDER BY percentual_lucro DESC;
 `);
@@ -420,7 +437,7 @@ app.get('/resumomotos', async (req, res) => {
       SELECT 
       TRIM(vendedor) AS vendedor,
       COUNT(*) AS totalCaptado
-      FROM captacao_motos
+      FROM microwork.captacao_motos
       GROUP BY vendedor
       ORDER BY totalCaptado DESC;
     `);
@@ -429,7 +446,7 @@ app.get('/resumomotos', async (req, res) => {
       SELECT 
       TRIM(vendedor) AS vendedor,
       COUNT(*) AS totalContratos
-      FROM contratos_motos
+      FROM microwork.contratos_motos
       GROUP BY vendedor
       ORDER BY totalContratos DESC;
     `);
@@ -438,7 +455,7 @@ app.get('/resumomotos', async (req, res) => {
       SELECT 
       TRIM(vendedor) AS vendedor,
       COUNT(*) AS quantidadeRetorno
-      FROM mk_vendas_motos
+      FROM microwork.vendas_motos
       WHERE retorno_porcent >= 2
       GROUP BY vendedor
       ORDER BY quantidadeRetorno DESC;
@@ -498,13 +515,13 @@ app.get('/resumomotos', async (req, res) => {
         SUM(quantidade) AS volume,
         SUM(lucro_ope) AS totalOpe,
         SUM(valor_venda_real) AS totalVendaReal
-      FROM mk_vendas_motos
+      FROM microwork.vendas_motos
       WHERE id_microwork = ?
     `, [idLogado]);
 
     const [retornos] = await connection.promise().query(`
       SELECT retorno_porcent 
-      FROM mk_vendas_motos 
+      FROM microwork.vendas_motos 
       WHERE id_microwork = ?
     `, [idLogado]);
 
@@ -524,7 +541,7 @@ app.get('/resumomotos', async (req, res) => {
 
     const [contagemcaptacao] = await connection.promise().query(`
       SELECT COUNT(*) AS totalCaptado
-      FROM captacao_motos
+      FROM microwork.captacao_motos
       WHERE CAST(SUBSTRING_INDEX(TRIM(vendedor), ' ', 1) AS UNSIGNED) = ?
     `, [idLogado]);
 
@@ -532,7 +549,7 @@ app.get('/resumomotos', async (req, res) => {
 
     const [vendedorResult] = await connection.promise().query(`
       SELECT vendedor
-      FROM mk_vendas_motos
+      FROM microwork.vendas_motos
       WHERE id_microwork = ?
       LIMIT 1
     `, [idLogado]);
@@ -543,7 +560,7 @@ app.get('/resumomotos', async (req, res) => {
     if (nomeVendedor) {
       const [contagemContratos] = await connection.promise().query(`
         SELECT COUNT(*) AS totalContratos
-        FROM contratos_motos
+        FROM microwork.contratos_motos
         WHERE vendedor = ?
       `, [nomeVendedor]);
 
@@ -581,7 +598,7 @@ app.get('/nps', async (req, res) => {
   }
 
   try {
-    const [dadosNPS] = await connection.promise().query('SELECT * FROM nps ORDER BY id DESC');
+    const [dadosNPS] = await connection.promise().query('SELECT * FROM nps');
 
     res.render('nps', {
       usuario: usuarioLogado,
@@ -594,25 +611,6 @@ app.get('/nps', async (req, res) => {
     res.status(500).send('Erro interno ao buscar dados do NPS.');
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // CHAMADO PARA A PAGINA DE CALCULO DE MOTOS
 app.get('/motos', (req, res) => {
@@ -717,7 +715,7 @@ app.post('/venda_moto', (req, res) => {
 app.get('/api/motos/modelos-motos-disponiveis', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(`
-    SELECT DISTINCT modelo FROM estoque_motos
+    SELECT DISTINCT modelo FROM microwork.estoque_motos
     ORDER BY modelo ASC`);
 
     const modelos = rows.map(row => row.modelo);
@@ -739,7 +737,7 @@ app.get('/api/motos/chassis-por-modelo', async (req, res) => {
 
   try {
     const [rows] = await connection.promise().query(
-      `SELECT DISTINCT chassi, cor, patio, ano, dias_estoque FROM estoque_motos 
+      `SELECT DISTINCT chassi, cor, patio, ano, dias_estoque FROM microwork.estoque_motos 
       WHERE situacao_reserva IS NULL AND modelo LIKE ?`,
       [`%${modeloSelecionado.trim()}%`]
     );
@@ -762,7 +760,7 @@ app.get('/api/motos/detalhes-chassi', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(
       `SELECT custo_contabil, chassi 
-       FROM estoque_motos 
+       FROM microwork.estoque_motos 
        WHERE chassi = ? LIMIT 1`,
       [chassi]
     );
@@ -823,7 +821,7 @@ app.post('/venda_motor', (req, res) => {
 app.get('/api/nautica/modelos-motores-disponiveis', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(`
-      SELECT DISTINCT modelo FROM estoque_motores
+      SELECT DISTINCT modelo FROM microwork.estoque_motores
       WHERE situacao IN ('loja', 'em demonstração', 'trânsito') AND modelo IS NOT NULL
       ORDER BY modelo ASC
     `);
@@ -851,7 +849,7 @@ app.get('/api/nautica/chassis-por-modelo', async (req, res) => {
 
   try {
     const [rows] = await connection.promise().query(
-      `SELECT DISTINCT chassi, cor, patio, dias_estoque FROM estoque_motores 
+      `SELECT DISTINCT chassi, cor, patio, dias_estoque FROM microwork.estoque_motores 
       WHERE situacao IN ('loja', 'em demonstração', 'trânsito') AND modelo LIKE ?`,
       [`%${termo}%`]
     );
@@ -874,7 +872,7 @@ app.get('/api/nautica/detalhes-chassi', async (req, res) => {
   try {
     const [rows] = await connection.promise().query(
       `SELECT custo_contabil, icms_compra, chassi 
-       FROM estoque_motores 
+       FROM microwork.estoque_motores 
        WHERE chassi = ? LIMIT 1`,
       [chassi]
     );
