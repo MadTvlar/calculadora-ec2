@@ -17,7 +17,7 @@ const taxas = require('./services/taxa');
 const emplacamento = require('./services/emplacamento');
 const app = express();
 const PORT = 8080;
-require('./scheduler');
+//require('./scheduler');
 
 // MIDDLEWARES
 app.use(express.json());

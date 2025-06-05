@@ -26,11 +26,11 @@ async function executarAtualizacao() {
 
   try {
 
-    //await fetchEstoqueMotores(pool);
-    //await delay(2000);
+    await fetchEstoqueMotores(pool);
+    await delay(2000);
 
-    //await fetchEstoqueMotos(pool);
-    //await delay(2000);
+    await fetchEstoqueMotos(pool);
+    await delay(2000);
 
     await fetchMkVendasMotos(pool);
     await delay(2000);
@@ -65,6 +65,6 @@ cron.schedule('0 12 * * *', executarAtualizacao);  // 12:00
 cron.schedule('0 16 * * *', executarAtualizacao);  // 16:00
 
 // Execução inicial
-//executarAtualizacao();
+executarAtualizacao();
 
 console.log('Tarefas agendadas e execução inicial realizada.');
