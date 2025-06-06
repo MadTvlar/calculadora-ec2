@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   calculadora:
+    image: calculadora-ec2:latest  # ⬅️ Nome fixo da imagem
     build: .
     ports:
       - "8080:8080"

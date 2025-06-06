@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+NOW=$(date '+%Y-%m-%d %H:%M:%S')
+echo "⏰ $NOW - Iniciando deploy..."
+
 echo "🔁 Atualizando repositório..."
 git pull origin main
 
@@ -10,8 +13,11 @@ DOCKER_BUILDKIT=1 timeout 300 docker-compose build || {
   exit 1
 }
 
+echo "🧹 Removendo containers antigos..."
+docker-compose down --remove-orphans
+
 echo "🧪 Subindo novo container em teste..."
-docker-compose up -d
+docker-compose up -d --build --force-recreate
 
 echo "⏳ Aguardando healthcheck..."
 sleep 10
