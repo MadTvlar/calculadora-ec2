@@ -151,34 +151,35 @@ async function atualizarRankings(pool) {
 
   const [rankRetorno] = await pool.promise().query(`
   SELECT 
-    NULL AS id_microwork,
-    TRIM(
+  NULL AS id_microwork,
+  TRIM(
+    REGEXP_REPLACE(
       REGEXP_REPLACE(
-        REGEXP_REPLACE(
-          TRIM(vendedor),
-          '^[0-9. ]+',
-          ''
-        ),
-        ' [0-9.-]+$',
+        TRIM(vendedor),
+        '^[0-9. ]+',
         ''
-      )
-    ) AS vendedor,
-    COUNT(*) AS quantidadeRetorno
-  FROM microwork.vendas_motos
-  WHERE retorno_porcent >= 2
-  GROUP BY 
-    TRIM(
-      REGEXP_REPLACE(
-        REGEXP_REPLACE(
-          TRIM(vendedor),
-          '^[0-9. ]+',
-          ''
-        ),
-        ' [0-9.-]+$',
-        ''
-      )
+      ),
+      ' [0-9.-]+$',
+      ''
     )
-  ORDER BY quantidadeRetorno DESC;
+  ) AS vendedor,
+  COUNT(*) - 
+    SUM(CASE WHEN quantidade = -1 THEN 2 ELSE 0 END) AS quantidadeRetorno
+FROM microwork.vendas_motos
+WHERE retorno_porcent >= 2
+GROUP BY 
+  TRIM(
+    REGEXP_REPLACE(
+      REGEXP_REPLACE(
+        TRIM(vendedor),
+        '^[0-9. ]+',
+        ''
+      ),
+      ' [0-9.-]+$',
+      ''
+    )
+  )
+ORDER BY quantidadeRetorno DESC;
 `);
 
   const [retornoDetalhado] = await pool.promise().query(`
@@ -189,9 +190,27 @@ async function atualizarRankings(pool) {
         ' [0-9.-]+$', ''
       )
     ) AS vendedor,
-    SUM(CASE WHEN retorno_porcent >= 2 AND retorno_porcent < 4 THEN 1 ELSE 0 END) AS r2,
-    SUM(CASE WHEN retorno_porcent >= 4 THEN 1 ELSE 0 END) AS r4
+
+    -- R2: entre 2 e < 4
+    SUM(
+      CASE 
+        WHEN retorno_porcent >= 2 AND retorno_porcent < 4 THEN 
+          CASE WHEN quantidade = -1 THEN -1 ELSE 1 END
+        ELSE 0
+      END
+    ) AS r2,
+
+    -- R4: 4 ou mais
+    SUM(
+      CASE 
+        WHEN retorno_porcent >= 4 THEN 
+          CASE WHEN quantidade = -1 THEN -1 ELSE 1 END
+        ELSE 0
+      END
+    ) AS r4
+
   FROM microwork.vendas_motos
+
   GROUP BY 
     TRIM(
       REGEXP_REPLACE(
