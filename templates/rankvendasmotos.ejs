@@ -70,16 +70,21 @@
         <% rankingGeral.forEach((v, i)=> { %>
           <tr>
             <td class="rank-item">
-              <% if (i===0) { %>
-                <i class="fas fa-crown gold"></i>
-                <% } else if (i===1) { %>
-                  <i class="fas fa-crown silver"></i>
-                  <% } else if (i===2) { %>
-                    <i class="fas fa-crown bronze"></i>
-                    <% } else { %>
-                      <%= i + 1 %>º
-                        <% } %>
+              <% if (v.val_pontos> 0) { %>
+                <% if (i===0) { %>
+                  <i class="fas fa-crown gold"></i>
+                  <% } else if (i===1) { %>
+                    <i class="fas fa-crown silver"></i>
+                    <% } else if (i===2) { %>
+                      <i class="fas fa-crown bronze"></i>
+                      <% } else { %>
+                        <%= i + 1 %>º
+                          <% } %>
+                            <% } else { %>
+                              -
+                              <% } %>
             </td>
+
             <td>
               <%= v.vendedor %>
             </td>
