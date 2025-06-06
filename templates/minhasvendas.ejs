@@ -59,19 +59,22 @@
 
         <div class="card-total">
           <h4>COMISSÃO</h4>
-          <p>R$ <%= (comissao * 0.085).toFixed(2) %>
+          <p>
+            <%= (comissao * 0.085).toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' }) %>
           </p>
         </div>
 
         <div class="card-total">
           <h4>PROFISSIONAIS DO ANO</h4>
-          <p>R$ <%= pontos %>
+          <p>
+            <%= pontos.toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' }) %>
           </p>
         </div>
 
-        <div class="card-total" style="background-color: green;">
+        <div class="card-verde">
           <h4>TOTAL PREVISTO</h4>
-          <p>R$ <%= (comissao * 0.085).toFixed(2) + pontos %>
+          <p>
+            <%= (comissao * 0.085 + pontos).toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' })%>
           </p>
         </div>
 

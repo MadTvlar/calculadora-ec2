@@ -272,6 +272,7 @@ pool.getConnection((err, connection) => {
 
   const createRankingPontos = `
   CREATE TABLE IF NOT EXISTS ranking_pontos (
+    filial VARCHAR(5),
     id_microwork INT NULL,
     vendedor VARCHAR(255) NULL,
     pontos INT NULL,

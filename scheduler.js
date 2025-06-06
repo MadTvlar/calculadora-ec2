@@ -1,8 +1,6 @@
 require('dotenv').config();
 
-const cron = require('node-cron');
 const pool = require('./services/db');
-
 
 // Módulos opcionais (comente/descomente conforme necessário)
 const atualizarRankings = require('./routes/rankingGeralMotos');
@@ -18,7 +16,6 @@ const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
 
 // Função principal de atualização
 async function executarAtualizacao() {
@@ -58,11 +55,6 @@ async function executarAtualizacao() {
     console.error('Erro na atualização:', err);
   }
 }
-
-// Agendar tarefas para horários específicos
-cron.schedule('0 8 * * *', executarAtualizacao);   // 08:00
-cron.schedule('0 12 * * *', executarAtualizacao);  // 12:00
-cron.schedule('0 16 * * *', executarAtualizacao);  // 16:00
 
 // Execução inicial
 executarAtualizacao();

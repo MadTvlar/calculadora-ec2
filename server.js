@@ -87,7 +87,7 @@ app.post('/login', async (req, res) => {
   if (login === 'admin' && password === 'admin!@#') {
     res.cookie('usuario_logado', 'Administrador');
     res.cookie('grupo_logado', 'admin');
-    res.cookie('id_logado', '51014');
+    res.cookie('id_logado', '70057');
     return res.redirect('/segmentos');
   }
 
@@ -315,7 +315,6 @@ app.get('/minhasvendas', (req, res) => {
     });
 });
 
-
 // CHAMADO PARA O MEU RANK DE MOTOS POR PONTO
 app.get('/rankmotos', async (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
@@ -334,6 +333,14 @@ app.get('/rankmotos', async (req, res) => {
       FROM ranking_pontos
       ORDER BY pontos DESC
     `);
+
+    // Aqui tratamos o nome
+    rankingGeral.forEach(item => {
+      const nomes = item.vendedor.split(' ');
+      if (nomes.length > 1) {
+        item.vendedor = `${nomes[0]} ${nomes[nomes.length - 1]}`;
+      }
+    });
 
     const [ultimaAtualizacaoRows] = await connection.promise().query(`
       SELECT MAX(atualizado_em) AS ultimaAtualizacao FROM ranking_pontos
