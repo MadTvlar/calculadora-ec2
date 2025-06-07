@@ -354,30 +354,55 @@ html {
 
 .coin {
   position: absolute;
-  font-size: 24px;
-  animation: fall 4.5s forwards ease-in;
+  font-size: 30px;
+  animation: rise 4.5s forwards ease-in;
   opacity: 0.9;
   pointer-events: none;
   user-select: none;
-  filter: drop-shadow(0 0 2px gold);
   z-index: 1000;
   display: block;
-  /* sempre exibida, controla a aparição via JS */
+  bottom: -40px;
+  /* COMEÇA DEBAIXO DO CARD */
 }
+
 
 .card-verde:hover .coin {
   display: block;
 }
 
 
-@keyframes fall {
+@keyframes rise {
   0% {
     transform: translateY(0) scale(1);
     opacity: 0.9;
   }
 
   100% {
-    transform: translateY(450px) scale(0.5);
+    transform: translateY(-500px) scale(0.5);
+    /* atravessa o card e sobe */
     opacity: 0;
   }
+}
+
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-10px);
+  }
+
+  60% {
+    transform: translateY(5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.card-bounce {
+  animation: bounce 0.8s ease;
 }

@@ -181,31 +181,47 @@
       function createCoin() {
         const coin = document.createElement('div');
         coin.classList.add('coin');
-        coin.textContent = '💰';
 
-        // Posiciona coin aleatório dentro do card horizontalmente
-        coin.style.left = Math.random() * (card.clientWidth - 24) + 'px';
-        coin.style.top = '0px';
+        const symbols = ['💸'];
+        const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+        coin.textContent = randomSymbol;
+
+        const cardWidth = card.clientWidth;
+        const left = Math.random() * (cardWidth - 24);
+
+
+        coin.style.left = `${left}px`;
+        coin.style.bottom = '-20px';
         card.appendChild(coin);
 
-        // Remove o coin após a animação terminar
         coin.addEventListener('animationend', () => {
           coin.remove();
         });
       }
+
+
 
       function step() {
         start += increment;
         if (start >= finalValue) {
           element.textContent = formatter.format(finalValue);
 
-          // Cria moedas caindo em sequência
-          let coinsToDrop = 40;
-          let interval = setInterval(() => {
-            createCoin();
-            coinsToDrop--;
-            if (coinsToDrop <= 0) clearInterval(interval);
-          }, 50);
+          // Aplica a animação de pulo no card
+          card.classList.add('card-bounce');
+
+          // Remove a classe após a animação para poder reutilizar depois
+          card.addEventListener('animationend', () => {
+            card.classList.remove('card-bounce');
+
+            // Só começa a cair moedas depois do pulo
+            let coinsToDrop = 40;
+            let interval = setInterval(() => {
+              createCoin();
+              coinsToDrop--;
+              if (coinsToDrop <= 0) clearInterval(interval);
+            }, 50);
+          }, { once: true });
+
 
         } else {
           element.textContent = formatter.format(start);
