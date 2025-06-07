@@ -71,12 +71,11 @@
           </p>
         </div>
 
-        <div class="card-verde">
+        <div class="card-verde" id="total-previsto-card">
           <h4>TOTAL PREVISTO</h4>
-          <p>
-            <%= (comissao * 0.085 + pontos).toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' })%>
-          </p>
+          <p id="total-previsto-value">R$ 0,00</p>
         </div>
+
 
   </div>
 
@@ -167,6 +166,62 @@
       }
     };
   </script>
+
+  <script>
+    function animateCountUp(elementId, finalValue, duration = 2500) {
+      const element = document.getElementById(elementId);
+      const card = document.getElementById('total-previsto-card');
+      let start = 0;
+      const increment = finalValue / (duration / 16);
+      const formatter = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+
+      function createCoin() {
+        const coin = document.createElement('div');
+        coin.classList.add('coin');
+        coin.textContent = '💰';
+
+        // Posiciona coin aleatório dentro do card horizontalmente
+        coin.style.left = Math.random() * (card.clientWidth - 24) + 'px';
+        coin.style.top = '0px';
+        card.appendChild(coin);
+
+        // Remove o coin após a animação terminar
+        coin.addEventListener('animationend', () => {
+          coin.remove();
+        });
+      }
+
+      function step() {
+        start += increment;
+        if (start >= finalValue) {
+          element.textContent = formatter.format(finalValue);
+
+          // Cria moedas caindo em sequência
+          let coinsToDrop = 40;
+          let interval = setInterval(() => {
+            createCoin();
+            coinsToDrop--;
+            if (coinsToDrop <= 0) clearInterval(interval);
+          }, 50);
+
+        } else {
+          element.textContent = formatter.format(start);
+          requestAnimationFrame(step);
+        }
+      }
+
+      step();
+    }
+
+    const totalPrevisto = parseFloat("<%= (comissao * 0.085 + pontos).toFixed(2) %>");
+    animateCountUp('total-previsto-value', totalPrevisto);
+  </script>
+
+
+
 </body>
 
 </html>

@@ -300,8 +300,7 @@ html {
   color: #fff;
 }
 
-.card-total:hover h4,
-.card-verde:hover h4 {
+.card-total:hover h4 {
   margin: 0;
   font-size: 1.1rem;
   font-weight: bold;
@@ -319,6 +318,8 @@ html {
   min-width: 200px;
   text-align: center;
   transition: transform 0.2s ease;
+  position: relative;
+  overflow: visible;
 }
 
 .card-verde:hover {
@@ -329,9 +330,16 @@ html {
 
 .card-verde h4 {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: normal;
+  font-size: 1.2rem;
+  font-weight: bold;
   color: #272424;
+}
+
+.card-verde:hover h4 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #000;
 }
 
 
@@ -341,4 +349,35 @@ html {
 .footer {
   outline: none !important;
   caret-color: transparent;
+}
+
+
+.coin {
+  position: absolute;
+  font-size: 24px;
+  animation: fall 4.5s forwards ease-in;
+  opacity: 0.9;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 2px gold);
+  z-index: 1000;
+  display: block;
+  /* sempre exibida, controla a aparição via JS */
+}
+
+.card-verde:hover .coin {
+  display: block;
+}
+
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(450px) scale(0.5);
+    opacity: 0;
+  }
 }

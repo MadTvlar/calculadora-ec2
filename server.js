@@ -353,12 +353,14 @@ app.get('/rankmotos', async (req, res) => {
       'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
     ];
     const mesAtual = meses[new Date().getMonth()];
+    const anoAtual = new Date().getFullYear();
 
     res.render('rankvendasmotos', {
       usuario: usuarioLogado,
       rankingGeral,
       ultimaAtualizacao,
-      mesAtual
+      mesAtual,
+      anoAtual
     });
 
   } catch (error) {
