@@ -463,12 +463,16 @@ app.get('/resumomotos', async (req, res) => {
     const [rankRetorno] = await connection.promise().query(`
       SELECT 
       TRIM(vendedor) AS vendedor,
-      COUNT(*) AS quantidadeRetorno
+      SUM(CASE 
+      WHEN quantidade = -1 THEN -1
+      ELSE 1
+      END) AS quantidadeRetorno
       FROM microwork.vendas_motos
       WHERE retorno_porcent >= 2
       GROUP BY vendedor
       ORDER BY quantidadeRetorno DESC;
-    `);
+`);
+
 
     const [rankNPS] = await connection.promise().query(`
       SELECT 
