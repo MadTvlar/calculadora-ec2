@@ -397,6 +397,8 @@ app.get('/resumomotos', async (req, res) => {
       22062, // MOTO AMIL EIRELLI-ME
       78420, // 60.618.200 SHIRLENE PINHO DE SOUZA
       46429, // FRANSUILDO DOS SANTOS SILVA
+      63736, // LUCIANO LINQUEO LESSE DOS SANTOS
+      78300, // 51.223.800 EDNALDO PEREIRA DO VALE
     ]);
 
     // Coleta os nomes dos representantes para filtro por nome
@@ -435,7 +437,7 @@ app.get('/resumomotos', async (req, res) => {
     const [rankLLO] = await connection.promise().query(`
       SELECT 
       vendedor,
-      ROUND(SUM(lucro_ope) / SUM(valor_venda) * 100, 2) AS percentual_lucro
+      ROUND(SUM(lucro_ope) / SUM(valor_venda_real) * 100, 2) AS percentual_lucro
       FROM microwork.vendas_motos
       GROUP BY vendedor
       ORDER BY percentual_lucro DESC;
