@@ -242,6 +242,8 @@ pool.getConnection((err, connection) => {
   const createRankingGeral = `
     CREATE TABLE IF NOT EXISTS ranking_geral (
       tipo VARCHAR(20),
+      filial VARCHAR(5),
+      id_microwork INT,
       vendedor VARCHAR(255),
       valor DECIMAL(10,2),
       posicao INT,

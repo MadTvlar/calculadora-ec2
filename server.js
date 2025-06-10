@@ -322,6 +322,7 @@ app.get('/rankmotos', async (req, res) => {
   try {
     const [rankingGeral] = await connection.promise().query(`
       SELECT 
+        filial,
         vendedor,
         pontos AS val_pontos,
         vendas AS val_vendas,

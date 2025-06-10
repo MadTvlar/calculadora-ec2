@@ -1,7 +1,7 @@
 const fetchrankingPontosMotos = async (connection) => {
   const referente_mes = new Date().toISOString().slice(0, 7); // "YYYY-MM"
 
-  console.log('\nLimpando a tabela de ranking_pontos')
+  console.log('\nLimpando a tabela de ranking_pontos');
   await connection.promise().query('TRUNCATE TABLE ranking_pontos');
 
   const [rankingGeral] = await connection.promise().query(`
@@ -29,7 +29,6 @@ const fetchrankingPontosMotos = async (connection) => {
     GROUP BY vendedor_normalizado
   `);
 
-
   for (const vendedor of rankingGeral) {
     const vendas = vendedor.val_vendas || 0;
     const llo = vendedor.val_lucro || 0;
@@ -40,6 +39,7 @@ const fetchrankingPontosMotos = async (connection) => {
     const r4 = vendedor.val_r4 || 0;
     const nps = vendedor.nota_oficial || 0;
 
+    // cálculo dos pontos conforme regras existentes
     let pontosPorVenda = 0;
     if (vendas >= 7 && vendas <= 9) pontosPorVenda = 50;
     else if (vendas >= 10 && vendas <= 14) pontosPorVenda = 60;
@@ -90,29 +90,33 @@ const fetchrankingPontosMotos = async (connection) => {
       (contrato * pontosPorContrato) +
       pontosPorRetorno + pontosPorNPS;
 
+    // Busca id_microwork e filial via vendedor
     const [[usuario]] = await connection.promise().query(`
-  SELECT id_microwork AS id_microwork 
-  FROM microwork.vendas_motos 
-  WHERE vendedor = ?
-  LIMIT 1
-`, [vendedor.vendedor]);
+      SELECT id_microwork, filial 
+      FROM tropa_azul.ranking_geral 
+      WHERE vendedor = ?
+      LIMIT 1
+    `, [vendedor.vendedor]);
 
     const idMicrowork = usuario ? usuario.id_microwork : null;
+    const filial = usuario ? usuario.filial : null;
 
     await connection.promise().query(`
-  INSERT INTO ranking_pontos 
-    (id_microwork, vendedor, pontos, vendas, llo, captacao, contrato, retorno, NPS, referente_mes)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  ON DUPLICATE KEY UPDATE
-    pontos = VALUES(pontos),
-    vendas = VALUES(vendas),
-    llo = VALUES(llo),
-    captacao = VALUES(captacao),
-    contrato = VALUES(contrato),
-    retorno = VALUES(retorno),
-    NPS = VALUES(NPS),
-    atualizado_em = CURRENT_TIMESTAMP
-`, [
+      INSERT INTO ranking_pontos 
+        (filial, id_microwork, vendedor, pontos, vendas, llo, captacao, contrato, retorno, NPS, referente_mes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        filial = VALUES(filial),
+        pontos = VALUES(pontos),
+        vendas = VALUES(vendas),
+        llo = VALUES(llo),
+        captacao = VALUES(captacao),
+        contrato = VALUES(contrato),
+        retorno = VALUES(retorno),
+        NPS = VALUES(NPS),
+        atualizado_em = CURRENT_TIMESTAMP
+    `, [
+      filial,
       idMicrowork,
       vendedor.vendedor,
       pontosTotais,
@@ -124,9 +128,9 @@ const fetchrankingPontosMotos = async (connection) => {
       nps,
       referente_mes
     ]);
+  }
 
-  };
-  console.log('Tabela de ranking_pontos, atualizado!')
-}
+  console.log('Tabela de ranking_pontos, atualizado!');
+};
 
 module.exports = fetchrankingPontosMotos;
