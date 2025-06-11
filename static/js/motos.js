@@ -96,10 +96,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       labelChassi.textContent = `CHASSI (${chassis.length})`;
 
       chassis.forEach(chassi => {
-
         const option = document.createElement('option');
-        // Combinando chassi, cor, pátio e dias_estoque para exibir
-        const textoExibido = `${chassi.chassi || 'N/A'} - ${chassi.cor || 'N/A'} - ${chassi.patio || 'N/A'} - ${chassi.ano || 'N/A'} - ${chassi.dias_estoque || 'N/A'} dias`;
+
+        // Define o status da reserva com emoji
+        const reservaStatus = chassi.status_reserva === 'RESERVADO' ? '🔒 RESERVADO' : '✔️ DISPONÍVEL';
+
+        // Combinando chassi, cor, pátio, ano, dias_estoque e status_reserva
+        const textoExibido = `${chassi.patio || 'N/A'} - ${chassi.chassi || 'N/A'} - ${chassi.cor || 'N/A'} - 
+        ${chassi.ano || 'N/A'} - ${chassi.dias_estoque || 'N/A'} dias - ${reservaStatus}`;
 
         option.value = chassi.chassi; // valor do chassi
         option.textContent = textoExibido; // texto exibido no select
@@ -524,7 +528,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
 
         const margemPercentual = margemLiquida / entradaReal * 100;
-        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(84)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+        document.getElementById('resultado_porcentual').innerText = `LLO: ${'.'.repeat(109)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
         console.log('valor margem percentual', margemPercentual);
 
@@ -583,13 +587,13 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
       if (formaPagamento != 'Financiado') {
 
         const margemPercentual = margemLiquida / entradaReal * 100;
-        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(84)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+        document.getElementById('resultado_porcentual').innerText = `LLO: ${'.'.repeat(109)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
         console.log('valor margem percentual', margemPercentual);
       } else {
 
         const margemPercentual = margemLiquida / valorVendaReal * 100;
-        document.getElementById('resultado_porcentual').innerText = `Lucro Operacional: ${'.'.repeat(84)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+        document.getElementById('resultado_porcentual').innerText = `LLO: ${'.'.repeat(109)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
         console.log('valor margem percentual', margemPercentual);
       }

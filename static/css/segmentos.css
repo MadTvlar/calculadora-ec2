@@ -74,6 +74,18 @@ body {
   }
 }
 
+@keyframes fadeInForm {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .card {
   background-color: #e0e0e0;
   width: 220px;
@@ -85,8 +97,15 @@ body {
   justify-content: center;
   align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInForm 0.8s ease-out;
+  /* Removido 'forwards' */
   padding: 20px;
   cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 
 .card img {
@@ -95,11 +114,6 @@ body {
   border-radius: 8px;
   margin-bottom: 15px;
   object-fit: contain;
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 
 .footer {
@@ -111,6 +125,7 @@ body {
   padding: 16px;
   font-size: 1rem;
   text-align: center;
+  animation: surgindo 2.5s ease-out forwards;
 }
 
 .footer-text {
@@ -187,4 +202,10 @@ body {
 
 .show {
   display: block;
+}
+
+.top-container,
+.footer {
+  outline: none !important;
+  caret-color: transparent;
 }

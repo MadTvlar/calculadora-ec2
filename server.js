@@ -221,7 +221,6 @@ app.get('/reservasmotos', async (req, res) => {
   }
 });
 
-
 // CHAMADO PARA O BOTÃO DE ADICIONAR USUÁRIO
 app.post('/usuarios/adicionar', async (req, res) => {
   console.log(req.body);
@@ -723,7 +722,7 @@ app.post('/venda_moto', (req, res) => {
       console.error('Erro ao inserir dados: ', err);
       return res.status(500).send('Erro ao registrar a venda');
     }
-    res.send('Venda registrada com sucesso!');
+    res.send('Simulação Realizada com Sucesso!');
   });
 });
 
@@ -753,17 +752,29 @@ app.get('/api/motos/chassis-por-modelo', async (req, res) => {
 
   try {
     const [rows] = await connection.promise().query(
-      `SELECT DISTINCT chassi, cor, patio, ano, dias_estoque FROM microwork.estoque_motos 
-      WHERE situacao_reserva IS NULL AND modelo LIKE ?`,
+      `SELECT DISTINCT 
+          chassi, 
+          cor, 
+          patio, 
+          ano, 
+          dias_estoque,
+          CASE 
+            WHEN situacao_reserva = 'Ativa' THEN 'RESERVADO'
+            ELSE ''
+          END AS status_reserva
+       FROM microwork.estoque_motos 
+       WHERE modelo LIKE ?
+       ORDER BY patio DESC`,
       [`%${modeloSelecionado.trim()}%`]
     );
 
-    res.json(rows);  // Envia os dados completos para o front-end
+    res.json(rows);  // Envia os dados com status_reserva para o front-end
   } catch (err) {
     console.error('Erro ao buscar chassis:', err);
     res.status(500).json({ error: 'Erro ao buscar chassis' });
   }
 });
+
 
 // CHAMADO PARA ADICIONAR NO CALCULO O CUSTO CONTABIL E O CHASSI
 app.get('/api/motos/detalhes-chassi', async (req, res) => {
