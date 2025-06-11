@@ -382,7 +382,7 @@ app.get('/resumomotos', async (req, res) => {
 
     // IDs dos representantes a serem excluídos
     const representante = new Set([
-      7808,  // 53.562.394 HUDSON SANTOS DE LIMA
+      78080,  // 53.562.394 HUDSON SANTOS DE LIMA
       63703, // 53.338.753 KEDMA NASCIMENTO MORAES
       55641, // JANDERSON MOCAMBIQUE DE SOUZA
       69987, // 47.551.394 JULIANA DA COSTA BEZERRA 
