@@ -331,7 +331,7 @@ app.get('/rankmotos', async (req, res) => {
         retorno AS val_retorno,
         nps AS nota_oficial
       FROM ranking_pontos
-      ORDER BY pontos DESC
+      ORDER BY pontos DESC, vendas DESC, llo DESC
     `);
 
     // Aqui tratamos o nome
