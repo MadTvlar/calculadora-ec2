@@ -190,20 +190,36 @@ body {
   }
 }
 
-/* Card */
+/* Card com efeito 3D */
 .card {
-  background-color: #ffffff;
-  border: 2px solid #0002c6;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  padding: 10px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: linear-gradient(145deg, #f0f8ff, #ffffff);
+  border: none;
+  border-radius: 20px;
+  box-shadow: 20px 20px 60px #d9d9d9,
+    -20px -20px 60px #ffffff;
+  width: 95%;
+  max-width: 1300px;
+  padding: 20px;
+  margin-top: 10%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   height: auto;
-  flex-grow: 0;
+  min-height: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
   animation: surgirDeBaixo 1s ease forwards;
   opacity: 0;
+  perspective: 2000px;
+  transform-style: preserve-3d;
+}
+
+.card:hover {
+  transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
+  box-shadow: 25px 25px 75px #d9d9d9,
+    -25px -25px 75px #ffffff;
 }
 
 .card h2 {
@@ -225,63 +241,46 @@ body {
   font-weight: bold;
 }
 
-.card:hover {
-  transform: translateY(-15px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+/* Rank Title dentro do card */
+.rank-title {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(0, 2, 198, 0.1);
+  text-align: center;
 }
 
-
-/* Rank */
-.rank-title {
-  margin-top: 6%;
-  margin-bottom: 60px;
-  animation: surgirDeBaixo 2s ease forwards;
-  opacity: 0;
+.rank-title h2 {
+  color: #0002c6;
+  font-size: clamp(18px, 4vw, 24px);
+  margin: 0;
+  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .data-atualizacao {
-  font-size: 14px;
-  color: #000000;
-  margin-top: -10px;
-  margin-bottom: 20px;
+  font-size: clamp(12px, 2vw, 14px);
+  color: #666;
+  margin-top: 8px;
+  font-style: italic;
 }
-
-
-.rank-title h2 {
-  padding: 10px 20px;
-  color: #0002c6;
-  font-size: 2.5rem;
-  font-weight: 900;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(to right, #0002c6, #3b3bff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-  letter-spacing: 1px;
-  animation: aparecerTitulo 1.8s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes aparecerTitulo {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 
 /* Remover grid da célula com posição */
 .rank-item {
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: 1.1rem;
-  font-weight: bold;
+  justify-content: center;
+  gap: 5px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+}
+
+.rank-item i {
+  font-size: 1.2em;
+  margin: 0;
+  text-align: center;
 }
 
 /* Ajustar estilo das coroas */
@@ -305,135 +304,384 @@ body {
 }
 
 
+/* Tabela com rolagem e efeitos 3D */
 .rank-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-.rank-table th,
-.rank-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  margin-top: 20px;
+  overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+  transform-style: preserve-3d;
 }
 
 .rank-table thead {
-  background-color: #f5f5f5;
-  font-weight: bold;
-  font-size: 1.2rem;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(145deg, #0002c6, #0004ff);
+  color: white;
+  z-index: 1;
+  transform: translateZ(20px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.rank-table tbody tr:nth-child(even) {
-  background-color: #fafafa;
-}
-
-/* Destaque pódio */
-.rank-table tbody tr:nth-child(1) {
-  background: linear-gradient(to right, #fff9cc, #ffd700);
-  /* ouro */
-  font-weight: bold;
-  color: #000;
-}
-
-.rank-table tbody tr:nth-child(2) {
-  background: linear-gradient(to right, #f2f2f2, #c0c0c0);
-  /* prata */
-  font-weight: bold;
-  color: #000;
-}
-
-.rank-table tbody tr:nth-child(3) {
-  background: linear-gradient(to right, #f5e2cc, #eba661);
-  /* bronze */
-  font-weight: bold;
-  color: #000;
-}
-
-
-/* Posições 1 a 5 - Verde (claro para escuro) */
-.rank-table tbody tr:nth-child(1),
-.rank-table tbody tr:nth-child(2),
-.rank-table tbody tr:nth-child(3),
-.rank-table tbody tr:nth-child(4),
-.rank-table tbody tr:nth-child(5) {
-  background: linear-gradient(to right, #ccffcc, #009933);
-  font-weight: bold;
-  color: #000;
-}
-
-/* Posições 6 a 10 - Amarelo (claro para escuro) */
-.rank-table tbody tr:nth-child(6),
-.rank-table tbody tr:nth-child(7),
-.rank-table tbody tr:nth-child(8),
-.rank-table tbody tr:nth-child(9),
-.rank-table tbody tr:nth-child(10) {
-  background: linear-gradient(to right, #ffffcc, #e6b800);
-  font-weight: bold;
-  color: #000;
-}
-
-
-
-/* Hover geral com transição */
-.rank-table tbody tr:hover {
-  background-color: #e6f0ff;
-  box-shadow: inset 0 0 0 1px #0002c6, 0 2px 8px rgba(0, 0, 0, 0.1);
-  transform: scale(1.01);
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-}
-
-/* Coroas com brilho sutil */
-.fa-crown.gold {
-  color: gold;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
-}
-
-.fa-crown.silver {
-  color: silver;
-  text-shadow: 0 0 6px rgba(192, 192, 192, 0.5);
-}
-
-.fa-crown.bronze {
-  color: #cd7f32;
-  text-shadow: 0 0 6px rgba(205, 127, 50, 0.5);
-}
-
-/* Células centrais mais suaves */
-.rank-table td,
 .rank-table th {
-  transition: background-color 0.3s, color 0.3s;
-}
-
-/* Cabeçalho com sombra sutil */
-.rank-table thead {
-  background-color: #f5f5f5;
+  padding: 15px;
+  text-align: center;
   font-weight: bold;
-  box-shadow: inset 0 -1px 0 #ddd;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
 }
 
-/* Animação de "respiração" para a coroa */
-@keyframes bounceCrown {
+.rank-table td {
+  padding: 8px 15px;
+  text-align: center;
+  border: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  vertical-align: middle;
+}
 
-  0%,
-  100% {
-    transform: translateY(0);
+/* Ajuste das larguras das colunas - Ajuste manualmente conforme necessário */
+.rank-table th:nth-child(1),
+.rank-table td:nth-child(1) {
+  width: 5%;
+  /* Posição - Ajuste entre 5% e 10% */
+}
+
+.rank-table th:nth-child(2),
+.rank-table td:nth-child(2) {
+  width: 12%;
+  /* Filial - Ajuste entre 10% e 15% */
+}
+
+.rank-table th:nth-child(3),
+.rank-table td:nth-child(3) {
+  width: 20%;
+  /* Vendedor - Ajuste entre 18% e 25% */
+}
+
+.rank-table th:nth-child(4),
+.rank-table td:nth-child(4) {
+  width: 10%;
+  /* Pontos - Ajuste entre 8% e 12% */
+}
+
+.rank-table th:nth-child(5),
+.rank-table td:nth-child(5) {
+  width: 10%;
+  /* Vendas - Ajuste entre 8% e 12% */
+}
+
+.rank-table th:nth-child(6),
+.rank-table td:nth-child(6) {
+  width: 10%;
+  /* LLO - Ajuste entre 8% e 12% */
+}
+
+.rank-table th:nth-child(7),
+.rank-table td:nth-child(7) {
+  width: 10%;
+  /* Captação - Ajuste entre 8% e 12% */
+}
+
+.rank-table th:nth-child(8),
+.rank-table td:nth-child(8) {
+  width: 10%;
+  /* Contratos - Ajuste entre 8% e 12% */
+}
+
+.rank-table th:nth-child(9),
+.rank-table td:nth-child(9) {
+  width: 10%;
+  /* Retorno - Ajuste entre 8% e 12% */
+}
+
+.rank-table th:nth-child(10),
+.rank-table td:nth-child(10) {
+  width: 10%;
+  /* NPS - Ajuste entre 8% e 12% */
+}
+
+/* Dica: A soma total das larguras deve ser 100% */
+
+/* Estilos para as posições */
+.rank-table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transform-style: preserve-3d;
+  transform: translateZ(0);
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.rank-table tbody tr:hover {
+  transform: translateZ(25px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+/* Removendo o efeito de brilho */
+.rank-table tbody tr:hover td {
+  text-shadow: none;
+}
+
+/* Scrollbar personalizado */
+.rank-table tbody::-webkit-scrollbar {
+  width: 10px;
+}
+
+.rank-table tbody::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+.rank-table tbody::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #0002c6, #0004ff);
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+
+.rank-table tbody::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #0004ff, #0002c6);
+}
+
+/* Animação de entrada para as linhas */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50px) translateZ(-50px);
   }
 
-  50% {
-    transform: translateY(-4px);
+  to {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
   }
 }
 
-/* Aplica o movimento apenas ao passar o mouse */
-.rank-table tbody tr:hover .fa-crown {
-  animation: bounceCrown 0.8s ease-in-out infinite;
+.rank-table tbody tr {
+  animation: slideIn 0.5s ease forwards;
+  animation-delay: calc(0.5s + var(--row-index) * 0.2s);
+  opacity: 0;
+}
+
+/* Ajuste para números - mantendo centralizado */
+.rank-table td:nth-child(4),
+.rank-table td:nth-child(5),
+.rank-table td:nth-child(6),
+.rank-table td:nth-child(7),
+.rank-table td:nth-child(8),
+.rank-table td:nth-child(9),
+.rank-table td:nth-child(10) {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: bold;
+  text-align: center;
+  padding-right: 15px;
+}
+
+/* Ajuste para texto - mantendo centralizado */
+.rank-table td:nth-child(1) {
+  text-align: center;
+  padding-left: 45px !important;
+  width: 5%;
+}
+
+.rank-table td:nth-child(2),
+.rank-table td:nth-child(3) {
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Container da tabela para garantir alinhamento */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 0 2px;
 }
 
 .rank-table,
 .rank-title {
   outline: none !important;
   caret-color: transparent;
+}
+
+/* Media Queries para Responsividade */
+@media screen and (max-width: 1200px) {
+  .card {
+    width: 90%;
+    padding: 15px;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .card {
+    width: 95%;
+    padding: 10px;
+  }
+
+  .rank-table th,
+  .rank-table td {
+    padding: 8px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .card {
+    width: 98%;
+    margin: 10px auto;
+    padding: 10px;
+  }
+
+  .rank-title h2 {
+    font-size: 20px;
+  }
+
+  .data-atualizacao {
+    font-size: 12px;
+  }
+
+  .rank-table th,
+  .rank-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .rank-table td:nth-child(4),
+  .rank-table td:nth-child(5),
+  .rank-table td:nth-child(6),
+  .rank-table td:nth-child(7),
+  .rank-table td:nth-child(8),
+  .rank-table td:nth-child(9),
+  .rank-table td:nth-child(10) {
+    padding-right: 15px;
+  }
+
+  .rank-table td:nth-child(1),
+  .rank-table td:nth-child(2),
+  .rank-table td:nth-child(3) {
+    padding-left: 15px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .card {
+    width: 100%;
+    margin: 5px auto;
+    border-radius: 15px;
+  }
+
+  .rank-title h2 {
+    font-size: 18px;
+  }
+
+  .data-atualizacao {
+    font-size: 11px;
+  }
+
+  .rank-table th,
+  .rank-table td {
+    padding: 4px;
+    font-size: 11px;
+  }
+
+  /* Ajuste adicional para telas muito pequenas */
+  .rank-table {
+    border-spacing: 0 4px;
+  }
+
+  .rank-table tbody tr {
+    margin: 5px 0;
+  }
+}
+
+/* Ajustes para telas muito pequenas */
+@media screen and (max-width: 400px) {
+  .card {
+    padding: 5px;
+  }
+
+  .rank-title {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+
+  .rank-table th,
+  .rank-table td {
+    padding: 3px;
+    font-size: 10px;
+  }
+}
+
+/* Ajustes para telas muito grandes */
+@media screen and (min-width: 1600px) {
+  .card {
+    max-width: 1500px;
+  }
+
+  .rank-title h2 {
+    font-size: 28px;
+  }
+
+  .data-atualizacao {
+    font-size: 16px;
+  }
+
+  .rank-table th,
+  .rank-table td {
+    font-size: 16px;
+    padding: 20px;
+  }
+}
+
+/* Primeiros 5 lugares - Tons de Azul */
+.rank-table tbody tr:nth-child(-n+5) {
+  background: linear-gradient(145deg, #1e90ff, #4169e1);
+  color: #000000;
+  font-weight: bold;
+  transform: translateZ(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.rank-table tbody tr:nth-child(-n+5):hover {
+  background: linear-gradient(145deg, #1e90ff, #4169e1);
+  transform: translateZ(25px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Lugares 6-10 - Tons de Amarelo */
+.rank-table tbody tr:nth-child(n+6):nth-child(-n+10) {
+  background: linear-gradient(145deg, #ffd700, #ffa500);
+  color: #000000;
+  font-weight: bold;
+  transform: translateZ(3px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.rank-table tbody tr:nth-child(n+6):nth-child(-n+10):hover {
+  background: linear-gradient(145deg, #ffd700, #ffa500);
+  transform: translateZ(25px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Lugares 11-15 - Tons de Laranja */
+.rank-table tbody tr:nth-child(n+11):nth-child(-n+15) {
+  background: linear-gradient(145deg, #ff8c00, #ff4500);
+  color: #000000;
+  font-weight: bold;
+  transform: translateZ(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.rank-table tbody tr:nth-child(n+11):nth-child(-n+15):hover {
+  background: linear-gradient(145deg, #ff8c00, #ff4500);
+  transform: translateZ(25px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }

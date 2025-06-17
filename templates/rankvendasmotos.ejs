@@ -33,94 +33,100 @@
     </div>
   </div>
 
-  <div class="rank-title">
-    <h2>
-      RANKING GERAL - <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
-        <%= anoAtual %>
-    </h2>
-    <p class="data-atualizacao">
-      Atualizado em:
-      <%= (()=> {
-        const d = new Date(ultimaAtualizacao);
-        const dia = String(d.getDate()).padStart(2, '0');
-        const mes = String(d.getMonth() + 1).padStart(2, '0');
-        const ano = d.getFullYear();
-        const hora = String(d.getHours()).padStart(2, '0');
-        const min = String(d.getMinutes()).padStart(2, '0');
-        return `${dia}/${mes}/${ano} às ${hora}h${min}`;
-        })() %>
-    </p>
-  </div>
-
   <div class="card">
-    <table class="rank-table">
-      <thead>
-        <tr>
-          <th>Posição</th>
-          <th>Filial</th>
-          <th>Vendedor</th>
-          <th>Pontos</th>
-          <th>Vendas</th>
-          <th>LLO (%)</th>
-          <th>Captação</th>
-          <th>Contratos</th>
-          <th>Retorno</th>
-          <th>NPS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% rankingGeral.forEach((v, i)=> { %>
+    <div class="rank-title">
+      <h2>
+        RANKING GERAL - <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
+          <%= anoAtual %>
+      </h2>
+      <p class="data-atualizacao">
+        Atualizado em:
+        <%= (()=> {
+          const d = new Date(ultimaAtualizacao);
+          const dia = String(d.getDate()).padStart(2, '0');
+          const mes = String(d.getMonth() + 1).padStart(2, '0');
+          const ano = d.getFullYear();
+          const hora = String(d.getHours()).padStart(2, '0');
+          const min = String(d.getMinutes()).padStart(2, '0');
+          return `${dia}/${mes}/${ano} às ${hora}h${min}`;
+          })() %>
+      </p>
+    </div>
+
+    <div class="table-container">
+      <table class="rank-table">
+        <thead>
           <tr>
-            <td class="rank-item">
-              <% if (v.val_pontos> 0) { %>
-                <% if (i===0) { %>
-                  <i class="fas fa-crown gold"></i>
-                  <% } else if (i===1) { %>
-                    <i class="fas fa-crown silver"></i>
-                    <% } else if (i===2) { %>
-                      <i class="fas fa-crown bronze"></i>
-                      <% } else { %>
-                        <%= i + 1 %>º
-                          <% } %>
-                            <% } else { %>
-                              -
-                              <% } %>
-            </td>
-            <td>
-              <%= v.filial %>
-            </td>
-            <td>
-              <%= v.vendedor %>
-            </td>
-            <td>
-              <%= v.val_pontos ? Math.floor(v.val_pontos) : '-' %>
-            </td>
-            <td>
-              <%= v.val_vendas ? Math.floor(v.val_vendas) : '-' %>
-            </td>
-            <td>
-              <%= v.val_lucro || '-' %>%
-            </td>
-            <td>
-              <%= v.val_captacao ? Math.floor(v.val_captacao) : '-' %>
-            </td>
-            <td>
-              <%= v.val_contratos ? Math.floor(v.val_contratos) : '-' %>
-            </td>
-            <td>
-              <%= v.val_retorno ? Math.floor(v.val_retorno) : '-' %>
-            </td>
-            <td>
-              <%= v.nota_oficial ? Math.floor(v.nota_oficial) : '-' %>
-            </td>
+            <th>Posição</th>
+            <th>Filial</th>
+            <th>Vendedor</th>
+            <th>Pontos</th>
+            <th>Vendas</th>
+            <th>LLO (%)</th>
+            <th>Captação</th>
+            <th>Contratos</th>
+            <th>Retorno</th>
+            <th>NPS</th>
           </tr>
-          <% }) %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% rankingGeral.forEach((v, i)=> { %>
+            <tr>
+              <td class="rank-item">
+                <% if (v.val_pontos> 0) { %>
+                  <% if (i===0) { %>
+                    <i class="fas fa-crown gold"></i>
+                    <% } else if (i===1) { %>
+                      <i class="fas fa-crown silver"></i>
+                      <% } else if (i===2) { %>
+                        <i class="fas fa-crown bronze"></i>
+                        <% } else { %>
+                          <%= i + 1 %>º
+                            <% } %>
+                              <% } else { %>
+                                -
+                                <% } %>
+              </td>
+              <td>
+                <%= v.filial %>
+              </td>
+              <td>
+                <%= v.vendedor %>
+              </td>
+              <td>
+                <%= v.val_pontos ? Math.floor(v.val_pontos) : '-' %>
+              </td>
+              <td>
+                <%= v.val_vendas ? Math.floor(v.val_vendas) : '-' %>
+              </td>
+              <td>
+                <%= v.val_lucro || '-' %>%
+              </td>
+              <td>
+                <%= v.val_captacao ? Math.floor(v.val_captacao) : '-' %>
+              </td>
+              <td>
+                <%= v.val_contratos ? Math.floor(v.val_contratos) : '-' %>
+              </td>
+              <td>
+                <%= v.val_retorno ? Math.floor(v.val_retorno) : '-' %>
+              </td>
+              <td>
+                <%= v.nota_oficial ? Math.floor(v.nota_oficial) : '-' %>
+              </td>
+            </tr>
+            <% }) %>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-
-
+  <script>
+    // Adiciona o índice para cada linha da tabela
+    document.querySelectorAll('.rank-table tbody tr').forEach((row, index) => {
+      row.style.setProperty('--row-index', index);
+    });
+  </script>
 
   <footer class="footer">
     <div class="footer-text">

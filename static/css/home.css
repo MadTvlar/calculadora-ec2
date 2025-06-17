@@ -81,7 +81,7 @@ body {
 }
 
 .logo-container {
-  max-width: 100%;
+  max-width: 80%;
   margin-bottom: 2rem;
   opacity: 0;
   animation: fadeInImage 1.5s ease-out forwards;

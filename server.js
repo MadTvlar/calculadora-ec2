@@ -84,13 +84,6 @@ app.get('/', (req, res) => {
 app.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
-  if (login === 'admin' && password === 'admin!@#') {
-    res.cookie('usuario_logado', 'Administrador');
-    res.cookie('grupo_logado', 'admin');
-    res.cookie('id_logado', '70057');
-    return res.redirect('/segmentos');
-  }
-
   try {
     const [rows] = await connection.promise().query('SELECT * FROM usuarios WHERE email = ?', [login]);
 
