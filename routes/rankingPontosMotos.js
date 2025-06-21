@@ -68,15 +68,15 @@ const fetchrankingPontosMotos = async (connection) => {
 
     let pontosPorRetorno = 0;
     if (retorno >= 3) {
-      if (r2 < 5) pontosPorRetorno = r2 * 30;
-      else if (r2 >= 5 && r2 < 8) pontosPorRetorno = r2 * 40;
-      else if (r2 >= 8 && r2 < 12) pontosPorRetorno = r2 * 50;
-      else if (r2 >= 12) pontosPorRetorno = r2 * 60;
+      if (retorno < 5) pontosPorRetorno = r2 * 30;
+      else if (retorno >= 5 && r2 < 8) pontosPorRetorno = r2 * 40;
+      else if (retorno >= 8 && r2 < 12) pontosPorRetorno = r2 * 50;
+      else if (retorno >= 12) pontosPorRetorno = r2 * 60;
 
-      if (r4 < 5) pontosPorRetorno += r4 * 50;
-      else if (r4 >= 5 && r4 < 8) pontosPorRetorno += r4 * 60;
-      else if (r4 >= 8 && r4 < 12) pontosPorRetorno += r4 * 70;
-      else if (r4 >= 12) pontosPorRetorno += r4 * 80;
+      if (retorno < 5) pontosPorRetorno += r4 * 50;
+      else if (retorno >= 5 && r4 < 8) pontosPorRetorno += r4 * 60;
+      else if (retorno >= 8 && r4 < 12) pontosPorRetorno += r4 * 70;
+      else if (retorno >= 12) pontosPorRetorno += r4 * 80;
     }
 
     let pontosPorNPS = 0;
