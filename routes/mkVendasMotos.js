@@ -20,7 +20,7 @@ async function fetchMkVendasMotos(pool) {
         Tipodemovimento=2,25,26,22,11,9,17,10,21,32;
         Municipio=null;
         Consorcio=null;
-        TipoVeiculo=null;
+        TipoVeiculo=4,3;
         Pontodevendadovendedor=null;
         FinanceiraLeasing=null;
         Origemdavenda=null;
@@ -38,11 +38,11 @@ async function fetchMkVendasMotos(pool) {
         ComExpedicao=True;
         SemExpedicao=True`;
 
-  const response = await axios.post('https://microworkcloud.com.br/api/integracao/terceiro', {
+  const response = await axios.post(process.env.API_URL_MICROWORK, {
     idrelatorioconfiguracao: 248,
     idrelatorioconsulta: 50,
     idrelatorioconfiguracaoleiaute: 248,
-    idrelatoriousuarioleiaute: 1097,
+    idrelatoriousuarioleiaute: 1120,
     ididioma: 1,
     listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13],
     filtros: filtros
@@ -61,66 +61,76 @@ async function fetchMkVendasMotos(pool) {
     const dataVendaFormatada = moto.datavenda ? moto.datavenda.substring(0, 10) : null;
 
     const [rows] = await pool.promise().query(
-      'SELECT quantidade FROM microwork.vendas_motos WHERE doc_fiscal = ?',
+      'SELECT empresa FROM microwork.vendas_motos WHERE doc_fiscal = ?',
       [moto.docfiscal]
     );
 
-    if (rows.length === 0 || rows[0].quantidade !== moto.quantidade) {
+    if (rows.length === 0 || rows[0].empresa !== moto.empresa) {
       const query = `
   INSERT INTO microwork.vendas_motos (
-    empresa, quantidade, data_venda, id_microwork, doc_fiscal, vendedor, modelo,
-    cor, chassi, ano, custo_contabil, dias_estoque, pedido,
-    tipo_venda, valor_venda, entrada_bonificada, valor_venda_real, despesa_ope, valor_financiado,
-    valor_retorno, retorno_porcent, lucro_ope, financiada
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    empresa, quantidade, financiada, banco, id_microwork, vendedor, 
+    cpf_cnpj, data_venda, pedido, doc_fiscal, modelo, cor, chassi, ano,
+    dias_estoque, tipo_venda, custo_contabil, valor_venda,
+    entrada_bonificada, valor_venda_real, valor_financiado,
+    valor_retorno, retorno_porcent, despesa_emplac, despesa_ope,
+    lucro_ope
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON DUPLICATE KEY UPDATE
           empresa = VALUES(empresa),
           quantidade = VALUES(quantidade),
-          data_venda = VALUES(data_venda),
+          financiada = VALUES(financiada),
+          banco = VALUES(banco),
           id_microwork = VALUES(id_microwork),
           vendedor = VALUES(vendedor),
+          cpf_cnpj = VALUES(cpf_cnpj),
+          data_venda = VALUES(data_venda),
+          pedido = VALUES(pedido),
           modelo = VALUES(modelo),
           cor = VALUES(cor),
           chassi = VALUES(chassi),
           ano = VALUES(ano),
-          custo_contabil = VALUES(custo_contabil),
           dias_estoque = VALUES(dias_estoque),
-          pedido = VALUES(pedido),
           tipo_venda = VALUES(tipo_venda),
+          custo_contabil = VALUES(custo_contabil),
           valor_venda = VALUES(valor_venda),
           entrada_bonificada = VALUES(entrada_bonificada),
           valor_venda_real = VALUES(valor_venda_real),
-          despesa_ope = VALUES(despesa_ope),
           valor_financiado = VALUES(valor_financiado),
           valor_retorno = VALUES(valor_retorno),
           retorno_porcent = VALUES(retorno_porcent),
+          despesa_emplac = VALUES(despesa_emplac),
+          despesa_ope = VALUES(despesa_ope),
           lucro_ope = VALUES(lucro_ope)
 `;
 
       const values = [
         moto.empresa,
         moto.quantidade,
-        moto.datavenda ? moto.datavenda.substring(0, 10) : null,
+        moto.quantidadefinanciada,
+        moto.financeira,
         moto.idpessoavendedor,
-        moto.docfiscal,
         moto.vendedor,
+        moto.cpfoucnpjvendedor,
+        moto.datavenda ? moto.datavenda.substring(0, 10) : null,
+        moto.proposta,
+        moto.docfiscal,
         moto.modelo,
         moto.cor,
         moto.chassi,
         moto.anofabrmod,
-        moto.custocontabil,
         moto.diasestoque,
-        moto.proposta,
         moto.tipovenda,
+        moto.custocontabil,
         moto.valorvenda,
         moto.acessorios,
         moto.valorvenda - moto.acessorios,
-        (moto.valorvenda - moto.acessorios) * 0.06,
         moto.valorfinanciamento,
         0,
-        moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,
-        moto.lucrooperacionalantescomissao,
-        moto.quantidadefinanciada
+        0,
+        //moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,
+        moto.documentacao,
+        (moto.valorvenda - moto.acessorios) * 0.06,
+        moto.lucrooperacionalantescomissao
       ];
 
       try {
