@@ -125,9 +125,8 @@ async function fetchMkVendasMotos(pool) {
         moto.acessorios,
         moto.valorvenda - moto.acessorios,
         moto.valorfinanciamento,
-        0,
-        0,
-        //moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,
+        moto.valorbonus,
+        moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,
         moto.documentacao,
         (moto.valorvenda - moto.acessorios) * 0.06,
         moto.lucrooperacionalantescomissao
