@@ -91,7 +91,7 @@
               <%= v.vendedor %>
             </span>
             <span class="sales">
-              <%= v.percentual_lucro.toString().replace('.', ',' ) %>%
+              <%= v.percentual_lucro !=null ? v.percentual_lucro.toString().replace('.', ',' ) + '%' : '-' %>
             </span>
           </li>
           <% }) %>
