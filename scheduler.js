@@ -62,8 +62,8 @@ async function executarAtualizacao() {
 }
 
 // Execução inicial
-//executarAtualizacao();
-fetchrankingPontosMotos(pool);
+executarAtualizacao();
+
 
 
 console.log('Tarefas agendadas e execução inicial realizada.');
