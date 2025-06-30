@@ -57,7 +57,7 @@ const fetchrankingPontosMotos = async (connection) => {
     let pontosPorCaptacao = 0;
     if (captacao >= 3 && captacao < 5) pontosPorCaptacao = 30;
     else if (captacao >= 5 && captacao < 8) pontosPorCaptacao = 40;
-    else if (captacao >= 8 && captacao < 10) pontosPorCaptacao = 50;
+    else if (captacao >= 8 && captacao < 12) pontosPorCaptacao = 50;
     else if (captacao >= 12) pontosPorCaptacao = 60;
 
     let pontosPorContrato = 0;

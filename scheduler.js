@@ -7,12 +7,14 @@ const atualizarRankings = require('./routes/rankingGeralMotos');
 const fetchEstoqueMotores = require('./routes/estoqueMotores');
 const fetchEstoqueMotos = require('./routes/estoqueMotos');
 const fetchMkVendasMotos = require('./routes/mkVendasMotos');
+const fetchMKVendasSeminovas = require('./routes/mkVendasSimonovas');
 const fetchMkContratosMotos = require('./routes/mkContratosMotos');
 const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
 const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
 
 
-//fetchMkcaptacaoMotos(pool);
+
+
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -30,6 +32,9 @@ async function executarAtualizacao() {
     await delay(2000);
 
     await fetchMkVendasMotos(pool);
+    await delay(2000);
+
+    await fetchMKVendasSeminovas(pool);
     await delay(2000);
 
     await fetchMkContratosMotos(pool);
@@ -57,6 +62,8 @@ async function executarAtualizacao() {
 }
 
 // Execução inicial
-executarAtualizacao();
+//executarAtualizacao();
+fetchrankingPontosMotos(pool);
+
 
 console.log('Tarefas agendadas e execução inicial realizada.');

@@ -140,31 +140,73 @@ pool.getConnection((err, connection) => {
   CREATE TABLE IF NOT EXISTS microwork.vendas_motos (
     empresa VARCHAR(5),
     quantidade INT DEFAULT 0,
-    data_venda DATE,
+    financiada INT,
+    banco VARCHAR(20),
     id_microwork INT,
-    doc_fiscal VARCHAR(20),
     vendedor VARCHAR(100),
+    cpf_cnpj VARCHAR(20),
+    data_venda DATE,
+    pedido INT,
+    doc_fiscal VARCHAR(20),
     modelo VARCHAR(100),
     cor VARCHAR(30),
     chassi VARCHAR(20) NOT NULL,
     ano VARCHAR(9),
-    custo_contabil DECIMAL(10,2),
     dias_estoque INT,
-    pedido INT,
     tipo_venda VARCHAR(50),
+    custo_contabil DECIMAL(10,2),
     valor_venda DECIMAL(10,2),
-    valor_venda_real DECIMAL(10,2),
-    despesa_ope DECIMAL(10,2),
     entrada_bonificada DECIMAL(10,2),
+    valor_venda_real DECIMAL(10,2),
     valor_financiado DECIMAL(10,2),
     valor_retorno DECIMAL(10,2),
     retorno_porcent DECIMAL(4,2),
+    despesa_emplac DECIMAL(10,2),
+    despesa_ope DECIMAL(10,2),
     lucro_ope DECIMAL(10,2),
-    financiada INT
+    UNIQUE KEY unique_doc_empresa (doc_fiscal, empresa)
   );
 `;
 
+
   connection.query(createMkVendasMotos);
+
+
+  const createMkVendasSeminovas = `
+  CREATE TABLE IF NOT EXISTS microwork.vendas_seminovas (
+    empresa VARCHAR(5),
+    quantidade INT DEFAULT 0,
+    financiada INT,
+    banco VARCHAR(20),
+    id_microwork INT,
+    vendedor VARCHAR(100),
+    cpf_cnpj VARCHAR(20),
+    data_venda DATE,
+    pedido INT,
+    doc_fiscal VARCHAR(20),
+    modelo VARCHAR(100),
+    cor VARCHAR(30),
+    chassi VARCHAR(20) NOT NULL,
+    ano VARCHAR(9),
+    dias_estoque INT,
+    tipo_venda VARCHAR(50),
+    custo_contabil DECIMAL(10,2),
+    valor_venda DECIMAL(10,2),
+    entrada_bonificada DECIMAL(10,2),
+    valor_venda_real DECIMAL(10,2),
+    valor_financiado DECIMAL(10,2),
+    valor_retorno DECIMAL(10,2),
+    retorno_porcent DECIMAL(4,2),
+    icms_venda DECIMAL(6,2),
+    despesa_emplac DECIMAL(10,2),
+    despesa_ope DECIMAL(10,2),
+    lucro_ope DECIMAL(10,2),
+    UNIQUE KEY unique_doc_empresa (doc_fiscal, empresa)
+  );
+`;
+
+
+  connection.query(createMkVendasSeminovas);
 
 
 

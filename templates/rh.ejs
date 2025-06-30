@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/rh.css">
+  <title>Tropa Azul - RH</title>
+</head>
+
+<body>
+  <div class="top-container">
+    <div class="logo-container">
+      <a href="/segmentos">
+        <img src="/images/tvlar_motos.png" alt="TVLAR MOTOS" class="logo">
+      </a>
+    </div>
+
+    <div class="user-container">
+      <div class="user-menu">
+        <button id="user-button">
+          <%= usuario %>
+        </button>
+        <div id="user-dropdown" class="dropdown-content">
+          <a href="/motos">Voltar</a>
+          <a href="/logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="🔎 Pesquisar por nome do vendedor...">
+  </div>
+
+  <div class="download-container">
+    <a href="/download-excel" class="download-btn">⬇️ Baixar Excel Completo</a>
+  </div>
+
+  <% const pontosPorId={}; pontos.forEach(p=> pontosPorId[p.id_microwork] =
+    p.pontos);
+
+    const vendasPorFilial = {};
+
+    vendas.forEach(venda => {
+    const filial = venda.empresa || 'NÃO IDENTIFICADA';
+    const vendedor = venda.nome_vendedor || 'NÃO IDENTIFICADO';
+
+    if (!vendasPorFilial[filial]) vendasPorFilial[filial] = {};
+    if (!vendasPorFilial[filial][vendedor]) vendasPorFilial[filial][vendedor] = [];
+
+    vendasPorFilial[filial][vendedor].push(venda);
+    });
+    %>
+
+    <% Object.keys(vendasPorFilial).sort().forEach(filial=> { %>
+      <div class="filial-card">
+        <h1>📍 Filial: <%= filial %>
+        </h1>
+
+        <% Object.keys(vendasPorFilial[filial]).forEach(vendedor=> {
+          if (vendedor === 'NÃO IDENTIFICADO') return;
+
+          const vendasVendedor = vendasPorFilial[filial][vendedor];
+          const primeiraVenda = vendasVendedor[0];
+          const pontosDoVendedor = pontosPorId[primeiraVenda.id_microwork] || 0;
+          const somaComissao = vendasVendedor.reduce((total, v) => total + parseFloat(v.comissao || 0), 0);
+          %>
+
+          <div class="vendedor-info">
+            <h2>
+              ID: <%= primeiraVenda.id_microwork %> — <%= vendedor %>
+            </h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Modelo</th>
+                  <th>Chassi</th>
+                  <th>Data da Venda</th>
+                  <th>Valor</th>
+                  <th>Lucro Op.</th>
+                  <th>Comissão</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% vendasVendedor.forEach(venda=> { %>
+                  <tr>
+                    <td>
+                      <%= venda.status %>
+                    </td>
+                    <td>
+                      <%= venda.modelo || 'N/A' %>
+                    </td>
+                    <td>
+                      <%= venda.chassi %>
+                    </td>
+                    <td>
+                      <%= new Date(venda.data_venda).toLocaleDateString() %>
+                    </td>
+                    <td>
+                      <%= (venda.valor_venda ? Number(venda.valor_venda).toLocaleString('pt-BR', { style: 'currency' ,
+                        currency: 'BRL' }) : 'R$ 0,00' ) %>
+                    </td>
+                    <td>
+                      <%= (venda.lucro_ope ? Number(venda.lucro_ope).toLocaleString('pt-BR', { style: 'currency' ,
+                        currency: 'BRL' }) : 'R$ 0,00' ) %>
+                    </td>
+                    <td>
+                      <%= (venda.comissao ? Number(venda.comissao).toLocaleString('pt-BR', { style: 'currency' ,
+                        currency: 'BRL' }) : 'R$ 0,00' ) %>
+                    </td>
+                  </tr>
+                  <% }); %>
+                    <!-- Linha de totalizador do vendedor -->
+                    <tr class="total-vendedor">
+                      <td colspan="4" style="text-align:left; font-weight:bold; color:#38bdf8;">TOTAL DO VENDEDOR:</td>
+                      <td></td>
+                      <td style="font-weight:bold; text-align:center; color:#38bdf8;">
+                        PONTOS: <%= pontosDoVendedor %>
+                          <% const pontoInfo=pontos.find(p=> p.id_microwork === primeiraVenda.id_microwork) || {}; %>
+                            <div class="pontos-detalhes" style="font-size: 0.9em; color: #0ea5e9; margin-top: 4px;">
+                              <span>Vendas: <%= pontoInfo.vendas ?? 0 %></span> |
+                              <span>LLO: <%= pontoInfo.llo ?? 0 %></span> |
+                              <span>Captação: <%= pontoInfo.captacao ?? 0 %></span> |
+                              <span>Contrato: <%= pontoInfo.contrato ?? 0 %></span> |
+                              <span>Retorno: <%= pontoInfo.retorno ?? 0 %></span> |
+                              <span>NPS: <%= pontoInfo.NPS ?? 0 %></span>
+                            </div>
+                      </td>
+                      <td style="font-weight:bold; color:#38bdf8;">
+                        <span>COMISSÃO: <%= somaComissao.toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL'
+                            }) %></span>
+                        <span>TOTAL: <%= (somaComissao + pontosDoVendedor).toLocaleString('pt-BR', { style: 'currency' ,
+                            currency: 'BRL' }) %></span>
+                      </td>
+                    </tr>
+              </tbody>
+            </table>
+          </div>
+          <% }); %>
+      </div>
+      <% }); %>
+
+
+
+        <footer class="footer">
+          <div class="footer-text">
+            <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+            <span class="animate scroll" style="--i:1;"></span>
+          </div>
+          <div class="footer-iconTop">
+            <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+            <span class="animate scroll" style="--i:3;"></span>
+          </div>
+        </footer>
+
+        <script>
+          document.getElementById("user-button").addEventListener("click", function () {
+            document.getElementById("user-dropdown").classList.toggle("show");
+          });
+
+          window.onclick = function (event) {
+            if (!event.target.matches('#user-button')) {
+              var dropdowns = document.getElementsByClassName("dropdown-content");
+              for (var i = 0; i < dropdowns.length; i++) {
+                if (dropdowns[i].classList.contains('show')) {
+                  dropdowns[i].classList.remove('show');
+                }
+              }
+            }
+          };
+
+          const searchInput = document.getElementById('searchInput');
+          const filialCards = document.querySelectorAll('.filial-card');
+
+          searchInput.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase().trim();
+
+            filialCards.forEach(card => {
+              const vendedorInfos = card.querySelectorAll('.vendedor-info');
+              let filialHasVisibleVendedor = false;
+
+              vendedorInfos.forEach(info => {
+                const vendedorText = info.querySelector('h2').textContent.toLowerCase();
+                if (vendedorText.includes(searchTerm)) {
+                  info.style.display = 'block';
+                  filialHasVisibleVendedor = true;
+                } else {
+                  info.style.display = 'none';
+                }
+              });
+
+              if (filialHasVisibleVendedor) {
+                card.style.display = 'block';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+          });
+        </script>
+</body>
+
+</html>

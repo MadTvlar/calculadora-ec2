@@ -16,10 +16,7 @@ async function atualizarRankings(pool) {
   const referenteMes = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
 
   console.log('\nLimpando a tabela de ranking_geral');
-  await pool.promise().query('TRUNCATE TABLE ranking_geral');
-
-  console.log('Inserindo dados na tabela de ranking_geral...');
-  await pool.promise().query('DELETE FROM ranking_geral WHERE referente_mes = ?', [referenteMes]);
+  await pool.promise().query('TRUNCATE TABLE tropa_azul.ranking_geral');
 
   const inserirDados = async (dados, tipo, campoValor, incluirDadosExtras = false) => {
     for (let i = 0; i < dados.length; i++) {
@@ -42,23 +39,12 @@ async function atualizarRankings(pool) {
   };
 
   const [rankVolume] = await pool.promise().query(`
-    SELECT 
-      id_microwork,
-      empresa,
-      TRIM(
-        REGEXP_REPLACE(
-          REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
-          ' [0-9.-]+$',
-          ''
-        )
-      ) AS vendedor,
-      SUM(quantidade) AS total_vendas
-    FROM microwork.vendas_motos
-    GROUP BY id_microwork, empresa, vendedor
-    ORDER BY total_vendas DESC;
-  `);
-
-  const [rankLLO] = await pool.promise().query(`
+  SELECT 
+  id_microwork,
+  ANY_VALUE(empresa) AS empresa,
+  vendedor,
+  SUM(quantidade) AS total_vendas
+FROM (
   SELECT 
     id_microwork,
     empresa,
@@ -69,9 +55,68 @@ async function atualizarRankings(pool) {
         ''
       )
     ) AS vendedor,
-    ROUND(SUM(lucro_ope) / SUM(valor_venda_real) * 100, 2) AS percentual_lucro
+    quantidade
   FROM microwork.vendas_motos
-  GROUP BY id_microwork, empresa, vendedor
+
+  UNION ALL
+
+  SELECT 
+    id_microwork,
+    empresa,
+    TRIM(
+      REGEXP_REPLACE(
+        REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
+        ' [0-9.-]+$',
+        ''
+      )
+    ) AS vendedor,
+    quantidade
+  FROM microwork.vendas_seminovas
+) AS uniao
+GROUP BY id_microwork, vendedor
+ORDER BY total_vendas DESC;
+
+`);
+
+
+  const [rankLLO] = await pool.promise().query(`
+  SELECT 
+    id_microwork,
+    ANY_VALUE(empresa) AS empresa,
+    vendedor,
+    ROUND(SUM(lucro_ope) / SUM(valor_venda_real) * 100, 2) AS percentual_lucro
+  FROM (
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
+          ' [0-9.-]+$',
+          ''
+        )
+      ) AS vendedor,
+      lucro_ope,
+      valor_venda_real
+    FROM microwork.vendas_motos
+
+    UNION ALL
+
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
+          ' [0-9.-]+$',
+          ''
+        )
+      ) AS vendedor,
+      lucro_ope,
+      valor_venda_real
+    FROM microwork.vendas_seminovas
+  ) AS uniao
+  GROUP BY id_microwork, vendedor
   ORDER BY percentual_lucro DESC;
 `);
 
@@ -79,7 +124,6 @@ async function atualizarRankings(pool) {
   const [rankCaptacao] = await pool.promise().query(`
   SELECT 
     TRIM(SUBSTRING_INDEX(vendedor, ' - ', 1)) AS id_microwork,
-    empresa,
     TRIM(
       REGEXP_REPLACE(
         REGEXP_REPLACE(
@@ -94,9 +138,10 @@ async function atualizarRankings(pool) {
     COUNT(*) AS totalCaptado
   FROM microwork.captacao_motos
   WHERE vendedor IS NOT NULL
-  GROUP BY id_microwork, empresa, vendedor
+  GROUP BY id_microwork, vendedor
   ORDER BY totalCaptado DESC;
 `);
+
 
   const [rankContrato] = await pool.promise().query(`
   SELECT 
@@ -185,7 +230,6 @@ async function atualizarRankings(pool) {
 
 
   await inserirRetornoPorTipo(retornoDetalhado);
-
   await inserirDados(rankVolume, 'volume', 'total_vendas', true); // inclui empresa e id_microwork
   await inserirDados(rankLLO, 'llo', 'percentual_lucro', true); // agora com empresa e id_microwork
   await inserirDados(rankCaptacao, 'captacao', 'totalCaptado', true); // inclui empresa e id_microwork

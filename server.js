@@ -9,6 +9,7 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const util = require('util');
 const bcrypt = require('bcrypt');
+const ExcelJS = require('exceljs');
 
 
 // SERVIÇOS INTERNOS
@@ -421,20 +422,42 @@ app.get('/resumomotos', async (req, res) => {
 
     // Coleta dos dados
     const [rankVolume] = await connection.promise().query(`
-      SELECT id_microwork, vendedor, SUM(quantidade) AS total_vendas
-      FROM microwork.vendas_motos
-      GROUP BY id_microwork, vendedor
-      ORDER BY total_vendas DESC;
-    `);
+    SELECT 
+    id_microwork, 
+    vendedor, 
+    SUM(quantidade) AS total_vendas
+    FROM (
+    SELECT id_microwork, vendedor, quantidade 
+    FROM microwork.vendas_motos
+
+    UNION ALL
+
+    SELECT id_microwork, vendedor, quantidade 
+    FROM microwork.vendas_seminovas
+    ) AS todas_vendas
+    GROUP BY id_microwork, vendedor
+    ORDER BY total_vendas DESC;
+`);
+
+
 
     const [rankLLO] = await connection.promise().query(`
-      SELECT 
-      vendedor,
-      ROUND(SUM(lucro_ope) / SUM(valor_venda_real) * 100, 2) AS percentual_lucro
-      FROM microwork.vendas_motos
-      GROUP BY vendedor
-      ORDER BY percentual_lucro DESC;
+  SELECT 
+    vendedor,
+    ROUND(SUM(lucro_ope) / SUM(valor_venda_real) * 100, 2) AS percentual_lucro
+  FROM (
+    SELECT vendedor, lucro_ope, valor_venda_real
+    FROM microwork.vendas_motos
+
+    UNION ALL
+
+    SELECT vendedor, lucro_ope, valor_venda_real
+    FROM microwork.vendas_seminovas
+  ) AS todas_vendas
+  GROUP BY vendedor
+  ORDER BY percentual_lucro DESC;
 `);
+
 
 
     const [rankCaptacao] = await connection.promise().query(`
@@ -456,17 +479,29 @@ app.get('/resumomotos', async (req, res) => {
     `);
 
     const [rankRetorno] = await connection.promise().query(`
-      SELECT 
-      TRIM(vendedor) AS vendedor,
-      SUM(CASE 
-      WHEN quantidade = -1 THEN -1
-      ELSE 1
-      END) AS quantidadeRetorno
-      FROM microwork.vendas_motos
-      WHERE retorno_porcent >= 2
-      GROUP BY vendedor
-      ORDER BY quantidadeRetorno DESC;
+  SELECT 
+    TRIM(vendedor) AS vendedor,
+    SUM(
+      CASE 
+        WHEN quantidade = -1 THEN -1
+        ELSE 1
+      END
+    ) AS quantidadeRetorno
+  FROM (
+    SELECT vendedor, quantidade, retorno_porcent
+    FROM microwork.vendas_motos
+    WHERE retorno_porcent >= 2
+
+    UNION ALL
+
+    SELECT vendedor, quantidade, retorno_porcent
+    FROM microwork.vendas_seminovas
+    WHERE retorno_porcent >= 2
+  ) AS todas_vendas
+  GROUP BY vendedor
+  ORDER BY quantidadeRetorno DESC;
 `);
+
 
 
     const [rankNPS] = await connection.promise().query(`
@@ -618,6 +653,73 @@ app.get('/nps', async (req, res) => {
     console.error('Erro ao buscar dados NPS:', error);
     res.status(500).send('Erro interno ao buscar dados do NPS.');
   }
+});
+
+// CHAMADO PARA SEGMENTOS ASSIM QUE O USUARIO CLICAR NA LOGO
+app.get('/rh', (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+  const idLogado = req.cookies.id_logado;
+
+  const queryVendas = `
+  SELECT 
+    vm.*,
+    vm.empresa, -- ADICIONADO
+    rp.vendedor AS nome_vendedor,
+
+    CASE 
+      WHEN vm.quantidade = 1 AND vm.lucro_ope * 0.085 < 0 THEN 0
+      WHEN vm.quantidade = 0 AND vm.lucro_ope * 0.085 > 0 THEN 0
+      WHEN vm.quantidade = -1 AND vm.lucro_ope * 0.085 > 0 THEN 0
+      ELSE vm.lucro_ope * 0.085
+    END AS comissao,
+
+    CASE 
+      WHEN vm.quantidade = 1 THEN 'Vendido'
+      WHEN vm.quantidade = 0 OR vm.quantidade = -1 THEN 'Devolvida'
+    END AS status
+
+  FROM microwork.vendas_motos vm
+  LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
+  ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
+`;
+
+
+  const queryPontos = `
+    SELECT id_microwork, pontos, vendas, llo, captacao, contrato, retorno, NPS
+    FROM ranking_pontos
+  `;
+
+  // Executa as duas consultas em paralelo
+  Promise.all([
+    new Promise((resolve, reject) => {
+      connection.query(queryVendas, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    }),
+    new Promise((resolve, reject) => {
+      connection.query(queryPontos, (err, results) => {
+        if (err) return reject(err);
+        resolve(results); // Array com todos os pontos
+      });
+    })
+  ])
+
+
+    .then(([vendas, pontos]) => {
+      res.render('rh', {
+        usuario: usuarioLogado,
+        grupo: grupoLogado,
+        id: idLogado,
+        vendas: vendas,
+        pontos: pontos
+      });
+    })
+    .catch(err => {
+      console.error('Erro ao buscar dados:', err);
+      res.status(500).send('Erro ao buscar dados');
+    });
 });
 
 // CHAMADO PARA A PAGINA DE CALCULO DE MOTOS
@@ -915,6 +1017,138 @@ app.get('/logout', (req, res) => {
 
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
+});
+
+app.get('/download-excel', async (req, res) => {
+
+  function formatarReal(valor) {
+    if (valor === null || valor === undefined) return '';
+    return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  const queryVendas = `
+  SELECT 
+    vm.*,
+    vm.empresa,
+    rp.vendedor AS nome_vendedor,
+    CASE 
+      WHEN vm.quantidade = 1 AND vm.lucro_ope * 0.085 < 0 THEN 0
+      WHEN vm.quantidade = 0 AND vm.lucro_ope * 0.085 > 0 THEN 0
+      WHEN vm.quantidade = -1 AND vm.lucro_ope * 0.085 > 0 THEN 0
+      ELSE vm.lucro_ope * 0.085
+    END AS comissao,
+    CASE 
+      WHEN vm.quantidade = 1 THEN 'Vendido'
+      WHEN vm.quantidade = 0 OR vm.quantidade = -1 THEN 'Devolvida'
+    END AS status
+  FROM microwork.vendas_motos vm
+  LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
+  ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
+  `;
+
+  const queryPontos = `
+    SELECT id_microwork, pontos
+    FROM ranking_pontos
+  `;
+
+  try {
+    const vendas = await new Promise((resolve, reject) => {
+      connection.query(queryVendas, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+    const pontos = await new Promise((resolve, reject) => {
+      connection.query(queryPontos, (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Vendas');
+
+    worksheet.columns = [
+      { header: 'Filial', key: 'empresa', width: 20 },
+      { header: 'ID Vendedor', key: 'id_microwork', width: 15 },
+      { header: 'Vendedor', key: 'nome_vendedor', width: 25 },
+      { header: 'Status', key: 'status', width: 15 },
+      { header: 'Modelo', key: 'modelo', width: 20 },
+      { header: 'Chassi', key: 'chassi', width: 20 },
+      { header: 'Data da Venda', key: 'data_venda', width: 15 },
+      { header: 'Valor', key: 'valor_venda', width: 15 },
+      { header: 'Lucro Op.', key: 'lucro_ope', width: 15 },
+      { header: 'Comissão', key: 'comissao', width: 15 },
+      { header: 'Pontos', key: 'pontos', width: 10 },
+      { header: '', key: 'L', width: 18 }, // Coluna L
+      { header: '', key: 'M', width: 18 }, // Coluna M
+      { header: '', key: 'N', width: 22 }, // Coluna N
+      { header: '', key: 'O', width: 22 }  // Coluna O
+    ];
+
+    const pontosPorId = {};
+    pontos.forEach(p => pontosPorId[p.id_microwork] = p.pontos);
+
+    // Agrupar vendas por vendedor
+    let vendasPorVendedor = {};
+    vendas.forEach(venda => {
+      if ((venda.nome_vendedor || 'NÃO IDENTIFICADO') === 'NÃO IDENTIFICADO') return;
+      if (!vendasPorVendedor[venda.nome_vendedor]) vendasPorVendedor[venda.nome_vendedor] = [];
+      vendasPorVendedor[venda.nome_vendedor].push(venda);
+    });
+
+    Object.keys(vendasPorVendedor).forEach(nome_vendedor => {
+      const vendasVendedor = vendasPorVendedor[nome_vendedor];
+      let somaComissao = 0;
+      let pontosDoVendedor = pontosPorId[vendasVendedor[0].id_microwork] || 0;
+      vendasVendedor.forEach(venda => {
+        somaComissao += Number(venda.comissao) || 0;
+        worksheet.addRow({
+          empresa: venda.empresa || 'NÃO IDENTIFICADA',
+          id_microwork: venda.id_microwork,
+          nome_vendedor: venda.nome_vendedor,
+          status: venda.status,
+          modelo: venda.modelo,
+          chassi: venda.chassi,
+          data_venda: venda.data_venda ? new Date(venda.data_venda).toLocaleDateString() : '',
+          valor_venda: formatarReal(venda.valor_venda),
+          lucro_ope: formatarReal(venda.lucro_ope),
+          comissao: formatarReal(venda.comissao),
+          pontos: pontosPorId[venda.id_microwork] || 0
+        });
+      });
+      // Linha de totalizador a partir da coluna L
+      worksheet.addRow({
+        empresa: '',
+        id_microwork: '',
+        nome_vendedor: '',
+        status: '',
+        modelo: '',
+        chassi: '',
+        data_venda: '',
+        valor_venda: '',
+        lucro_ope: '',
+        comissao: '',
+        pontos: '',
+        // Coluna L, M, N
+        L: 'TOTAL DO VENDEDOR',
+        M: 'PONTOS: ' + pontosDoVendedor,
+        N: 'COMISSÃO: ' + formatarReal(somaComissao),
+        O: 'TOTAL: ' + formatarReal(somaComissao + pontosDoVendedor)
+      });
+      // Linha em branco para separar
+      worksheet.addRow({});
+    });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="vendas.xlsx"');
+
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (err) {
+    console.error('Erro ao gerar Excel:', err);
+    res.status(500).send('Erro ao gerar Excel');
+  }
 });
 
 app.listen(PORT, () => {
