@@ -116,26 +116,43 @@
                   <% }); %>
                     <!-- Linha de totalizador do vendedor -->
                     <tr class="total-vendedor">
-                      <td colspan="4" style="text-align:left; font-weight:bold; color:#38bdf8;">TOTAL DO VENDEDOR:</td>
-                      <td></td>
+
+                      <td style="text-align:center; font-weight:bold; color:#38bdf8;">TOTAL DO VENDEDOR:
+                      </td>
+                      <td style="text-align:center; font-weight:bold; color:#38bdf8;">
+                        <%= vendedor %>
+                      </td>
+                      <td colspan="2" style="font-weight:bold; text-align:center; color:#38bdf8;">
+                        <% const pontoInfo=pontos.find(p=> p.id_microwork === primeiraVenda.id_microwork) || {}; %>
+                          <div class="pontos-detalhes">
+                            <span>Vendas: <%= pontoInfo.vendas ?? 0 %></span> |
+                            <span>LLO: <%= pontoInfo.llo ?? 0 %></span> | <br>
+                            <span>Captação: <%= pontoInfo.captacao ?? 0 %></span> |
+                            <span>Contrato: <%= pontoInfo.contrato ?? 0 %></span> |
+                            <span>Retorno: <%= pontoInfo.retorno ?? 0 %></span> |
+                            <span>NPS: <%= pontoInfo.NPS ?? 0 %></span>
+                          </div>
+                      </td>
                       <td style="font-weight:bold; text-align:center; color:#38bdf8;">
-                        PONTOS: <%= pontosDoVendedor %>
-                          <% const pontoInfo=pontos.find(p=> p.id_microwork === primeiraVenda.id_microwork) || {}; %>
-                            <div class="pontos-detalhes" style="font-size: 0.9em; color: #0ea5e9; margin-top: 4px;">
-                              <span>Vendas: <%= pontoInfo.vendas ?? 0 %></span> |
-                              <span>LLO: <%= pontoInfo.llo ?? 0 %></span> |
-                              <span>Captação: <%= pontoInfo.captacao ?? 0 %></span> |
-                              <span>Contrato: <%= pontoInfo.contrato ?? 0 %></span> |
-                              <span>Retorno: <%= pontoInfo.retorno ?? 0 %></span> |
-                              <span>NPS: <%= pontoInfo.NPS ?? 0 %></span>
-                            </div>
+                        PONTOS:
+                        <%= pontosDoVendedor %>
+                          </span>
                       </td>
-                      <td style="font-weight:bold; color:#38bdf8;">
-                        <span>COMISSÃO: <%= somaComissao.toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL'
-                            }) %></span>
-                        <span>TOTAL: <%= (somaComissao + pontosDoVendedor).toLocaleString('pt-BR', { style: 'currency' ,
-                            currency: 'BRL' }) %></span>
+
+                      <td style="font-weight:bold; text-align:center; color:#38bdf8;">
+                        COMISSÃO:
+                        <%= somaComissao.toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' }) %>
+                          </span>
                       </td>
+
+                      <td style="font-weight:bold; text-align:center; color:#38bdf8;">
+                        TOTAL:
+                        <%= (somaComissao + pontosDoVendedor).toLocaleString('pt-BR', { style: 'currency' ,
+                          currency: 'BRL' }) %>
+                          </span>
+                      </td>
+
+
                     </tr>
               </tbody>
             </table>

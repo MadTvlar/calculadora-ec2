@@ -664,7 +664,7 @@ app.get('/rh', (req, res) => {
   const queryVendas = `
   SELECT 
     vm.*,
-    vm.empresa, -- ADICIONADO
+    vm.empresa,
     rp.vendedor AS nome_vendedor,
 
     CASE 
@@ -679,10 +679,19 @@ app.get('/rh', (req, res) => {
       WHEN vm.quantidade = 0 OR vm.quantidade = -1 THEN 'Devolvida'
     END AS status
 
-  FROM microwork.vendas_motos vm
+  FROM (
+    SELECT 
+      empresa, id_microwork, modelo, chassi, vendedor, valor_venda, lucro_ope, quantidade, data_venda
+    FROM microwork.vendas_motos
+    UNION ALL
+    SELECT 
+      empresa, id_microwork, modelo, chassi, vendedor, lucro_ope, valor_venda, quantidade, data_venda
+    FROM microwork.vendas_seminovas
+  ) vm
   LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
   ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
 `;
+
 
 
   const queryPontos = `
@@ -1026,6 +1035,7 @@ app.get('/download-excel', async (req, res) => {
     return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 
+
   const queryVendas = `
   SELECT 
     vm.*,
@@ -1041,13 +1051,23 @@ app.get('/download-excel', async (req, res) => {
       WHEN vm.quantidade = 1 THEN 'Vendido'
       WHEN vm.quantidade = 0 OR vm.quantidade = -1 THEN 'Devolvida'
     END AS status
-  FROM microwork.vendas_motos vm
+  FROM (
+    SELECT 
+      empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi, valor_venda, lucro_ope, quantidade, data_venda
+    FROM microwork.vendas_motos
+    UNION ALL
+    SELECT 
+      empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi, valor_venda, lucro_ope, quantidade, data_venda
+    FROM microwork.vendas_seminovas
+  ) vm
   LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
   ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
-  `;
+`;
+
+
 
   const queryPontos = `
-    SELECT id_microwork, pontos
+    SELECT id_microwork, pontos, vendas, llo, captacao, contrato, retorno, NPS
     FROM ranking_pontos
   `;
 
@@ -1069,25 +1089,32 @@ app.get('/download-excel', async (req, res) => {
     const worksheet = workbook.addWorksheet('Vendas');
 
     worksheet.columns = [
-      { header: 'Filial', key: 'empresa', width: 20 },
-      { header: 'ID Vendedor', key: 'id_microwork', width: 15 },
-      { header: 'Vendedor', key: 'nome_vendedor', width: 25 },
-      { header: 'Status', key: 'status', width: 15 },
-      { header: 'Modelo', key: 'modelo', width: 20 },
+      { header: 'Filial', key: 'empresa', width: 5 },
+      { header: 'ID', key: 'id_microwork', width: 7 },
+      { header: 'Vendedor', key: 'nome_vendedor', width: 47 },
+      { header: 'cpf_cnpj', key: 'cpf_cnpj', width: 18 },
+      { header: 'Status', key: 'status', width: 9 },
+      { header: 'Modelo', key: 'modelo', width: 30 },
       { header: 'Chassi', key: 'chassi', width: 20 },
       { header: 'Data da Venda', key: 'data_venda', width: 15 },
-      { header: 'Valor', key: 'valor_venda', width: 15 },
-      { header: 'Lucro Op.', key: 'lucro_ope', width: 15 },
-      { header: 'Comissão', key: 'comissao', width: 15 },
-      { header: 'Pontos', key: 'pontos', width: 10 },
-      { header: '', key: 'L', width: 18 }, // Coluna L
-      { header: '', key: 'M', width: 18 }, // Coluna M
+      { header: 'Valor', key: 'valor_venda', width: 12 },
+      { header: 'Lucro Op.', key: 'lucro_ope', width: 12 },
+      { header: 'Comissão', key: 'comissao', width: 12 },
+      { header: 'Pontos', key: 'pontos', width: 8 },
+      { header: 'Vendas', key: 'vendas', width: 8 },
+      { header: 'LLO', key: 'llo', width: 8 },
+      { header: 'Captação', key: 'captacao', width: 9 },
+      { header: 'Contrato', key: 'contrato', width: 9 },
+      { header: 'Retorno', key: 'retorno', width: 8 },
+      { header: 'NPS', key: 'NPS', width: 5 },
+      { header: '', key: 'L', width: 68 }, // Coluna L
+      { header: '', key: 'M', width: 15 }, // Coluna M
       { header: '', key: 'N', width: 22 }, // Coluna N
       { header: '', key: 'O', width: 22 }  // Coluna O
     ];
 
     const pontosPorId = {};
-    pontos.forEach(p => pontosPorId[p.id_microwork] = p.pontos);
+    pontos.forEach(p => pontosPorId[p.id_microwork] = p);
 
     // Agrupar vendas por vendedor
     let vendasPorVendedor = {};
@@ -1100,13 +1127,14 @@ app.get('/download-excel', async (req, res) => {
     Object.keys(vendasPorVendedor).forEach(nome_vendedor => {
       const vendasVendedor = vendasPorVendedor[nome_vendedor];
       let somaComissao = 0;
-      let pontosDoVendedor = pontosPorId[vendasVendedor[0].id_microwork] || 0;
       vendasVendedor.forEach(venda => {
         somaComissao += Number(venda.comissao) || 0;
+        const pontoInfo = pontosPorId[venda.id_microwork] || {};
         worksheet.addRow({
           empresa: venda.empresa || 'NÃO IDENTIFICADA',
           id_microwork: venda.id_microwork,
           nome_vendedor: venda.nome_vendedor,
+          cpf_cnpj: venda.cpf_cnpj,
           status: venda.status,
           modelo: venda.modelo,
           chassi: venda.chassi,
@@ -1114,14 +1142,22 @@ app.get('/download-excel', async (req, res) => {
           valor_venda: formatarReal(venda.valor_venda),
           lucro_ope: formatarReal(venda.lucro_ope),
           comissao: formatarReal(venda.comissao),
-          pontos: pontosPorId[venda.id_microwork] || 0
+          pontos: pontoInfo.pontos || 0,
+          vendas: pontoInfo.vendas || 0,
+          llo: pontoInfo.llo || 0,
+          captacao: pontoInfo.captacao || 0,
+          contrato: pontoInfo.contrato || 0,
+          retorno: pontoInfo.retorno || 0,
+          NPS: pontoInfo.NPS || 0
         });
       });
       // Linha de totalizador a partir da coluna L
+      const pontoInfoTotal = pontosPorId[vendasVendedor[0].id_microwork] || {};
       worksheet.addRow({
         empresa: '',
         id_microwork: '',
         nome_vendedor: '',
+        cpf_cnpj: '',
         status: '',
         modelo: '',
         chassi: '',
@@ -1130,11 +1166,16 @@ app.get('/download-excel', async (req, res) => {
         lucro_ope: '',
         comissao: '',
         pontos: '',
-        // Coluna L, M, N
-        L: 'TOTAL DO VENDEDOR',
-        M: 'PONTOS: ' + pontosDoVendedor,
+        vendas: '',
+        llo: '',
+        captacao: '',
+        contrato: '',
+        retorno: '',
+        NPS: '',
+        L: 'TOTAL DO VENDEDOR: ' + nome_vendedor,
+        M: 'PONTOS: ' + (pontoInfoTotal.pontos || 0),
         N: 'COMISSÃO: ' + formatarReal(somaComissao),
-        O: 'TOTAL: ' + formatarReal(somaComissao + pontosDoVendedor)
+        O: 'TOTAL: ' + formatarReal(somaComissao + (pontoInfoTotal.pontos || 0))
       });
       // Linha em branco para separar
       worksheet.addRow({});
