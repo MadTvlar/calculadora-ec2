@@ -76,13 +76,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>Status</th>
-                  <th>Modelo</th>
-                  <th>Chassi</th>
-                  <th>Data da Venda</th>
-                  <th>Valor</th>
-                  <th>Lucro Op.</th>
-                  <th>Comissão</th>
+                  <th>STATUS</th>
+                  <th>MODELO</th>
+                  <th>CHASSI</th>
+                  <th>DATA DE VENDA</th>
+                  <th>VALOR DE VENDA</th>
+                  <th>LUCRO OPERACIONAL</th>
+                  <th>COMISSÃO</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,7 +116,6 @@
                   <% }); %>
                     <!-- Linha de totalizador do vendedor -->
                     <tr class="total-vendedor">
-
                       <td style="text-align:center; font-weight:bold; color:#38bdf8;">TOTAL DO VENDEDOR:
                       </td>
                       <td style="text-align:center; font-weight:bold; color:#38bdf8;">
@@ -138,21 +137,17 @@
                         <%= pontosDoVendedor %>
                           </span>
                       </td>
-
                       <td style="font-weight:bold; text-align:center; color:#38bdf8;">
                         COMISSÃO:
                         <%= somaComissao.toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' }) %>
                           </span>
                       </td>
-
                       <td style="font-weight:bold; text-align:center; color:#38bdf8;">
                         TOTAL:
                         <%= (somaComissao + pontosDoVendedor).toLocaleString('pt-BR', { style: 'currency' ,
                           currency: 'BRL' }) %>
                           </span>
                       </td>
-
-
                     </tr>
               </tbody>
             </table>

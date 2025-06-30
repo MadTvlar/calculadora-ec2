@@ -11,9 +11,6 @@ const dataFinal = `${year}-${month}-${day} 23:59:59`;
 
 async function fetchMkVendasSeminovas(pool) {
 
-  console.log('\nLimpando vendas_seminovas');
-  await pool.promise().query('TRUNCATE TABLE microwork.vendas_seminovas');
-
   console.log('Iniciando a consulta API de para a tabela microwork.vendas_seminovas')
 
   const filtros = `DesconsiderarEstornadoDevolvido=False;
