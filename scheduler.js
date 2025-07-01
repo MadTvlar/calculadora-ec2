@@ -62,7 +62,7 @@ async function executarAtualizacao() {
 }
 
 // Execução inicial
-executarAtualizacao();
+//executarAtualizacao();
 
 
 
