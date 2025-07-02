@@ -31,24 +31,24 @@ async function executarAtualizacao() {
     await fetchEstoqueMotos(pool);
     await delay(2000);
 
-    await fetchMkVendasMotos(pool);
-    await delay(2000);
+    //await fetchMkVendasMotos(pool);
+    //await delay(2000);
 
-    await fetchMKVendasSeminovas(pool);
-    await delay(2000);
+    //await fetchMKVendasSeminovas(pool);
+    //await delay(2000);
 
-    await fetchMkContratosMotos(pool);
-    await delay(2000);
+    //await fetchMkContratosMotos(pool);
+    //await delay(2000);
 
-    await fetchMkcaptacaoMotos(pool);
-    await delay(2000);
+    //await fetchMkcaptacaoMotos(pool);
+    //await delay(2000);
 
 
-    await atualizarRankings(pool);
-    await delay(2000);
+    //await atualizarRankings(pool);
+    //await delay(2000);
 
-    await fetchrankingPontosMotos(pool);
-    await delay(2000);
+    //await fetchrankingPontosMotos(pool);
+    //await delay(2000);
 
     const agora = new Date();
     await pool.promise().query(
@@ -62,7 +62,7 @@ async function executarAtualizacao() {
 }
 
 // Execução inicial
-//executarAtualizacao();
+executarAtualizacao();
 
 
 

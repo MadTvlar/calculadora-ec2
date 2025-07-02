@@ -4,9 +4,10 @@ require('dotenv').config();
 const now = new Date();
 const year = now.getFullYear();
 const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
 
 const dataInicial = `${year}-${month}-01 00:00:00`;
-const dataFinal = `${year}-${month}-30 23:59:59`;
+const dataFinal = `${year}-${month}-${day} 23:59:59`;
 
 async function fetchMkContratosMotos(pool) {
 

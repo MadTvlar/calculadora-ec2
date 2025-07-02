@@ -8,6 +8,7 @@
 
   <link rel="stylesheet" href="/css/rankvendasmotos.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 
 </head>
@@ -33,11 +34,29 @@
     </div>
   </div>
 
+  <div class="podio-title">
+    <h2>
+      RANKING - JUNHO DE 2025
+    </h2>
+  </div>
+
+  <div class="podio-container">
+    <img src="/images/2_colocado.png" alt="2º Colocado" class="podio-img" />
+    <img src="/images/1_colocado.png" alt="1º Colocado" class="podio-img" />
+    <img src="/images/3_colocado.png" alt="3º Colocado" class="podio-img" />
+  </div>
+
+  <div class="podio-podium">
+    <div class="podium-block second">2</div>
+    <div class="podium-block first">1</div>
+    <div class="podium-block third">3</div>
+  </div>
+
   <div class="card">
     <div class="rank-title">
       <h2>
-        RANKING GERAL - <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
-          <%= anoAtual %>
+        RANKING GERAL -<!--<%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
+          <%= anoAtual %> --> JUNHO 2025
       </h2>
       <p class="data-atualizacao">
         Atualizado em:
@@ -126,6 +145,19 @@
     document.querySelectorAll('.rank-table tbody tr').forEach((row, index) => {
       row.style.setProperty('--row-index', index);
     });
+
+    // Animação das bordas do pódio
+    window.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () {
+        document.querySelector('.podio-item.third')?.classList.add('ativo');
+      }, 700);
+      setTimeout(function () {
+        document.querySelector('.podio-item.second')?.classList.add('ativo');
+      }, 1300);
+      setTimeout(function () {
+        document.querySelector('.podio-item.first')?.classList.add('ativo');
+      }, 1900);
+    });
   </script>
 
   <footer class="footer">
@@ -155,6 +187,32 @@
       }
     };
   </script>
+
+  <script>
+    function confeteCantos() {
+      // Lado esquerdo (aponta para o centro)
+      confetti({
+        angle: 60, // Diagonal para o centro
+        spread: 130, // Aumenta o alcance lateral
+        startVelocity: 100, // Mais força para subir
+        particleCount: 180, // Mais partículas
+        origin: { x: 0, y: 1 }
+      });
+      // Lado direito (aponta para o centro)
+      confetti({
+        angle: 120, // Diagonal para o centro
+        spread: 130,
+        startVelocity: 100,
+        particleCount: 180,
+        origin: { x: 1, y: 1 }
+      });
+    }
+
+    setTimeout(confeteCantos, 2900);
+    setTimeout(confeteCantos, 3500);
+    setTimeout(confeteCantos, 4400);
+  </script>
+
 </body>
 
 </html>
