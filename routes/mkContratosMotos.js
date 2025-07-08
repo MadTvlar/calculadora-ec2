@@ -11,9 +11,6 @@ const dataFinal = `${year}-${month}-${day} 23:59:59`;
 
 async function fetchMkContratosMotos(pool) {
 
-  console.log('Limpando a tabela de contratos_motos')
-  await pool.promise().query('TRUNCATE TABLE microwork.contratos_motos');
-
   console.log('Iniciando a consulta API de Contratos Motos')
 
   const filtros = `Reposicao=True;
@@ -41,7 +38,7 @@ async function fetchMkContratosMotos(pool) {
     idrelatorioconfiguracao: 194,
     idrelatorioconsulta: 97,
     idrelatorioconfiguracaoleiaute: 194,
-    idrelatoriousuarioleiaute: 1098,
+    idrelatoriousuarioleiaute: 1146,
     ididioma: 1,
     listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 15],
     filtros: filtros
@@ -58,28 +55,31 @@ async function fetchMkContratosMotos(pool) {
   for (const moto of dados) {
 
     const query = `
-    INSERT INTO microwork.contratos_motos (
-    data_venda, quantidade, empresa, vendedor, administrador, proposta, contrato, cliente, ponto_venda, modelo, parcelas, valor_parcela, valor_credito)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-   ON DUPLICATE KEY UPDATE
-          data_venda = VALUES(data_venda),
-          quantidade = VALUES(quantidade),
-          empresa = VALUES(empresa),
-          vendedor = VALUES(vendedor),
-          administrador = VALUES(administrador),
-          proposta = VALUES(proposta),
-          cliente = VALUES(cliente),
-          ponto_venda = VALUES(ponto_venda),
-          modelo = VALUES(modelo),
-          parcelas = VALUES(parcelas),
-          valor_parcela = VALUES(valor_parcela),
-          valor_credito = VALUES(valor_credito)
+  INSERT INTO microwork.contratos_motos (
+    data_venda, quantidade, empresa, id_microwork, vendedor, administrador,
+    proposta, contrato, cliente, ponto_venda, modelo, parcelas, valor_parcela, valor_credito
+  )
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+  ON DUPLICATE KEY UPDATE
+    data_venda = VALUES(data_venda),
+    quantidade = VALUES(quantidade),
+    id_microwork = VALUES(id_microwork),
+    vendedor = VALUES(vendedor),
+    administrador = VALUES(administrador),
+    proposta = VALUES(proposta),
+    cliente = VALUES(cliente),
+    ponto_venda = VALUES(ponto_venda),
+    modelo = VALUES(modelo),
+    parcelas = VALUES(parcelas),
+    valor_parcela = VALUES(valor_parcela),
+    valor_credito = VALUES(valor_credito)
 `;
 
     const values = [
       moto.datavenda ? moto.datavenda.substring(0, 10) : null,
       moto.quantidade,
       moto.empresa,
+      moto.idpessoavendedor,
       moto.vendedor,
       moto.administradorareduzida,
       moto.proposta,
@@ -95,7 +95,7 @@ async function fetchMkContratosMotos(pool) {
 
     try {
       await pool.promise().query(query, values);
-      console.log(`Contrato ${moto.contrato} inserido com sucesso.`);
+      console.log(`Contrato ${moto.contrato}, se não existir, inserido com sucesso.`);
     } catch (error) {
       console.error(`Erro ao inserir Contrato ${moto.contrato}:`, error.message);
     }

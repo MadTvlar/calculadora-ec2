@@ -42,7 +42,7 @@ async function fetchMkVendasMotos(pool) {
     idrelatorioconfiguracao: 248,
     idrelatorioconsulta: 50,
     idrelatorioconfiguracaoleiaute: 248,
-    idrelatoriousuarioleiaute: 1120,
+    idrelatoriousuarioleiaute: 1143,
     ididioma: 1,
     listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13],
     filtros: filtros
@@ -58,7 +58,7 @@ async function fetchMkVendasMotos(pool) {
 
   for (const moto of dados) {
 
-    const dataVendaFormatada = moto.datavenda ? moto.datavenda.substring(0, 10) : null;
+    const dataMovimentacaoFormatada = moto.datamovimentacao ? moto.datamovimentacao.substring(0, 10) : null;
 
     const [rows] = await pool.promise().query(
       'SELECT empresa FROM microwork.vendas_motos WHERE doc_fiscal = ?',
@@ -111,7 +111,7 @@ async function fetchMkVendasMotos(pool) {
         moto.idpessoavendedor,
         moto.vendedor,
         moto.cpfoucnpjvendedor,
-        moto.datavenda ? moto.datavenda.substring(0, 10) : null,
+        moto.datamovimentacao ? moto.datamovimentacao.substring(0, 10) : null,
         moto.proposta,
         moto.docfiscal,
         moto.modelo,
@@ -134,9 +134,9 @@ async function fetchMkVendasMotos(pool) {
 
       try {
         await pool.promise().query(query, values);
-        console.log(`Chassi ${moto.chassi} com data ${dataVendaFormatada} inserido com sucesso.`);
+        console.log(`Chassi ${moto.chassi} com data ${dataMovimentacaoFormatada} inserido com sucesso.`);
       } catch (error) {
-        console.error(`Erro ao inserir chassi ${moto.chassi} com data ${dataVendaFormatada}:`, error.message);
+        console.error(`Erro ao inserir chassi ${moto.chassi} com data ${dataMovimentacaoFormatada}:`, error.message);
       }
     }
   }

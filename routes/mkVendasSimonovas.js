@@ -42,7 +42,7 @@ async function fetchMkVendasSeminovas(pool) {
     idrelatorioconfiguracao: 248,
     idrelatorioconsulta: 50,
     idrelatorioconfiguracaoleiaute: 248,
-    idrelatoriousuarioleiaute: 1120,
+    idrelatoriousuarioleiaute: 1145,
     ididioma: 1,
     listaempresas: [15],
     filtros: filtros
@@ -58,7 +58,7 @@ async function fetchMkVendasSeminovas(pool) {
 
   for (const moto of dados) {
 
-    const dataVendaFormatada = moto.datavenda ? moto.datavenda.substring(0, 10) : null;
+    const dataVendaFormatada = moto.datamovimentacao ? moto.datamovimentacao.substring(0, 10) : null;
 
     const [rows] = await pool.promise().query(
       'SELECT empresa FROM microwork.vendas_seminovas WHERE doc_fiscal = ?',
@@ -112,7 +112,7 @@ async function fetchMkVendasSeminovas(pool) {
         moto.idpessoavendedor,
         moto.vendedor,
         moto.cpfoucnpjvendedor,
-        moto.datavenda ? moto.datavenda.substring(0, 10) : null,
+        moto.datamovimentacao ? moto.datamovimentacao.substring(0, 10) : null,
         moto.proposta,
         moto.docfiscal,
         moto.modelo,

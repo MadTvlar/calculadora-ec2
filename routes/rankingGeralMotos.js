@@ -1,19 +1,33 @@
 require('dotenv').config();
 
 const representante = new Set([
-  '53.562.394 HUDSON SANTOS DE LIMA', 'KEDMA NASCIMENTO MORAES', 'JANDERSON MOCAMBIQUE DE SOUZA',
-  'C J T SIMAO TRANSPORTE POR NAVEGACAO FLUVIAL LTDA', '53.017.883 LUCIDALVA GARCIA DE SOUZA', '53.376.541 MATHEUS SILVA DE SOUZA',
-  'A C DE ALMEIDA', 'K. S. S. CARDOSO', 'L. C. M. DOS SANTOS', 'M A P ANGELIN CORPORATE LTDA',
-  'ODUÉNAVI DE MELO RIBEIRO PEREIRA', 'MOTO AMIL EIRELLI-ME', '47.551.394 JULIANA DA COSTA BEZERRA',
-  '47.551.394 JULIANA DA COSTA BEZERRA ', '70203 - KLAUSBERG DA SILVA LIMA (000.939.742-64)',
-  'KLAUSBERG DA SILVA LIMA', 'LUCIANO LINQUEO LESSE DOS SANTOS', 'JACKSON IURY ROCHA DA SILVA',
-  '60.618.200 SHIRLENE PINHO DE SOUZA', 'JULIANA DA COSTA BEZERRA', 'SHIRLENE PINHO DE SOUZA',
-  'FRANSUILDO DOS SANTOS SILVA', 'FRANSUILDO DOS SANTOS SILVA', 'LUCIANO LINQUEO LESSE DOS SANTOS',
-  '51.223.800 EDNALDO PEREIRA DO VALE'
+  'HUDSON SANTOS DE LIMA',
+  'KEDMA NASCIMENTO MORAES',
+  'JANDERSON MOCAMBIQUE DE SOUZA',
+  'C J T SIMAO TRANSPORTE POR NAVEGACAO FLUVIAL LTDA',
+  'LUCIDALVA GARCIA DE SOUZA',
+  'MATHEUS SILVA DE SOUZA',
+  'A C DE ALMEIDA',
+  'K. S. S. CARDOSO',
+  'L. C. M. DOS SANTOS',
+  'M A P ANGELIN CORPORATE LTDA',
+  'ODUÉNAVI DE MELO RIBEIRO PEREIRA',
+  'MOTO AMIL EIRELLI-ME',
+  'KLAUSBERG DA SILVA LIMA',
+  'LUCIANO LINQUEO LESSE DOS SANTOS',
+  'JACKSON IURY ROCHA DA SILVA',
+  'JULIANA DA COSTA BEZERRA',
+  'SHIRLENE PINHO DE SOUZA',
+  'FRANSUILDO DOS SANTOS SILVA',
+  'LUCIANO LINQUEO LESSE DOS SANTOS',
+  'EDNALDO PEREIRA DO VALE',
+  'LEONIDAS AUGUSTO PINEDO NETO'
 ]);
 
 async function atualizarRankings(pool) {
   const referenteMes = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
+  console.log(referenteMes);
+
 
   console.log('\nLimpando a tabela de ranking_geral');
   await pool.promise().query('TRUNCATE TABLE tropa_azul.ranking_geral');
@@ -40,42 +54,43 @@ async function atualizarRankings(pool) {
 
   const [rankVolume] = await pool.promise().query(`
   SELECT 
-  id_microwork,
-  ANY_VALUE(empresa) AS empresa,
-  vendedor,
-  SUM(quantidade) AS total_vendas
-FROM (
-  SELECT 
     id_microwork,
-    empresa,
-    TRIM(
-      REGEXP_REPLACE(
-        REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
-        ' [0-9.-]+$',
-        ''
-      )
-    ) AS vendedor,
-    quantidade
-  FROM microwork.vendas_motos
+    ANY_VALUE(empresa) AS empresa,
+    vendedor,
+    SUM(quantidade) AS total_vendas
+  FROM (
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
+          ' [0-9.-]+$',
+          ''
+        )
+      ) AS vendedor,
+      quantidade
+    FROM microwork.vendas_motos
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
 
-  UNION ALL
+    UNION ALL
 
-  SELECT 
-    id_microwork,
-    empresa,
-    TRIM(
-      REGEXP_REPLACE(
-        REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
-        ' [0-9.-]+$',
-        ''
-      )
-    ) AS vendedor,
-    quantidade
-  FROM microwork.vendas_seminovas
-) AS uniao
-GROUP BY id_microwork, vendedor
-ORDER BY total_vendas DESC;
-
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(vendedor, '^[0-9. ]+', ''),
+          ' [0-9.-]+$',
+          ''
+        )
+      ) AS vendedor,
+      quantidade
+    FROM microwork.vendas_seminovas
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+  ) AS uniao
+  GROUP BY id_microwork, vendedor
+  ORDER BY total_vendas DESC;
 `);
 
 
@@ -99,6 +114,7 @@ ORDER BY total_vendas DESC;
       lucro_ope,
       valor_venda_real
     FROM microwork.vendas_motos
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
 
     UNION ALL
 
@@ -115,6 +131,7 @@ ORDER BY total_vendas DESC;
       lucro_ope,
       valor_venda_real
     FROM microwork.vendas_seminovas
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
   ) AS uniao
   GROUP BY id_microwork, vendedor
   ORDER BY percentual_lucro DESC;
@@ -123,14 +140,10 @@ ORDER BY total_vendas DESC;
 
   const [rankCaptacao] = await pool.promise().query(`
   SELECT 
-    TRIM(SUBSTRING_INDEX(vendedor, ' - ', 1)) AS id_microwork,
+    id_microwork,
     TRIM(
       REGEXP_REPLACE(
-        REGEXP_REPLACE(
-          TRIM(SUBSTRING(vendedor, LOCATE('-', vendedor) + 1, LOCATE('(', vendedor) - LOCATE('-', vendedor) - 1)),
-          '^[0-9. ]+',
-          ''
-        ),
+        REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''),
         ' [0-9.-]+$',
         ''
       )
@@ -138,6 +151,7 @@ ORDER BY total_vendas DESC;
     COUNT(*) AS totalCaptado
   FROM microwork.captacao_motos
   WHERE vendedor IS NOT NULL
+    AND DATE_FORMAT(data_conclusao, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
   GROUP BY id_microwork, vendedor
   ORDER BY totalCaptado DESC;
 `);
@@ -145,7 +159,7 @@ ORDER BY total_vendas DESC;
 
   const [rankContrato] = await pool.promise().query(`
   SELECT 
-    NULL AS id_microwork,
+    id_microwork,
     empresa,
     TRIM(
       REGEXP_REPLACE(
@@ -156,9 +170,11 @@ ORDER BY total_vendas DESC;
     ) AS vendedor,
     COUNT(*) AS totalContratos
   FROM microwork.contratos_motos
-  GROUP BY empresa, vendedor
+  WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+  GROUP BY id_microwork, empresa, vendedor
   ORDER BY totalContratos DESC;
 `);
+
 
   const [rankRetorno] = await pool.promise().query(`
   SELECT 
@@ -174,9 +190,11 @@ ORDER BY total_vendas DESC;
     COUNT(*) - SUM(CASE WHEN quantidade = -1 THEN 2 ELSE 0 END) AS quantidadeRetorno
   FROM microwork.vendas_motos
   WHERE retorno_porcent >= 2
+    AND DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
   GROUP BY id_microwork, empresa, vendedor
   ORDER BY quantidadeRetorno DESC;
 `);
+
 
 
   const [retornoDetalhado] = await pool.promise().query(`
@@ -204,6 +222,7 @@ ORDER BY total_vendas DESC;
       END
     ) AS r4
   FROM microwork.vendas_motos
+  WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
   GROUP BY id_microwork, empresa, vendedor;
 `);
 

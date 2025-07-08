@@ -237,9 +237,10 @@ pool.getConnection((err, connection) => {
 
   const createContratosMotos = `
     CREATE TABLE IF NOT EXISTS microwork.contratos_motos (
-      data_venda DATETIME,
+      data_venda DATE,
       quantidade INT,
       empresa VARCHAR(5),
+      id_microwork INT,
       vendedor VARCHAR(255),
       administrador VARCHAR(20),
       proposta VARCHAR(50),
@@ -260,9 +261,11 @@ pool.getConnection((err, connection) => {
   const createcaptacaoMotos = `
     CREATE TABLE IF NOT EXISTS microwork.captacao_motos (
       empresa VARCHAR(5),
+      quantidade INT,
       n_avaliacao INT,
       data_conclusao DATETIME,
       situacao VARCHAR(20),
+      id_microwork INT,
       vendedor VARCHAR(255),
       avaliador VARCHAR(255),
       tipo VARCHAR(20),

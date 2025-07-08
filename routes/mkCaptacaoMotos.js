@@ -11,9 +11,6 @@ const dataFinal = `${year}-${month}-${day} 23:59:59`;
 
 async function fetchMkcaptacaoMotos(pool) {
 
-  console.log('Limpando a tabela de captacao_motos')
-  await pool.promise().query('TRUNCATE TABLE microwork.captacao_motos');
-
   console.log('Iniciando a consulta API de Contratos Motos')
 
   const filtros = `DataInicial=${dataInicial};
@@ -28,7 +25,7 @@ async function fetchMkcaptacaoMotos(pool) {
     idrelatorioconfiguracao: 531,
     idrelatorioconsulta: 198,
     idrelatorioconfiguracaoleiaute: 531,
-    idrelatoriousuarioleiaute: 1099,
+    idrelatoriousuarioleiaute: 1150,
     ididioma: 1,
     listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15],
     filtros: filtros
@@ -45,32 +42,23 @@ async function fetchMkcaptacaoMotos(pool) {
   for (const moto of dados) {
 
     const query = `
-    INSERT INTO microwork.captacao_motos (
-    empresa, n_avaliacao, data_conclusao, situacao, vendedor, avaliador, tipo, pessoa, modelo, cor, placa, chassi, valor_compra, data_emissao, valor_venda)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-   ON DUPLICATE KEY UPDATE
-          empresa = VALUES(empresa),
-          n_avaliacao = VALUES(n_avaliacao),
-          data_conclusao = VALUES(data_conclusao),
-          situacao = VALUES(situacao),
-          vendedor = VALUES(vendedor),
-          avaliador = VALUES(avaliador),
-          tipo = VALUES(tipo),
-          pessoa = VALUES(pessoa),
-          modelo = VALUES(modelo),
-          cor = VALUES(cor),
-          placa = VALUES(placa),
-          valor_compra = VALUES(valor_compra),
-          data_emissao = VALUES(data_emissao),
-          valor_venda = VALUES(valor_venda)
+  INSERT IGNORE INTO microwork.captacao_motos (
+    empresa, quantidade, n_avaliacao, data_conclusao, situacao,
+    id_microwork, vendedor, avaliador, tipo, pessoa, modelo, cor,
+    placa, chassi, valor_compra, data_emissao, valor_venda
+  )
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 `;
+
 
     const values = [
       moto.empresa,
+      moto.quantidade,
       moto.numeroavaliacao,
       moto.dataconclusao ? moto.dataconclusao.substring(0, 10) : null,
       moto.situacao,
-      moto.vendedorcompleto,
+      moto.vendedorcompleto.match(/^\d+/)?.[0] || null,
+      moto.vendedorcompleto.match(/- (.*?) \(/)?.[1]?.trim() || null,
       moto.avaliador,
       moto.tipoavaliacao,
       moto.pessoa,

@@ -34,6 +34,7 @@
     </div>
   </div>
 
+  <!--
   <div class="podio-title">
     <h2>
       RANKING - JUNHO DE 2025
@@ -51,12 +52,13 @@
     <div class="podium-block first">1</div>
     <div class="podium-block third">3</div>
   </div>
+  -->
 
   <div class="card">
     <div class="rank-title">
       <h2>
-        RANKING GERAL -<!--<%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
-          <%= anoAtual %> --> JUNHO 2025
+        RANKING GERAL - <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
+          <%= anoAtual %>
       </h2>
       <p class="data-atualizacao">
         Atualizado em:
@@ -188,7 +190,8 @@
     };
   </script>
 
-  <script>
+  <!--
+<script>
     function confeteCantos() {
       // Lado esquerdo (aponta para o centro)
       confetti({
@@ -212,7 +215,7 @@
     setTimeout(confeteCantos, 3500);
     setTimeout(confeteCantos, 4400);
   </script>
-
+-->
 </body>
 
 </html>
