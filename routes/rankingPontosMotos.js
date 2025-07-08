@@ -49,16 +49,16 @@ const fetchrankingPontosMotos = async (connection) => {
     let pontoPorLLO = 0;
     if (vendas >= 7) {
       if (llo >= 10 && llo < 12) pontoPorLLO = 50 * vendas;
-      else if (llo >= 12 && llo < 14) pontoPorLLO = 70 * vendas;
-      else if (llo >= 14 && llo < 16) pontoPorLLO = 80 * vendas;
-      else if (llo >= 16) pontoPorLLO = 90 * vendas;
+      else if (llo >= 12 && llo < 14) pontoPorLLO = 60 * vendas;
+      else if (llo >= 14 && llo < 16) pontoPorLLO = 70 * vendas;
+      else if (llo >= 16) pontoPorLLO = 80 * vendas;
     }
 
     let pontosPorCaptacao = 0;
     if (captacao >= 3 && captacao < 5) pontosPorCaptacao = 30;
     else if (captacao >= 5 && captacao < 8) pontosPorCaptacao = 40;
-    else if (captacao >= 8 && captacao < 12) pontosPorCaptacao = 50;
-    else if (captacao >= 12) pontosPorCaptacao = 60;
+    else if (captacao >= 8 && captacao < 10) pontosPorCaptacao = 50;
+    else if (captacao >= 10) pontosPorCaptacao = 60;
 
     let pontosPorContrato = 0;
     if (contrato >= 3 && contrato < 5) pontosPorContrato = 50;
@@ -70,13 +70,13 @@ const fetchrankingPontosMotos = async (connection) => {
     if (retorno >= 3) {
       if (retorno < 5) pontosPorRetorno = r2 * 30;
       else if (retorno >= 5 && r2 < 8) pontosPorRetorno = r2 * 40;
-      else if (retorno >= 8 && r2 < 12) pontosPorRetorno = r2 * 50;
-      else if (retorno >= 12) pontosPorRetorno = r2 * 60;
+      else if (retorno >= 8 && r2 < 10) pontosPorRetorno = r2 * 50;
+      else if (retorno >= 10) pontosPorRetorno = r2 * 60;
 
       if (retorno < 5) pontosPorRetorno += r4 * 50;
       else if (retorno >= 5 && r4 < 8) pontosPorRetorno += r4 * 60;
-      else if (retorno >= 8 && r4 < 12) pontosPorRetorno += r4 * 70;
-      else if (retorno >= 12) pontosPorRetorno += r4 * 80;
+      else if (retorno >= 8 && r4 < 10) pontosPorRetorno += r4 * 70;
+      else if (retorno >= 10) pontosPorRetorno += r4 * 80;
     }
 
     let pontosPorNPS = 0;
