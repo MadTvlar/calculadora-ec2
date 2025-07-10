@@ -266,11 +266,41 @@ app.get('/minhasvendas', (req, res) => {
   const idLogado = req.cookies.id_logado;
 
   const queryVendas = `
-    SELECT *
+  SELECT * FROM (
+    SELECT 
+      id_microwork,
+      valor_venda_real,
+      lucro_ope,
+      data_venda,
+      quantidade,
+      modelo,
+      chassi,
+      cor
     FROM microwork.vendas_motos
     WHERE id_microwork = ?
-    ORDER BY data_venda DESC
-  `;
+      AND data_venda >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+      AND data_venda < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
+
+    UNION ALL
+
+    SELECT 
+      id_microwork,
+      valor_venda_real,
+      lucro_ope,
+      data_venda,
+      quantidade,
+      modelo,
+      chassi,
+      cor
+    FROM microwork.vendas_seminovas
+    WHERE id_microwork = ?
+      AND data_venda >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+      AND data_venda < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
+  ) AS vendas_unificadas
+  ORDER BY data_venda DESC
+`;
+
+
 
   const queryPontos = `
     SELECT pontos
@@ -281,13 +311,13 @@ app.get('/minhasvendas', (req, res) => {
   // Executa as duas consultas em paralelo
   Promise.all([
     new Promise((resolve, reject) => {
-      connection.query(queryVendas, [idLogado], (err, results) => {
+      connection.query(queryVendas, [idLogado, idLogado], (err, results) => {
         if (err) return reject(err);
         resolve(results);
       });
     }),
     new Promise((resolve, reject) => {
-      connection.query(queryPontos, [idLogado], (err, results) => {
+      connection.query(queryPontos, [idLogado, idLogado], (err, results) => {
         if (err) return reject(err);
         resolve(results[0] ? results[0].pontos : 0); // Se não tiver resultado, retorna 0
       });
