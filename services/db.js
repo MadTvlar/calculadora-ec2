@@ -316,6 +316,23 @@ pool.getConnection((err, connection) => {
   connection.query(createNPSGeral);
 
 
+  const createShare = `
+    CREATE TABLE IF NOT EXISTS microwork.share (
+      data_emplcamento date DEFAULT NULL,
+      municipio varchar(30) DEFAULT NULL,
+      fabricante varchar(20) DEFAULT NULL,
+      empresa varchar(60) DEFAULT NULL,
+      modelo varchar(60) DEFAULT NULL,
+      ano int DEFAULT NULL,
+      placa varchar(9) DEFAULT NULL,
+      uf varchar(2) DEFAULT NULL,
+      chassi varchar(20) DEFAULT NULL,
+      UNIQUE KEY unq_chassi_placa (chassi,placa)
+    );
+  `;
+
+  connection.query(createShare);
+
 
   const createRankingPontos = `
   CREATE TABLE IF NOT EXISTS ranking_pontos (

@@ -64,4 +64,5 @@ async function executarAtualizacao() {
 // Execução inicial
 executarAtualizacao();
 
+
 console.log('Tarefas agendadas e execução inicial realizada.');

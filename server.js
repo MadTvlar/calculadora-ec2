@@ -36,6 +36,8 @@ app.set('views', path.join(__dirname, 'templates'));
 
 const rotaNPS = require('./routes/nps');
 app.use('/nps', rotaNPS);
+const rotaMercado = require('./routes/mercado');
+app.use('/', rotaMercado);
 
 // CONFIGURAÇÃO AUXILIAres
 const query = util.promisify(connection.query).bind(connection);
@@ -213,6 +215,37 @@ app.get('/reservasmotos', async (req, res) => {
     console.error('Erro ao buscar reservas de motos:', err);
     res.status(500).render('erro', { mensagem: 'Erro ao buscar reservas de motos' });
   }
+});
+
+// CHAMADO PARA JOGAR PARA PAGINA DE MERCADO
+app.get('/mercado', (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+
+  res.render('mercado', {
+    usuario: usuarioLogado,
+    grupo: grupoLogado,
+    ultimaDataUpload: ultimaDataUpload ? new Date(ultimaDataUpload).toLocaleString('pt-BR') : null
+  });
+});
+
+// Variável para armazenar a data do último upload (em memória)
+let ultimaDataUpload = null;
+
+const multer = require('multer');
+const upload = multer({ dest: path.join(__dirname, 'uploads') });
+
+
+// Rota para upload do Excel
+app.post('/upload-excel', upload.single('excelFile'), (req, res) => {
+  if (req.file) {
+    ultimaDataUpload = Date.now();
+  }
+  res.redirect('/mercado');
 });
 
 // CHAMADO PARA O BOTÃO DE ADICIONAR USUÁRIO
@@ -452,23 +485,26 @@ app.get('/resumomotos', async (req, res) => {
 
     // Coleta dos dados
     const [rankVolume] = await connection.promise().query(`
-    SELECT 
+  SELECT 
     id_microwork, 
     vendedor, 
     SUM(quantidade) AS total_vendas
-    FROM (
-    SELECT id_microwork, vendedor, quantidade 
+  FROM (
+    SELECT id_microwork, vendedor, quantidade, data_venda 
     FROM microwork.vendas_motos
+    WHERE MONTH(data_venda) = MONTH(CURRENT_DATE()) 
+      AND YEAR(data_venda) = YEAR(CURRENT_DATE())
 
     UNION ALL
 
-    SELECT id_microwork, vendedor, quantidade 
+    SELECT id_microwork, vendedor, quantidade, data_venda 
     FROM microwork.vendas_seminovas
-    ) AS todas_vendas
-    GROUP BY id_microwork, vendedor
-    ORDER BY total_vendas DESC;
+    WHERE MONTH(data_venda) = MONTH(CURRENT_DATE()) 
+      AND YEAR(data_venda) = YEAR(CURRENT_DATE())
+  ) AS todas_vendas
+  GROUP BY id_microwork, vendedor
+  ORDER BY total_vendas DESC
 `);
-
 
 
     const [rankLLO] = await connection.promise().query(`
@@ -478,35 +514,43 @@ app.get('/resumomotos', async (req, res) => {
   FROM (
     SELECT vendedor, lucro_ope, valor_venda_real
     FROM microwork.vendas_motos
+    WHERE MONTH(data_venda) = MONTH(CURRENT_DATE()) 
+      AND YEAR(data_venda) = YEAR(CURRENT_DATE())
 
     UNION ALL
 
     SELECT vendedor, lucro_ope, valor_venda_real
     FROM microwork.vendas_seminovas
+    WHERE MONTH(data_venda) = MONTH(CURRENT_DATE()) 
+      AND YEAR(data_venda) = YEAR(CURRENT_DATE())
   ) AS todas_vendas
   GROUP BY vendedor
   ORDER BY percentual_lucro DESC;
 `);
 
 
-
     const [rankCaptacao] = await connection.promise().query(`
-      SELECT 
-      TRIM(vendedor) AS vendedor,
-      COUNT(*) AS totalCaptado
-      FROM microwork.captacao_motos
-      GROUP BY vendedor
-      ORDER BY totalCaptado DESC;
-    `);
+  SELECT 
+    TRIM(vendedor) AS vendedor,
+    COUNT(*) AS totalCaptado
+  FROM microwork.captacao_motos
+  WHERE MONTH(data_conclusao) = MONTH(CURRENT_DATE())
+    AND YEAR(data_conclusao) = YEAR(CURRENT_DATE())
+  GROUP BY vendedor
+  ORDER BY totalCaptado DESC;
+`);
+
 
     const [rankContrato] = await connection.promise().query(`
-      SELECT 
-      TRIM(vendedor) AS vendedor,
-      COUNT(*) AS totalContratos
-      FROM microwork.contratos_motos
-      GROUP BY vendedor
-      ORDER BY totalContratos DESC;
-    `);
+  SELECT 
+    TRIM(vendedor) AS vendedor,
+    COUNT(*) AS totalContratos
+  FROM microwork.contratos_motos
+  WHERE MONTH(data_venda) = MONTH(CURRENT_DATE())
+    AND YEAR(data_venda) = YEAR(CURRENT_DATE())
+  GROUP BY vendedor
+  ORDER BY totalContratos DESC;
+`);
 
     const [rankRetorno] = await connection.promise().query(`
   SELECT 
@@ -521,16 +565,21 @@ app.get('/resumomotos', async (req, res) => {
     SELECT vendedor, quantidade, retorno_porcent
     FROM microwork.vendas_motos
     WHERE retorno_porcent >= 2
+      AND MONTH(data_venda) = MONTH(CURRENT_DATE())
+      AND YEAR(data_venda) = YEAR(CURRENT_DATE())
 
     UNION ALL
 
     SELECT vendedor, quantidade, retorno_porcent
     FROM microwork.vendas_seminovas
     WHERE retorno_porcent >= 2
+      AND MONTH(data_venda) = MONTH(CURRENT_DATE())
+      AND YEAR(data_venda) = YEAR(CURRENT_DATE())
   ) AS todas_vendas
   GROUP BY vendedor
   ORDER BY quantidadeRetorno DESC;
 `);
+
 
 
 
@@ -584,19 +633,25 @@ app.get('/resumomotos', async (req, res) => {
     const mesAtual = dataAtual.toLocaleString('pt-BR', { month: 'long' }).toLowerCase();
 
     const [dadosUsuario] = await connection.promise().query(`
-      SELECT 
-        SUM(quantidade) AS volume,
-        SUM(lucro_ope) AS totalOpe,
-        SUM(valor_venda_real) AS totalVendaReal
-      FROM microwork.vendas_motos
-      WHERE id_microwork = ?
-    `, [idLogado]);
+  SELECT 
+    SUM(quantidade) AS volume,
+    SUM(lucro_ope) AS totalOpe,
+    SUM(valor_venda_real) AS totalVendaReal
+  FROM microwork.vendas_motos
+  WHERE id_microwork = ?
+    AND MONTH(data_venda) = MONTH(CURRENT_DATE())
+    AND YEAR(data_venda) = YEAR(CURRENT_DATE())
+`, [idLogado]);
+
 
     const [retornos] = await connection.promise().query(`
-      SELECT retorno_porcent 
-      FROM microwork.vendas_motos 
-      WHERE id_microwork = ?
-    `, [idLogado]);
+  SELECT retorno_porcent 
+  FROM microwork.vendas_motos 
+  WHERE id_microwork = ?
+    AND MONTH(data_venda) = MONTH(CURRENT_DATE())
+    AND YEAR(data_venda) = YEAR(CURRENT_DATE())
+`, [idLogado]);
+
 
     const listaRetornos = retornos.map(r => r.retorno_porcent);
 
@@ -710,14 +765,16 @@ app.get('/rh', (req, res) => {
     END AS status
 
   FROM (
-    SELECT 
-      empresa, id_microwork, modelo, chassi, vendedor, valor_venda, lucro_ope, quantidade, data_venda
-    FROM microwork.vendas_motos
-    UNION ALL
-    SELECT 
-      empresa, id_microwork, modelo, chassi, vendedor, lucro_ope, valor_venda, quantidade, data_venda
-    FROM microwork.vendas_seminovas
-  ) vm
+  SELECT 
+    empresa, id_microwork, modelo, chassi, vendedor, valor_venda, lucro_ope, quantidade, data_venda
+  FROM microwork.vendas_motos
+  WHERE YEAR(data_venda) = YEAR(CURDATE()) AND MONTH(data_venda) = MONTH(CURDATE())
+  UNION ALL
+  SELECT 
+    empresa, id_microwork, modelo, chassi, vendedor, lucro_ope, valor_venda, quantidade, data_venda
+  FROM microwork.vendas_seminovas
+  WHERE YEAR(data_venda) = YEAR(CURDATE()) AND MONTH(data_venda) = MONTH(CURDATE())
+) vm
   LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
   ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
 `;

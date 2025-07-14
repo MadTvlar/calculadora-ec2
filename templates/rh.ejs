@@ -34,10 +34,6 @@
     <input type="text" id="searchInput" placeholder="🔎 Pesquisar por nome do vendedor...">
   </div>
 
-  <div class="download-container">
-    <a href="/download-excel" class="download-btn">⬇️ Baixar Excel Completo</a>
-  </div>
-
   <% const pontosPorId={}; pontos.forEach(p=> pontosPorId[p.id_microwork] =
     p.pontos);
 
@@ -54,8 +50,26 @@
     });
     %>
 
+    <div class="download-container">
+      <a href="/download-excel" class="download-btn">⬇️ Baixar Excel Completo</a>
+      <div class="select-wrapper">
+        <div class="select-trigger" id="selectTrigger">
+          <span id="selectedOption">Filtrar por Filial</span>
+          <i class="arrow">▼</i>
+        </div>
+        <div class="select-options" id="selectOptions">
+          <div class="option" data-filial="todas">Todas as Filiais</div>
+          <% Object.keys(vendasPorFilial).sort().forEach(filial=> { %>
+            <div class="option" data-filial="<%= filial %>">
+              <%= filial %>
+            </div>
+            <% }); %>
+        </div>
+      </div>
+    </div>
+
     <% Object.keys(vendasPorFilial).sort().forEach(filial=> { %>
-      <div class="filial-card">
+      <div class="filial-card" id="filial-<%= filial.replace(/\s+/g, '-').toLowerCase() %>" data-filial="<%= filial %>">
         <h1>📍 Filial: <%= filial %>
         </h1>
 
@@ -170,47 +184,135 @@
         </footer>
 
         <script>
-          document.getElementById("user-button").addEventListener("click", function () {
-            document.getElementById("user-dropdown").classList.toggle("show");
-          });
+          document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("user-button").addEventListener("click", function () {
+              document.getElementById("user-dropdown").classList.toggle("show");
+            });
 
-          window.onclick = function (event) {
-            if (!event.target.matches('#user-button')) {
-              var dropdowns = document.getElementsByClassName("dropdown-content");
-              for (var i = 0; i < dropdowns.length; i++) {
-                if (dropdowns[i].classList.contains('show')) {
-                  dropdowns[i].classList.remove('show');
+            window.onclick = function (event) {
+              if (!event.target.matches('#user-button')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                  if (dropdowns[i].classList.contains('show')) {
+                    dropdowns[i].classList.remove('show');
+                  }
                 }
               }
-            }
-          };
+            };
 
-          const searchInput = document.getElementById('searchInput');
-          const filialCards = document.querySelectorAll('.filial-card');
+            const searchInput = document.getElementById('searchInput');
+            const filialCards = document.querySelectorAll('.filial-card');
+            const selectTrigger = document.getElementById('selectTrigger');
+            const selectOptions = document.getElementById('selectOptions');
+            const selectedOption = document.getElementById('selectedOption');
+            const options = document.querySelectorAll('.option');
+            const footer = document.querySelector('.footer');
 
-          searchInput.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase().trim();
+            let currentFilter = null; // Começa sem filtro
 
+            // Esconde todos os cards de filial ao carregar
             filialCards.forEach(card => {
-              const vendedorInfos = card.querySelectorAll('.vendedor-info');
-              let filialHasVisibleVendedor = false;
+              card.style.display = 'none';
+            });
 
-              vendedorInfos.forEach(info => {
-                const vendedorText = info.querySelector('h2').textContent.toLowerCase();
-                if (vendedorText.includes(searchTerm)) {
-                  info.style.display = 'block';
-                  filialHasVisibleVendedor = true;
+            // Toggle do dropdown
+            selectTrigger.addEventListener('click', function () {
+              selectOptions.classList.toggle('show');
+              selectTrigger.classList.toggle('active');
+            });
+
+            // Fechar dropdown ao clicar fora
+            document.addEventListener('click', function (event) {
+              if (!selectTrigger.contains(event.target) && !selectOptions.contains(event.target)) {
+                selectOptions.classList.remove('show');
+                selectTrigger.classList.remove('active');
+              }
+            });
+
+            // Event listeners para as opções
+            options.forEach(option => {
+              option.addEventListener('click', function () {
+                const selectedFilial = this.getAttribute('data-filial');
+                const selectedText = this.textContent;
+
+                // Atualiza o texto do trigger
+                selectedOption.textContent = selectedText;
+
+                // Remove classe selected de todas as opções
+                options.forEach(opt => opt.classList.remove('selected'));
+                // Adiciona classe selected à opção clicada
+                this.classList.add('selected');
+
+                // Fecha o dropdown
+                selectOptions.classList.remove('show');
+                selectTrigger.classList.remove('active');
+
+                // Aplica o filtro
+                filterByFilial(selectedFilial);
+              });
+            });
+
+            // Função para filtrar por filial
+            function filterByFilial(selectedFilial) {
+              currentFilter = selectedFilial;
+              applyFilters();
+            }
+
+            // Função combinada de busca e filtro
+            function applyFilters() {
+              const searchTerm = searchInput.value.toLowerCase().trim();
+              let algumCardVisivel = false;
+
+              filialCards.forEach(card => {
+                const cardFilial = card.getAttribute('data-filial');
+                const vendedorInfos = card.querySelectorAll('.vendedor-info');
+                let filialHasVisibleVendedor = false;
+
+                // Verifica se a filial está no filtro ativo
+                const filialMatches = !currentFilter || currentFilter === 'todas' || cardFilial === currentFilter;
+
+                if (filialMatches) {
+                  vendedorInfos.forEach(info => {
+                    const vendedorText = info.querySelector('h2').textContent.toLowerCase();
+                    if (searchTerm && vendedorText.includes(searchTerm)) {
+                      info.style.display = 'block';
+                      filialHasVisibleVendedor = true;
+                    } else if (!searchTerm) {
+                      info.style.display = 'block';
+                      filialHasVisibleVendedor = true;
+                    } else {
+                      info.style.display = 'none';
+                    }
+                  });
+
+                  // NOVA LÓGICA: se filtro for 'todas' e busca vazia, mostra todos os cards
+                  if ((currentFilter === 'todas' && !searchTerm) || ((searchTerm || (currentFilter && currentFilter !== 'todas')) && filialHasVisibleVendedor)) {
+                    card.style.display = 'block';
+                    algumCardVisivel = true;
+                  } else if (filialHasVisibleVendedor && (searchTerm || (currentFilter && currentFilter !== 'todas'))) {
+                    card.style.display = 'block';
+                    algumCardVisivel = true;
+                  } else {
+                    card.style.display = 'none';
+                  }
                 } else {
-                  info.style.display = 'none';
+                  card.style.display = 'none';
                 }
               });
 
-              if (filialHasVisibleVendedor) {
-                card.style.display = 'block';
+              // Alterna o footer entre fixo e relativo
+              if (algumCardVisivel) {
+                footer.classList.remove('footer-fixed');
+                footer.classList.add('footer-relative');
               } else {
-                card.style.display = 'none';
+                footer.classList.remove('footer-relative');
+                footer.classList.add('footer-fixed');
               }
-            });
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            // Garante que o footer fique correto ao carregar
+            applyFilters();
           });
         </script>
 </body>
