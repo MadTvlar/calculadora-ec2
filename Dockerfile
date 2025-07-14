@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm ci --no-audit --progress=true
 
 # Copia todo o resto
-COPY . .
+COPY ./ ./
 
 EXPOSE 8080
 CMD ["node", "server.js"]
