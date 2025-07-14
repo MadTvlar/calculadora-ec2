@@ -5,7 +5,8 @@ NOW=$(date '+%Y-%m-%d %H:%M:%S')
 echo "⏰ $NOW - Iniciando deploy..."
 
 echo "🔁 Atualizando repositório..."
-git pull origin main
+git fetch --all
+git reset --hard origin/main
 
 echo "🔧 Buildando Docker com timeout..."
 DOCKER_BUILDKIT=1 timeout 300 docker-compose build || {
