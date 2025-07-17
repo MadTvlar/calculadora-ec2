@@ -263,7 +263,7 @@ pool.getConnection((err, connection) => {
       empresa VARCHAR(5),
       quantidade INT,
       n_avaliacao INT,
-      data_conclusao DATETIME,
+      data_conclusao DATE,
       situacao VARCHAR(20),
       id_microwork INT,
       vendedor VARCHAR(255),
@@ -299,6 +299,16 @@ pool.getConnection((err, connection) => {
 
   connection.query(createRankingGeral);
 
+
+  const createAlterVision = `
+    CREATE TABLE IF NOT EXISTS altervision.altervision (
+      data DATE,
+      empresa VARCHAR(30),
+      quantidade INT
+    );
+  `;
+
+  connection.query(createAlterVision);
 
 
   const createNPSGeral = `

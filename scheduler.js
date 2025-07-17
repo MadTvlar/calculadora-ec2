@@ -11,6 +11,7 @@ const fetchMKVendasSeminovas = require('./routes/mkVendasSimonovas');
 const fetchMkContratosMotos = require('./routes/mkContratosMotos');
 const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
 const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
+const fetchAltervision = require('./routes/altervision');
 
 
 
@@ -63,6 +64,8 @@ async function executarAtualizacao() {
 
 // Execução inicial
 executarAtualizacao();
+//fetchAltervision(pool);
+
 
 
 console.log('Tarefas agendadas e execução inicial realizada.');

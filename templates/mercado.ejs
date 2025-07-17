@@ -13,13 +13,15 @@
 
     body {
       font-family: 'Inter', Arial, sans-serif;
-      background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
-      color: #e0e6ed;
+      background: #f6f8fa;
+      color: #232946;
       margin: 0;
       padding: 0;
       min-height: 100vh;
       text-align: center;
       overflow-x: hidden;
+      overflow-y: hidden;
+      /* Remove rolagem vertical */
       position: relative;
       letter-spacing: 0.5px;
     }
@@ -32,8 +34,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      background: rgba(20, 30, 48, 0.85);
-      box-shadow: 0 4px 32px 0 #38bdf8cc;
+      background: rgba(24, 28, 41, 0.85);
+      box-shadow: 0 2px 16px 0 #38bdf855;
       padding: 10px 60px 10px 60px;
       z-index: 1000;
       border-bottom: 2px solid #38bdf8;
@@ -90,7 +92,7 @@
       padding: 8px 14px;
       border-radius: 8px;
       border: 1.5px solid #38bdf8;
-      background: rgba(44, 83, 100, 0.25);
+      background: rgba(35, 41, 70, 0.7);
       color: #e0e6ed;
       font-size: 1rem;
       font-weight: 600;
@@ -98,20 +100,20 @@
       text-align: center;
       outline: none;
       transition: border 0.2s, box-shadow 0.2s;
-      box-shadow: 0 0 8px #38bdf855;
+      box-shadow: 0 0 4px #38bdf822;
     }
 
     .user-container input:focus,
     .user-container select:focus {
-      border-color: #7f5af0;
-      box-shadow: 0 0 16px #7f5af0cc;
+      border-color: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
     }
 
     h1,
     h2 {
       font-family: 'Orbitron', Arial, sans-serif;
       color: #38bdf8;
-      text-shadow: 0 2px 12px #7f5af0cc;
+      text-shadow: 0 0 8px #38bdf8, 0 0 16px #38bdf822;
       margin-top: 60px;
       margin-bottom: 18px;
       letter-spacing: 1.5px;
@@ -120,7 +122,7 @@
     h2 {
       font-size: 1.3rem;
       color: #e0e6ed;
-      text-shadow: 0 2px 8px #38bdf8cc;
+      text-shadow: 0 0 8px #38bdf8cc;
       margin-top: 30px;
     }
 
@@ -129,13 +131,13 @@
       bottom: 0;
       left: 0;
       width: 100vw;
-      background: rgba(20, 30, 48, 0.92);
+      background: rgba(24, 28, 41, 0.92);
       color: #38bdf8;
       font-size: 1.1rem;
       padding: 0.5%;
       text-align: center;
       border-top: 2px solid #38bdf8;
-      box-shadow: 0 -2px 24px #7f5af055;
+      box-shadow: 0 -2px 12px #38bdf822;
       letter-spacing: 1px;
       z-index: 1002;
       backdrop-filter: blur(6px);
@@ -241,6 +243,127 @@
     .show {
       display: block;
     }
+
+    /* Neon sutil em botões */
+    button,
+    input[type="submit"] {
+      background: #181c29;
+      color: #38bdf8;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 0 8px #38bdf822;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    }
+
+    button:hover,
+    input[type="submit"]:hover {
+      background: #232946;
+      color: #fff;
+      box-shadow: 0 0 16px #38bdf8;
+    }
+
+    /* Inputs mais clean */
+    .user-container input,
+    .user-container select {
+      background: rgba(35, 41, 70, 0.7);
+      color: #e0e6ed;
+      border: 1.5px solid #38bdf8;
+      box-shadow: 0 0 4px #38bdf822;
+    }
+
+    .user-container input:focus,
+    .user-container select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+
+    /* Estilo para o formulário de upload */
+    .upload-form-container {
+      margin-top: 180px;
+      margin-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .upload-form-label {
+      font-weight: bold;
+      color: #274472;
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .upload-form-input {
+      margin: 18px 0 24px 0;
+      padding: 16px 18px;
+      border-radius: 10px;
+      border: 2px solid #274472;
+      background: #e6f0fa;
+      color: #232946;
+      font-size: 1.1rem;
+      width: 320px;
+      box-sizing: border-box;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #27447222;
+    }
+
+    .upload-form-input:focus {
+      border-color: #38bdf8;
+      outline: none;
+      box-shadow: 0 0 12px #38bdf8aa;
+    }
+
+    .upload-form-button {
+      background: #274472;
+      color: #fff;
+      font-weight: 700;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.15rem;
+      font-family: 'Orbitron', Arial, sans-serif;
+      transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+      box-shadow: 0 2px 12px #38bdf855;
+      letter-spacing: 1px;
+    }
+
+    .upload-form-button:hover {
+      background: #38bdf8;
+      color: #232946;
+      box-shadow: 0 0 18px #38bdf8cc;
+    }
+
+    .upload-success-message {
+      background: #38bdf8;
+      color: #232946;
+      font-weight: bold;
+      font-size: 1.15rem;
+      padding: 16px 32px;
+      border-radius: 10px;
+      margin: 0 auto 24px auto;
+      width: fit-content;
+      box-shadow: 0 2px 12px #38bdf855;
+      letter-spacing: 1px;
+      animation: surgindo 1s;
+    }
+
+    .upload-error-message {
+      background: #ff3333;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.15rem;
+      padding: 16px 32px;
+      border-radius: 10px;
+      margin: 0 auto 24px auto;
+      width: fit-content;
+      box-shadow: 0 2px 12px #ff333355;
+      letter-spacing: 1px;
+      animation: surgindo 1s;
+    }
   </style>
 
 
@@ -251,7 +374,7 @@
   <div class="top-container">
     <div class="logo-container">
       <a href="/segmentos">
-        <img src="/images/tvlar_motos.png" alt="TVLAR MOTOS" class="logo">
+        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
       </a>
     </div>
 
@@ -268,15 +391,12 @@
     </div>
   </div>
 
-
-  <div style="margin-top: 180px; margin-bottom: 40px;">
+  <div class="upload-form-container">
     <form id="upload-excel-form" action="/upload" method="POST" enctype="multipart/form-data">
-      <label for="excelFile" style="font-weight:bold; color:#38bdf8; font-size:1.1rem;">Enviar arquivo
-        Excel:</label><br>
-      <input type="file" id="excelFile" name="excelFile" accept=".xlsx,.xls"
-        style="margin: 16px 0; padding: 8px; border-radius: 8px; border: 1.5px solid #38bdf8; background: rgba(44,83,100,0.15); color: #e0e6ed;">
-      <button type="submit"
-        style="background: rgba(44, 83, 100, 0.3); color: #e0e6ed; font-weight:600; padding: 10px 24px; border: 1.5px solid #38bdf8; border-radius: 8px; cursor:pointer; font-size:1rem; font-family:'Orbitron', Arial, sans-serif; transition: all 0.3s;">Enviar</button>
+      <label for="excelFile" class="upload-form-label">Enviar arquivo Excel:</label><br>
+      <input type="file" id="excelFile" name="excelFile" accept=".xlsx,.xls" class="upload-form-input">
+      <button type="submit" class="upload-form-button">Enviar</button>
+      <div id="upload-message" style="display:none;"></div>
     </form>
   </div>
 
@@ -309,11 +429,40 @@
         }
       };
 
+      // Feedback ao enviar formulário
+      var uploadForm = document.getElementById('upload-excel-form');
+      var feedbackDiv = document.getElementById('upload-feedback');
+      uploadForm.addEventListener('submit', function () {
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.innerHTML = '<div style="background:#274472;color:#fff;font-weight:bold;padding:14px 32px;border-radius:10px;box-shadow:0 2px 12px #38bdf855;font-size:1.1rem;letter-spacing:1px;">Enviando arquivo...</div>';
+      });
 
+      /// Exibir mensagem de sucesso/erro só após envio
+      var urlParams = new URLSearchParams(window.location.search);
+      var success = urlParams.get('success');
+      var inseridos = urlParams.get('inseridos');
+      var uploadMsg = document.getElementById('upload-message');
+      if (success !== null && inseridos !== null) {
+        if (success == '1' && parseInt(inseridos) > 0) {
+          uploadMsg.style.display = 'block';
+          uploadMsg.className = 'upload-success-message';
+          uploadMsg.innerHTML = `Arquivo enviado e ${inseridos} registro${inseridos > 1 ? 's' : ''} inserido${inseridos > 1 ? 's' : ''} com sucesso!`;
+        } else {
+          uploadMsg.style.display = 'block';
+          uploadMsg.className = 'upload-error-message';
+          uploadMsg.innerHTML = 'Nenhum dado válido foi inserido. Verifique o arquivo enviado.';
+        }
+        // Scroll até a mensagem
+        uploadMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-
-
-
+        // Remove os parâmetros da URL sem recarregar a página, mas só depois de exibir a mensagem
+        setTimeout(function () {
+          if (window.history.replaceState) {
+            const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: url }, '', url);
+          }
+        }, 100); // Pequeno delay para garantir exibição
+      }
     });
   </script>
 </body>

@@ -221,12 +221,19 @@ app.get('/reservasmotos', async (req, res) => {
 app.get('/mercado', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   const grupoLogado = req.cookies.grupo_logado;
+  let { success, inseridos } = req.query;
 
   if (!usuarioLogado) {
     return res.redirect('/');
   }
 
+  // Só define se realmente vieram na query
+  success = (typeof success !== 'undefined' && success !== '') ? success : undefined;
+  inseridos = (typeof inseridos !== 'undefined' && inseridos !== '') ? inseridos : undefined;
+
   res.render('mercado', {
+    success,
+    inseridos,
     usuario: usuarioLogado,
     grupo: grupoLogado,
     ultimaDataUpload: ultimaDataUpload ? new Date(ultimaDataUpload).toLocaleString('pt-BR') : null
@@ -379,6 +386,10 @@ app.get('/minhasvendas', (req, res) => {
 // CHAMADO PARA O MEU RANK DE MOTOS POR PONTO
 app.get('/rankmotos', async (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
 
   try {
     const [rankingGeral] = await connection.promise().query(`
@@ -1147,14 +1158,19 @@ app.get('/download-excel', async (req, res) => {
     SELECT 
       empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi, valor_venda, lucro_ope, quantidade, data_venda
     FROM microwork.vendas_motos
+    WHERE YEAR(data_venda) = YEAR(CURRENT_DATE()) AND MONTH(data_venda) = MONTH(CURRENT_DATE())
+
     UNION ALL
+
     SELECT 
       empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi, valor_venda, lucro_ope, quantidade, data_venda
     FROM microwork.vendas_seminovas
+    WHERE YEAR(data_venda) = YEAR(CURRENT_DATE()) AND MONTH(data_venda) = MONTH(CURRENT_DATE())
   ) vm
   LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
   ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
 `;
+
 
 
 

@@ -26,6 +26,7 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
       'Município': 'municipio',
       'Fabricante': 'fabricante',
       'Razão Social': 'empresa',
+      'CNPJ': 'cnpj',
       'Modelo': 'modelo',
       'Ano Fabricação': 'ano',
       'Placa': 'placa',
@@ -50,26 +51,24 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
       }
     }
 
-    // Monta os dados para inserir, agrupando por tabela
     const dadosPorTabela = {};
+    const empresasComCnpj = new Set(); // Para armazenar empresas únicas com CNPJ
 
     worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber <= 2) return; // pula header e subheader
+      if (rowNumber <= 2) return;
+
       let valorData = row.getCell(colIndexes['data_emplacamento']).value;
       let data_emplacamento = null;
+
       if (valorData) {
         if (valorData instanceof Date) {
           data_emplacamento = valorData;
         } else if (typeof valorData === 'string') {
-          // Pega só os 10 primeiros caracteres
           const dataStr = valorData.slice(0, 10);
-          // Tenta converter do formato dd/mm/yyyy ou yyyy-mm-dd
           const partes = dataStr.split('/');
           if (partes.length === 3) {
-            // dd/mm/yyyy
             data_emplacamento = new Date(`${partes[2]}-${partes[1]}-${partes[0]}`);
           } else if (!isNaN(Date.parse(dataStr))) {
-            // yyyy-mm-dd ou outro formato reconhecido
             data_emplacamento = new Date(dataStr);
           }
         } else if (typeof valorData === 'object' && valorData.text) {
@@ -80,18 +79,26 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
           }
         }
       }
+
       const obj = {
         data_emplacamento,
         municipio: row.getCell(colIndexes['municipio']).value || '',
         fabricante: row.getCell(colIndexes['fabricante']).value || '',
-        empresa: row.getCell(colIndexes['empresa']).value || '',
+        empresa: row.getCell(colIndexes['empresa']).value || null,
+        cnpj: row.getCell(colIndexes['cnpj']).value || '',
         modelo: row.getCell(colIndexes['modelo']).value || '',
         ano: row.getCell(colIndexes['ano']).value || null,
         placa: row.getCell(colIndexes['placa']).value || '',
         uf: row.getCell(colIndexes['uf']).value || '',
         chassi: row.getCell(colIndexes['chassi']).value || ''
       };
-      // Só insere se tiver chassi, placa e data válida
+
+      // Armazena empresa + cnpj para posterior inserção
+      if (obj.empresa && obj.cnpj) {
+        empresasComCnpj.add(JSON.stringify({ empresa: obj.empresa, cnpj: obj.cnpj }));
+      }
+
+      // Somente insere dados de mercado se forem válidos
       if (obj.chassi && obj.placa && obj.data_emplacamento instanceof Date && !isNaN(obj.data_emplacamento)) {
         const ano = obj.data_emplacamento.getFullYear();
         const mes = String(obj.data_emplacamento.getMonth() + 1).padStart(2, '0');
@@ -101,22 +108,16 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
       }
     });
 
-    // Insere no banco, tabela por tabela
+    let totalInseridos = 0;
+
+    // Insere os dados nas tabelas de mercado
     for (const tabela in dadosPorTabela) {
       const dados = dadosPorTabela[tabela];
       if (dados.length > 0) {
-        console.log(`Dados a serem inseridos em ${tabela}:`);
-        dados.forEach((d, i) => {
-          console.log(`#${i + 1}:`, {
-            ...d,
-            data_emplacamento: (d.data_emplacamento instanceof Date && !isNaN(d.data_emplacamento))
-              ? d.data_emplacamento.toISOString().slice(0, 10)
-              : d.data_emplacamento
-          });
-        });
-        const sql = `INSERT IGNORE INTO ${tabela} (data_emplacamento, municipio, fabricante, empresa, modelo, ano, placa, uf, chassi)
+        const sql = `INSERT IGNORE INTO ${tabela} (cnpj, data_emplacamento, municipio, fabricante, empresa, modelo, ano, placa, uf, chassi)
           VALUES ?`;
         const values = dados.map(d => [
+          d.cnpj,
           d.data_emplacamento,
           d.municipio,
           d.fabricante,
@@ -127,14 +128,39 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
           d.uf,
           d.chassi
         ]);
-        await connection.promise().query(sql, [values]);
-        console.log(`Total inseridos (sem duplicatas) em ${tabela}: ${values.length}`);
-      } else {
-        console.log(`Nenhum dado válido para inserir em ${tabela}.`);
+
+        const [result] = await connection.promise().query(sql, [values]);
+        totalInseridos += values.length;
       }
     }
 
-    res.redirect('/mercado');
+    // Agora sim: Insere empresas com CNPJ na tabela tropa_azul ANTES de atualizar os dados no share
+    if (empresasComCnpj.size > 0) {
+      const valuesCnpj = Array.from(empresasComCnpj).map(str => {
+        const item = JSON.parse(str);
+        return [item.empresa, item.cnpj];
+      });
+
+      const sqlCnpj = `INSERT IGNORE INTO tropa_azul.cnpj_empresa (empresa, cnpj) VALUES ?`;
+      await connection.promise().query(sqlCnpj, [valuesCnpj]);
+    }
+
+    // Atualiza os campos empresa em branco nas tabelas share.mercado_YYYY_MM
+    for (const tabela in dadosPorTabela) {
+      const sqlUpdateEmpresa = `
+        UPDATE ${tabela} AS s
+        JOIN tropa_azul.cnpj_empresa AS t ON s.cnpj = t.cnpj
+        SET s.empresa = t.empresa
+        WHERE s.empresa IS NULL
+      `;
+      await connection.promise().query(sqlUpdateEmpresa);
+    }
+
+    if (totalInseridos > 0) {
+      res.redirect(`/mercado?success=1&inseridos=${totalInseridos}`);
+    } else {
+      res.redirect('/mercado?success=0&inseridos=0');
+    }
   } catch (err) {
     console.error('Erro ao processar Excel:', err);
     res.status(500).send('Erro ao processar o arquivo Excel.');
