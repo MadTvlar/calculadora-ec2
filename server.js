@@ -54,7 +54,7 @@ const formasPagamentos = [
 ];
 
 const bancos = [
-  "Yamaha", "Pan", "Santander", "Bradesco"
+  "Yamaha", "Pan", "Santander", "Bradesco", "C6 Bank", "Banco BV"
 ];
 
 const bancoRetorno = [
