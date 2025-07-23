@@ -14,6 +14,9 @@ app.post('/webhook', (req, res) => {
   if (repo === 'calculadora-ec2' && ref === 'refs/heads/main') {
     console.log('🚀 Novo commit na branch main, iniciando deploy...');
 
+    // ✅ responde logo para evitar timeout no GitHub
+    res.status(200).send('Deploy iniciado');
+
     exec('bash /home/ubuntu/safe-deploy.sh', (err, stdout, stderr) => {
       const endTime = new Date().toLocaleString('pt-BR', { timeZone: 'America/Manaus' });
 
@@ -21,11 +24,9 @@ app.post('/webhook', (req, res) => {
 
       if (err) {
         console.error(`❌ Erro no deploy às ${endTime}:\n`, stderr);
-        return res.status(500).send('Erro no deploy');
+      } else {
+        console.log(`✅ Deploy concluído com sucesso às ${endTime}`);
       }
-
-      console.log(`✅ Deploy concluído com sucesso às ${endTime}`);
-      res.status(200).send('Deploy feito com sucesso');
     });
   } else {
     console.log('ℹ️ Commit ignorado (branch ou repo diferente)');
