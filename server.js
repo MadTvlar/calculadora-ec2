@@ -34,7 +34,7 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'templates'));
 
-const rotaNPS = require('./routes/nps');
+const rotaNPS = require('./routes/nps_geral');
 app.use('/nps', rotaNPS);
 const rotaMercado = require('./routes/mercado');
 app.use('/', rotaMercado);
@@ -742,7 +742,7 @@ app.get('/nps', async (req, res) => {
   }
 
   try {
-    const [dadosNPS] = await connection.promise().query('SELECT * FROM nps');
+    const [dadosNPS] = await connection.promise().query('SELECT * FROM nps_geral');
 
     res.render('nps', {
       usuario: usuarioLogado,

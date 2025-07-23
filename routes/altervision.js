@@ -2,7 +2,15 @@ require('dotenv').config();
 const axios = require('axios');
 const connection = require('../services/db');
 
-const url = `https://bergasls.painelalter.com/api/v2/count?dateBegin=2025-06-01&dateEnd=2025-07-17&eventType=11&groupBy=day`;
+const now = new Date();
+const year = now.getFullYear();
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
+
+const dataInicial = `${year}-${month}-01`;
+const dataFinal = `${year}-${month}-${day}`;
+
+const url = `https://bergasls.painelalter.com/api/v2/count?dateBegin=${dataInicial}&dateEnd=${dataFinal}&eventType=11&groupBy=day`;
 
 async function fetchAltervision() {
   try {

@@ -44,6 +44,8 @@ async function executarAtualizacao() {
     await fetchMkcaptacaoMotos(pool);
     await delay(2000);
 
+    await fetchAltervision(pool);
+    await delay(2000);
 
     await atualizarRankings(pool);
     await delay(2000);
@@ -64,7 +66,6 @@ async function executarAtualizacao() {
 
 // Execução inicial
 executarAtualizacao();
-//fetchAltervision(pool);
 
 
 

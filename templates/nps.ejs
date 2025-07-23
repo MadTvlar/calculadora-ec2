@@ -37,68 +37,22 @@
       style="text-align: center; margin: 40px 0;">
       <input id="excelFile" type="file" name="excelFile" accept=".xlsx, .xls" required />
       <br /><br />
-      <button type="submit" name="acao" value="atualizar">Atualizar Dados</button>
-      <button type="submit" name="acao" value="resetar">Resetar e Inserir</button>
+      <button type="submit">Enviar</button>
     </form>
-    <p id="mensagem"></p>
+    <p id="mensagem" style="font-weight: bold; margin-top: 15px;"></p>
   </div>
-
-  <h2 style="text-align: center;">Registros NPS Cadastrados</h2>
-  <table border="1">
-    <thead>
-      <tr>
-        <th>ID Microwork</th>
-        <th>Vendedores</th>
-        <th>Promotoras</th>
-        <th>Neutras</th>
-        <th>Detratoras</th>
-        <th>Nota Oficial</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (npsData.length> 0) { %>
-        <% npsData.forEach((item)=> { %>
-          <tr>
-            <td>
-              <%= item.id_microwork %>
-            </td>
-            <td>
-              <%= item.vendedores %>
-            </td>
-            <td>
-              <%= item.promotoras %>
-            </td>
-            <td>
-              <%= item.neutras %>
-            </td>
-            <td>
-              <%= item.detratoras %>
-            </td>
-            <td>
-              <%= item.nota_oficial %>
-            </td>
-          </tr>
-          <% }) %>
-            <% } else { %>
-              <tr>
-                <td colspan="7">Nenhum dado cadastrado.</td>
-              </tr>
-              <% } %>
-    </tbody>
-  </table>
 
   <footer class="footer">
     <div class="footer-text">
-      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
-      <span class="animate scroll" style="--i:1;"></span>
+      <p>&copy; 2025 by Departamento de T.I | Todos os direitos reservados.</p>
     </div>
     <div class="footer-iconTop">
       <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
-      <span class="animate scroll" style="--i:3;"></span>
     </div>
   </footer>
 
   <script>
+    // Menu dropdown
     document.getElementById("user-button").addEventListener("click", function () {
       document.getElementById("user-dropdown").classList.toggle("show");
     });
@@ -114,12 +68,19 @@
       }
     };
 
-
+    // Upload via JavaScript com feedback na página
     const uploadForm = document.getElementById('upload-form');
     const mensagem = document.getElementById('mensagem');
+    const submitBtn = uploadForm.querySelector('button[type="submit"]');
 
     uploadForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      mensagem.textContent = '';
+      mensagem.style.color = 'black';
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
 
       const formData = new FormData(uploadForm);
 
@@ -129,17 +90,18 @@
           body: formData
         });
 
-        if (!response.ok) {
-          throw new Error('Erro na requisição');
-        }
+        if (!response.ok) throw new Error('Erro na requisição: ' + response.statusText);
 
         const resultText = await response.text();
-
-        // Mostra pop-up com o resultado
-        alert(resultText);
+        mensagem.style.color = 'green';
+        mensagem.textContent = resultText;
 
       } catch (error) {
-        alert('Erro ao enviar o arquivo: ' + error.message);
+        mensagem.style.color = 'red';
+        mensagem.textContent = 'Erro ao enviar o arquivo: ' + error.message;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar';
       }
     });
   </script>
