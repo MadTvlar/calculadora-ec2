@@ -449,6 +449,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
         document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
       }
 
+
     } if (formaPagamento === "À Vista") {
       margem_bruta = entradaReal - custoProduto;
       const valorVendaReal = entradaReal;
@@ -564,7 +565,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
     } else if (formaPagamento !== "Cartão de Crédito") {
       despEmplacamento = 0;
-      retornoEmplacamento = 0;
+
       document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
       document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
     }
