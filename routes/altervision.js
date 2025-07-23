@@ -38,10 +38,7 @@ async function fetchAltervision() {
     console.log('Processo concluído.');
   } catch (error) {
     console.error('Erro ao buscar ou inserir dados:', error);
-  } finally {
-    connection.end();
   }
 }
-
 
 module.exports = fetchAltervision;

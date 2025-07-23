@@ -15,7 +15,6 @@ const fetchAltervision = require('./routes/altervision');
 
 
 
-
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -25,33 +24,34 @@ async function executarAtualizacao() {
   console.log('Executando os fetch...');
 
   try {
+    const delayMs = 1000;
 
     await fetchEstoqueMotores(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await fetchEstoqueMotos(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await fetchMkVendasMotos(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await fetchMKVendasSeminovas(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await fetchMkContratosMotos(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await fetchMkcaptacaoMotos(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await fetchAltervision(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await atualizarRankings(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     await fetchrankingPontosMotos(pool);
-    await delay(2000);
+    await delay(delayMs);
 
     const agora = new Date();
     await pool.promise().query(
@@ -66,6 +66,7 @@ async function executarAtualizacao() {
 
 // Execução inicial
 executarAtualizacao();
+
 
 
 

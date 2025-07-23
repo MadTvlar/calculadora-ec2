@@ -312,20 +312,14 @@ pool.getConnection((err, connection) => {
 
 
   const createNPSGeral = `
-    CREATE TABLE IF NOT EXISTS nps_geral (
-      data date,
-      empresa varchar(5),
-      cnpj varchar(20),
-      id_microwork int,
-      vendedor varchar(100),
-      modelo varchar(100),
-      chassi varchar(20),
-      doc_fiscal int,
-      detratora int,
-      neutra int,
-      promotora int,
-      nota int,
-      unique key unq_chassi_doc (chassi, doc_fiscal)
+    CREATE TABLE IF NOT EXISTS nps (
+      id_microwork INT,
+      vendedores VARCHAR(255),
+      promotoras INT,
+      neutras INT,
+      detratoras INT,
+      nota_oficial DECIMAL(6,2),          
+      atualizado_em DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `;
 
