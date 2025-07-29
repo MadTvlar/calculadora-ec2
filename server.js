@@ -389,7 +389,7 @@ app.get('/rankmotos', async (req, res) => {
       FROM (
         SELECT id_microwork, data_venda
         FROM microwork.vendas_motos
-        WHERE DAY(data_venda) IN (10, 15, 20) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
+        WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
         UNION ALL
         SELECT id_microwork, data_venda
         FROM microwork.vendas_seminovas
