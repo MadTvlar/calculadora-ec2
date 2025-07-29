@@ -152,12 +152,19 @@ app.get('/apresentacao', (req, res) => {
 
 // CHAMADO PARA PAGINA DE CADASTRO DE USUARIOS (APENAS PARA ADMIN)
 app.get('/usuarios', async (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+
+  if (!usuarioLogado || grupoLogado != 'admin') {
+    return res.redirect('/');
+  }
+
   try {
-    const usuarios = await query('SELECT nome, id_microwork, email, grupo FROM usuarios ORDER BY grupo');
+    const [usuarios] = await connection.query('SELECT nome, id_microwork, email, grupo FROM usuarios ORDER BY grupo');
 
     res.render('usuarios', {
       usuarios,
-      usuario: req.cookies.usuario_logado
+      usuario: usuarioLogado
     });
   } catch (err) {
     console.error('Erro ao buscar usuários:', err);
@@ -265,11 +272,11 @@ app.post('/upload-excel', upload.single('excelFile'), (req, res) => {
 app.post('/usuarios/adicionar', async (req, res) => {
   console.log(req.body);
 
-  const { grupo, nome, id_microwork, email, senha } = req.body;
+  const { grupo, empresa, nome, id_microwork, email, senha } = req.body;
   try {
     const senhaCriptografada = await bcrypt.hash(senha, 10); // 10 é o número de salt rounds
-    const sql = 'INSERT INTO usuarios (grupo, nome, id_microwork, email, senha) VALUES (?, ?, ?, ?, ?)';
-    await connection.execute(sql, [grupo, nome, id_microwork, email, senhaCriptografada]);
+    const sql = 'INSERT INTO usuarios (grupo,empresa, nome, id_microwork, email, senha) VALUES (?, ?, ?, ?, ?, ?)';
+    await connection.execute(sql, [grupo, empresa, nome, id_microwork, email, senhaCriptografada]);
     res.redirect('/usuarios');
   } catch (err) {
     console.error('Erro ao adicionar usuário:', err);

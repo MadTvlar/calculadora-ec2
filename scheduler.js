@@ -73,4 +73,4 @@ executarAtualizacao();
 
 
 
-console.log('Todas Tarefas realizadas!');
+console.log('Iniciando as tarefas!');
