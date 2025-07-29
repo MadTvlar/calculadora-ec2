@@ -4,7 +4,7 @@ require('dotenv').config();
 async function fetchEstoqueMotores(pool) {
 
   console.log('\nLimpando estoque_motores.');
-  await pool.promise().query('TRUNCATE TABLE microwork.estoque_motores');
+  await pool.query('TRUNCATE TABLE microwork.estoque_motores');
 
 
   const filtros = `ESemProposta=False;
@@ -68,7 +68,7 @@ FabricacaoFinal=9999`;
       motor.valorcustocontabil
     ];
 
-    await pool.promise().query(query, values);
+    await pool.query(query, values);
     console.log(`Chassi ${motor.chassi} inserido com sucesso.`);
   }
 

@@ -129,7 +129,7 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
           d.chassi
         ]);
 
-        const [result] = await connection.promise().query(sql, [values]);
+        const [result] = await connection.query(sql, [values]);
         totalInseridos += values.length;
       }
     }
@@ -142,7 +142,7 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
       });
 
       const sqlCnpj = `INSERT IGNORE INTO tropa_azul.cnpj_empresa (empresa, cnpj) VALUES ?`;
-      await connection.promise().query(sqlCnpj, [valuesCnpj]);
+      await connection.query(sqlCnpj, [valuesCnpj]);
     }
 
     // Atualiza os campos empresa em branco nas tabelas share.mercado_YYYY_MM
@@ -153,7 +153,7 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
         SET s.empresa = t.empresa
         WHERE s.empresa IS NULL
       `;
-      await connection.promise().query(sqlUpdateEmpresa);
+      await connection.query(sqlUpdateEmpresa);
     }
 
     if (totalInseridos > 0) {

@@ -11,7 +11,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
-});
+}).promise();
 
 // Conectar ao banco de dados
 pool.getConnection((err, connection) => {
@@ -25,11 +25,12 @@ pool.getConnection((err, connection) => {
   const createSimulacaoMotos = `
   CREATE TABLE IF NOT EXISTS simulacao_motos (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    empresa varchar(5),
+    id_microwork int,
     nome_vendedor VARCHAR(50),
     nome_cliente VARCHAR(50),
     cpf_cnpj_cliente VARCHAR(20),
     moto_selecionada VARCHAR(50),
-    origiem_moto VARCHAR(10),
     forma_pagamento VARCHAR(20),
     filial_escolhida VARCHAR(20),
     banco_selecionado VARCHAR(10),

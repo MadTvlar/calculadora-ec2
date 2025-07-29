@@ -12,6 +12,7 @@ const fetchMkContratosMotos = require('./routes/mkContratosMotos');
 const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
 const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
 const fetchAltervision = require('./routes/altervision');
+const atualizarNPS = require('./routes/nps');
 
 
 
@@ -44,6 +45,9 @@ async function executarAtualizacao() {
     await fetchMkcaptacaoMotos(pool);
     await delay(delayMs);
 
+    await atualizarNPS(pool);
+    await delay(delayMs);
+
     await fetchAltervision(pool);
     await delay(delayMs);
 
@@ -54,7 +58,7 @@ async function executarAtualizacao() {
     await delay(delayMs);
 
     const agora = new Date();
-    await pool.promise().query(
+    await pool.query(
       'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
       [agora]
     );
@@ -69,5 +73,4 @@ executarAtualizacao();
 
 
 
-
-console.log('Tarefas agendadas e execução inicial realizada.');
+console.log('Todas Tarefas realizadas!');

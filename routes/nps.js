@@ -1,66 +1,46 @@
-const express = require('express');
-const router = express.Router();
-const multer = require('multer');
-const xlsx = require('xlsx');
-const fs = require('fs');
-const path = require('path');
 const connection = require('../services/db');
 
-const upload = multer({ dest: 'uploads/' });
+async function atualizarNPS() {
 
-router.post('/upload', upload.single('excelFile'), (req, res) => {
-  const file = req.file;
-  if (!file) return res.status(400).send('Nenhum arquivo enviado.');
+  console.log(`Limpando a tabela tropa_azul.nps`)
+  await connection.query(`TRUNCATE TABLE nps`);
 
-  const workbook = xlsx.readFile(file.path);
-  const sheet = workbook.Sheets['NOTA NPS INDIVIDUAL'];
-  if (!sheet) return res.status(400).send('Planilha "NOTA NPS INDIVIDUAL" não encontrada.');
-
-  const data = xlsx.utils.sheet_to_json(sheet);
-
-  const limparNome = (nome) => {
-    if (!nome) return '';
-    return nome
-      .replace(/^[\W\d_]+/, '')       // Remove caracteres estranhos do início
-      .replace(/[\W\d_]+$/, '')       // Remove caracteres estranhos do fim
-      .replace(/\d+/g, '')            // Remove números no meio
-      .replace(/\s{2,}/g, ' ')        // Reduz múltiplos espaços
-      .trim();                       // Remove espaços nas bordas
-  };
+  const [resultados] = await connection.query(`
+  SELECT 
+    id_microwork,
+    vendedor AS vendedores,
+    SUM(promotora) AS promotoras,
+    SUM(neutra) AS neutras,
+    SUM(detratora) AS detratoras
+    FROM nps_geral
+    WHERE DATE_FORMAT(data, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    GROUP BY id_microwork, vendedor
+`);
 
 
+  for (const row of resultados) {
+    const { id_microwork, vendedores, promotoras, neutras, detratoras } = row;
+    const total = parseInt(promotoras) + parseInt(neutras) + parseInt(detratoras);
 
-
-  const valores = data.map(row => [
-    row['ID'],
-    limparNome(row['VENDEDORES']),
-    row['PROMOTORAS'],
-    row['NEUTRAS'],
-    row['DETRATORAS'],
-    row['NOTA OFICIAL']
-  ]);
-
-  // RESET antes de inserir
-  connection.query('DELETE FROM nps', err => {
-    if (err) {
-      console.error('Erro ao apagar dados da tabela nps:', err);
-      return res.status(500).send('Erro ao apagar dados.');
+    let nota_oficial = 0;
+    if (total >= 3) {
+      nota_oficial = ((parseInt(promotoras) - parseInt(detratoras)) / total) * 100;
     }
 
-    const insertQuery = `
-      INSERT INTO nps (id_microwork, vendedores, promotoras, neutras, detratoras, nota_oficial)
-      VALUES ?
-    `;
+    await connection.query(`
+      INSERT INTO nps (id_microwork, vendedores, promotoras, neutras, detratoras, nota_oficial, atualizado_em)
+      VALUES (?, ?, ?, ?, ?, ?, NOW())
+      ON DUPLICATE KEY UPDATE
+        vendedores = VALUES(vendedores),
+        promotoras = VALUES(promotoras),
+        neutras = VALUES(neutras),
+        detratoras = VALUES(detratoras),
+        nota_oficial = VALUES(nota_oficial),
+        atualizado_em = NOW()
+    `, [id_microwork, vendedores, promotoras, neutras, detratoras, nota_oficial]);
+  }
 
-    connection.query(insertQuery, [valores], (err) => {
-      if (err) {
-        console.error('Erro ao inserir dados:', err);
-        return res.status(500).send('Erro ao inserir dados.');
-      }
+  console.log(`tabela tropa_azul.nps atualizado!`)
+}
 
-      res.send('Dados resetados e inseridos com sucesso!');
-    });
-  });
-});
-
-module.exports = router;
+module.exports = atualizarNPS;

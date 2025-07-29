@@ -72,7 +72,7 @@ async function fetchMkcaptacaoMotos(pool) {
     ];
 
     try {
-      await pool.promise().query(query, values);
+      await pool.query(query, values);
       console.log(`Chassi ${moto.chassi} inserido com sucesso.`);
     } catch (error) {
       console.error(`Erro ao inserir o Chassi ${moto.chassi}:`, error.message);

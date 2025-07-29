@@ -88,7 +88,7 @@ app.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
   try {
-    const [rows] = await connection.promise().query('SELECT * FROM usuarios WHERE email = ?', [login]);
+    const [rows] = await connection.query('SELECT * FROM usuarios WHERE email = ?', [login]);
 
     if (rows.length === 0) {
       req.flash('error', 'Login ou senha inválidos');
@@ -106,6 +106,7 @@ app.post('/login', async (req, res) => {
     res.cookie('usuario_logado', usuario.nome);
     res.cookie('grupo_logado', usuario.grupo);
     res.cookie('id_logado', usuario.id_microwork);
+    res.cookie('empresa_logado', usuario.empresa);
     res.redirect('/segmentos');
   } catch (err) {
     console.error('Erro no login:', err);
@@ -167,7 +168,7 @@ app.get('/usuarios', async (req, res) => {
 // CHAMADO PARA AS MOTOS RESERVADAS
 app.get('/reservasmotos', async (req, res) => {
   try {
-    const [rows] = await connection.promise().query(`
+    const [rows] = await connection.query(`
       SELECT patio, modelo, chassi, data_reserva, destino_reserva, observacao_reserva, dias_reserva
       FROM microwork.estoque_motos
       WHERE situacao_reserva = 'Ativa'
@@ -283,7 +284,7 @@ app.post('/usuarios/atualizar-senha', async (req, res) => {
   try {
     const senhaCriptografada = await bcrypt.hash(novaSenha, 10); // mesma segurança da criação
     const sql = 'UPDATE usuarios SET senha = ? WHERE email = ?';
-    await connection.promise().query(sql, [senhaCriptografada, email]);
+    await connection.query(sql, [senhaCriptografada, email]);
 
     res.redirect('/usuarios');
   } catch (err) {
@@ -296,7 +297,7 @@ app.post('/usuarios/atualizar-senha', async (req, res) => {
 app.post('/usuarios/excluir', async (req, res) => {
   const { email } = req.body;
   try {
-    await connection.promise().query('DELETE FROM usuarios WHERE email = ?', [email]);
+    await connection.query('DELETE FROM usuarios WHERE email = ?', [email]);
     res.redirect('/usuarios');
   } catch (error) {
     console.error('Erro ao excluir usuário:', error);
@@ -305,47 +306,49 @@ app.post('/usuarios/excluir', async (req, res) => {
 });
 
 // CHAMADO PARA MOSTRAR AS VENDAS FATURADAS DO USUARIO
-app.get('/minhasvendas', (req, res) => {
+app.get('/minhasvendas', async (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   const grupoLogado = req.cookies.grupo_logado;
   const idLogado = req.cookies.id_logado;
 
+  if (!usuarioLogado || !idLogado) {
+    return res.redirect('/');
+  }
+
   const queryVendas = `
-  SELECT * FROM (
-    SELECT 
-      id_microwork,
-      valor_venda_real,
-      lucro_ope,
-      data_venda,
-      quantidade,
-      modelo,
-      chassi,
-      cor
-    FROM microwork.vendas_motos
-    WHERE id_microwork = ?
-      AND data_venda >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
-      AND data_venda < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
+    SELECT * FROM (
+      SELECT 
+        id_microwork,
+        valor_venda_real,
+        lucro_ope,
+        data_venda,
+        quantidade,
+        modelo,
+        chassi,
+        cor
+      FROM microwork.vendas_motos
+      WHERE id_microwork = ?
+        AND data_venda >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+        AND data_venda < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
 
-    UNION ALL
+      UNION ALL
 
-    SELECT 
-      id_microwork,
-      valor_venda_real,
-      lucro_ope,
-      data_venda,
-      quantidade,
-      modelo,
-      chassi,
-      cor
-    FROM microwork.vendas_seminovas
-    WHERE id_microwork = ?
-      AND data_venda >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
-      AND data_venda < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
-  ) AS vendas_unificadas
-  ORDER BY data_venda DESC
-`;
-
-
+      SELECT 
+        id_microwork,
+        valor_venda_real,
+        lucro_ope,
+        data_venda,
+        quantidade,
+        modelo,
+        chassi,
+        cor
+      FROM microwork.vendas_seminovas
+      WHERE id_microwork = ?
+        AND data_venda >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+        AND data_venda < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
+    ) AS vendas_unificadas
+    ORDER BY data_venda DESC
+  `;
 
   const queryPontos = `
     SELECT pontos
@@ -353,37 +356,25 @@ app.get('/minhasvendas', (req, res) => {
     WHERE id_microwork = ?
   `;
 
-  // Executa as duas consultas em paralelo
-  Promise.all([
-    new Promise((resolve, reject) => {
-      connection.query(queryVendas, [idLogado, idLogado], (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
-    }),
-    new Promise((resolve, reject) => {
-      connection.query(queryPontos, [idLogado, idLogado], (err, results) => {
-        if (err) return reject(err);
-        resolve(results[0] ? results[0].pontos : 0); // Se não tiver resultado, retorna 0
-      });
-    })
-  ])
-    .then(([vendas, pontos]) => {
-      res.render('minhasvendas', {
-        usuario: usuarioLogado,
-        grupo: grupoLogado,
-        id: idLogado,
-        vendas: vendas,
-        pontos: pontos
-      });
-    })
-    .catch(err => {
-      console.error('Erro ao buscar dados:', err);
-      res.status(500).send('Erro ao buscar dados');
+  try {
+    const [vendas] = await connection.query(queryVendas, [idLogado, idLogado]);
+    const [pontosResult] = await connection.query(queryPontos, [idLogado]);
+    const pontos = pontosResult.length > 0 ? pontosResult[0].pontos : 0;
+
+    res.render('minhasvendas', {
+      usuario: usuarioLogado,
+      grupo: grupoLogado,
+      id: idLogado,
+      vendas,
+      pontos
     });
+  } catch (err) {
+    console.error('Erro ao buscar dados:', err);
+    res.status(500).send('Erro ao buscar dados');
+  }
 });
 
-// CHAMADO PARA O MEU RANK DE MOTOS POR PONTO
+// CHAMADO PARA O RANK DE MOTOS
 app.get('/rankmotos', async (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
 
@@ -392,8 +383,25 @@ app.get('/rankmotos', async (req, res) => {
   }
 
   try {
-    const [rankingGeral] = await connection.promise().query(`
+    // 1. Consulta as vendas de 29, 30 e 31 de julho nas duas tabelas
+    const [bonusVendas] = await connection.query(`
+      SELECT id_microwork, COUNT(*) AS qtd_bonus
+      FROM (
+        SELECT id_microwork, data_venda
+        FROM microwork.vendas_motos
+        WHERE DAY(data_venda) IN (10, 15, 20) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
+        UNION ALL
+        SELECT id_microwork, data_venda
+        FROM microwork.vendas_seminovas
+        WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
+      ) AS todas_vendas
+      GROUP BY id_microwork
+    `);
+
+    // 2. Consulta o ranking original
+    const [rankingGeral] = await connection.query(`
       SELECT 
+        id_microwork,
         filial,
         vendedor,
         pontos AS val_pontos,
@@ -407,15 +415,27 @@ app.get('/rankmotos', async (req, res) => {
       ORDER BY pontos DESC, vendas DESC, llo DESC
     `);
 
-    // Aqui tratamos o nome
+    // 3. Aplica os bônus de +50 pontos por venda especial
+    const bonusMap = new Map();
+    bonusVendas.forEach(row => {
+      bonusMap.set(row.id_microwork, row.qtd_bonus * 50);
+    });
+
+    // ➕ AQUI ENTRA A PARTE QUE ADICIONA OS BÔNUS AO RANKING:
     rankingGeral.forEach(item => {
+      const bonus = bonusMap.get(item.id_microwork) || 0;
+      item.pontos_extras = bonus; // novo campo com os bônus
+      item.val_pontos += bonus;   // soma os bônus aos pontos totais
+
+      // Formata o nome do vendedor
       const nomes = item.vendedor.split(' ');
       if (nomes.length > 1) {
         item.vendedor = `${nomes[0]} ${nomes[nomes.length - 1]}`;
       }
     });
 
-    const [ultimaAtualizacaoRows] = await connection.promise().query(`
+
+    const [ultimaAtualizacaoRows] = await connection.query(`
       SELECT MAX(atualizado_em) AS ultimaAtualizacao FROM ranking_pontos
     `);
 
@@ -441,6 +461,7 @@ app.get('/rankmotos', async (req, res) => {
     res.status(500).send("Erro ao carregar o ranking.");
   }
 });
+
 
 // CHAMADO PARA CADA KPI NA PAGINA REUMO MêS
 app.get('/resumomotos', async (req, res) => {
@@ -475,7 +496,7 @@ app.get('/resumomotos', async (req, res) => {
     ]);
 
     // Coleta os nomes dos representantes para filtro por nome
-    const [vendedoresBloqueadosRows] = await connection.promise().query(`
+    const [vendedoresBloqueadosRows] = await connection.query(`
       SELECT DISTINCT vendedor FROM microwork.vendas_motos
       WHERE id_microwork IN (${[...representante].join(',')})
     `);
@@ -500,7 +521,7 @@ app.get('/resumomotos', async (req, res) => {
     };
 
     // Coleta dos dados
-    const [rankVolume] = await connection.promise().query(`
+    const [rankVolume] = await connection.query(`
   SELECT 
     id_microwork, 
     vendedor, 
@@ -523,7 +544,7 @@ app.get('/resumomotos', async (req, res) => {
 `);
 
 
-    const [rankLLO] = await connection.promise().query(`
+    const [rankLLO] = await connection.query(`
   SELECT 
     vendedor,
     ROUND(SUM(lucro_ope) / SUM(valor_venda_real) * 100, 2) AS percentual_lucro
@@ -545,7 +566,7 @@ app.get('/resumomotos', async (req, res) => {
 `);
 
 
-    const [rankCaptacao] = await connection.promise().query(`
+    const [rankCaptacao] = await connection.query(`
   SELECT 
     TRIM(vendedor) AS vendedor,
     COUNT(*) AS totalCaptado
@@ -557,7 +578,7 @@ app.get('/resumomotos', async (req, res) => {
 `);
 
 
-    const [rankContrato] = await connection.promise().query(`
+    const [rankContrato] = await connection.query(`
   SELECT 
     TRIM(vendedor) AS vendedor,
     COUNT(*) AS totalContratos
@@ -568,7 +589,7 @@ app.get('/resumomotos', async (req, res) => {
   ORDER BY totalContratos DESC;
 `);
 
-    const [rankRetorno] = await connection.promise().query(`
+    const [rankRetorno] = await connection.query(`
   SELECT 
     TRIM(vendedor) AS vendedor,
     SUM(
@@ -599,7 +620,7 @@ app.get('/resumomotos', async (req, res) => {
 
 
 
-    const [rankNPS] = await connection.promise().query(`
+    const [rankNPS] = await connection.query(`
       SELECT 
       TRIM(vendedores) AS vendedor,
       nota_oficial
@@ -608,7 +629,7 @@ app.get('/resumomotos', async (req, res) => {
 `);
 
 
-    const [atualizacaoResult] = await connection.promise().query(`
+    const [atualizacaoResult] = await connection.query(`
       SELECT atualizado_em FROM updates WHERE id = 1
     `);
 
@@ -648,7 +669,7 @@ app.get('/resumomotos', async (req, res) => {
     const dataAtual = new Date();
     const mesAtual = dataAtual.toLocaleString('pt-BR', { month: 'long' }).toLowerCase();
 
-    const [dadosUsuario] = await connection.promise().query(`
+    const [dadosUsuario] = await connection.query(`
   SELECT 
     SUM(quantidade) AS volume,
     SUM(lucro_ope) AS totalOpe,
@@ -660,7 +681,7 @@ app.get('/resumomotos', async (req, res) => {
 `, [idLogado]);
 
 
-    const [retornos] = await connection.promise().query(`
+    const [retornos] = await connection.query(`
   SELECT retorno_porcent 
   FROM microwork.vendas_motos 
   WHERE id_microwork = ?
@@ -683,7 +704,7 @@ app.get('/resumomotos', async (req, res) => {
       quantidadeRetorno: 0
     };
 
-    const [contagemcaptacao] = await connection.promise().query(`
+    const [contagemcaptacao] = await connection.query(`
       SELECT COUNT(*) AS totalCaptado
       FROM microwork.captacao_motos
       WHERE CAST(SUBSTRING_INDEX(TRIM(vendedor), ' ', 1) AS UNSIGNED) = ?
@@ -691,7 +712,7 @@ app.get('/resumomotos', async (req, res) => {
 
     const totalCaptado = contagemcaptacao[0]?.totalCaptado || 0;
 
-    const [vendedorResult] = await connection.promise().query(`
+    const [vendedorResult] = await connection.query(`
       SELECT vendedor
       FROM microwork.vendas_motos
       WHERE id_microwork = ?
@@ -702,7 +723,7 @@ app.get('/resumomotos', async (req, res) => {
 
     let totalContratos = 0;
     if (nomeVendedor) {
-      const [contagemContratos] = await connection.promise().query(`
+      const [contagemContratos] = await connection.query(`
         SELECT COUNT(*) AS totalContratos
         FROM microwork.contratos_motos
         WHERE vendedor = ?
@@ -742,7 +763,7 @@ app.get('/nps', async (req, res) => {
   }
 
   try {
-    const [dadosNPS] = await connection.promise().query('SELECT * FROM nps_geral');
+    const [dadosNPS] = await connection.query('SELECT * FROM nps_geral');
 
     res.render('nps', {
       usuario: usuarioLogado,
@@ -838,6 +859,9 @@ app.get('/rh', (req, res) => {
 app.get('/motos', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   const grupoLogado = req.cookies.grupo_logado;
+  const idLogado = req.cookies.id_logado;
+  const empresaLogado = req.cookies.empresa_logado;
+
   if (!usuarioLogado) {
     return res.redirect('/');
   }
@@ -847,6 +871,8 @@ app.get('/motos', (req, res) => {
   res.render('motos', {
     usuario: usuarioLogado,
     grupo: grupoLogado,
+    id: idLogado,
+    empresa: empresaLogado,
     formasPagamentos,
     bancos,
     filiais,
@@ -854,6 +880,98 @@ app.get('/motos', (req, res) => {
     taxas,
     valorMesAtual
   });
+});
+
+// CHAMADO PARA O DIAPASSOR
+app.get('/diapassor', async (req, res) => {
+
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+
+  try {
+
+
+    const [rows] = await connection.execute(`
+  SELECT 
+    s.empresa,
+    s.nome_vendedor,
+    s.id_microwork,
+    COUNT(DISTINCT s.cpf_cnpj_cliente) AS total_simulacoes,
+    COALESCE(v.total_vendas, 0) AS total_vendas,
+    ROUND(
+      COALESCE(v.total_vendas, 0) / COUNT(DISTINCT s.cpf_cnpj_cliente) * 100, 2
+    ) AS percentual_exito
+  FROM tropa_azul.simulacao_motos s
+  LEFT JOIN (
+    SELECT id_microwork, SUM(quantidade) AS total_vendas
+    FROM microwork.vendas_motos
+    WHERE data_venda BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND LAST_DAY(NOW())
+    GROUP BY id_microwork
+  ) v ON s.id_microwork = v.id_microwork
+  WHERE s.criado_em BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND LAST_DAY(NOW())
+  GROUP BY s.empresa, s.nome_vendedor, s.id_microwork, v.total_vendas
+  ORDER BY percentual_exito DESC;
+`);
+
+    // Agrupar por empresa
+    const empresasMap = {};
+    rows.forEach(row => {
+      if (!empresasMap[row.empresa]) {
+        empresasMap[row.empresa] = [];
+      }
+      empresasMap[row.empresa].push({
+        nome_vendedor: row.nome_vendedor,
+        total_simulacoes: row.total_simulacoes,
+        total_vendas: row.total_vendas,
+        percentual_exito: row.percentual_exito
+      });
+    });
+
+    const empresas = Object.keys(empresasMap).map(nome => ({
+      nome,
+      vendedores: empresasMap[nome]
+    }));
+
+    // Renderiza a view
+    res.render('diapassor', {
+      usuario: usuarioLogado,
+      grupo: grupoLogado,
+      empresas
+    });
+
+  } catch (error) {
+    console.error('Erro ao buscar simulações:', error);
+    res.status(500).send('Erro ao buscar dados de simulação.');
+  }
+});
+
+// CHAMADO PARA VERIFICAR SE O CPF OU CNPJ CONSTA NOBANCO DE DADOS DE BLOCK
+app.get('/verificar-cpf', async (req, res) => {
+  const cpf = req.query.cpf;
+
+  if (!cpf) {
+    return res.status(400).json({ erro: 'CPF/CNPJ não informado' });
+  }
+
+  try {
+    const [rows] = await connection.query(
+      'SELECT 1 FROM tropa_azul.block_cpf_cnpj WHERE cpf_cnpj = ? LIMIT 1',
+      [cpf]
+    );
+
+    if (rows.length > 0) {
+      return res.json({ bloqueado: true });
+    } else {
+      return res.json({ bloqueado: false });
+    }
+  } catch (err) {
+    console.error('Erro ao consultar CPF:', err);
+    res.status(500).json({ erro: 'Erro no servidor' });
+  }
 });
 
 // CHAMADO PARA A PAGINA DE CALCULO NAUTICO
@@ -890,53 +1008,52 @@ app.get('/obter_taxa/:nome_parcela', (req, res) => {
 });
 
 // CHAMADO PARA SALVAR O BANCO DE DADOS A SIMULAÇÃO DA VENDA DE MOTOS
-app.post('/venda_moto', (req, res) => {
+app.post('/venda_moto', async (req, res) => {
   const {
-    nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento,
+    empresa, id_microwork, nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, forma_pagamento,
     filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
-    margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplcamento_custo,
+    margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplacamento_custo,
     frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas,
     margem_liquida, comissao
   } = req.body;
 
-  // Verifique se todos os campos necessários estão preenchidos
   if (!nome_vendedor || !nome_cliente || !cpf_cnpj_cliente || !moto_selecionada) {
     return res.status(400).send('Todos os campos são obrigatórios');
   }
 
-  // Query para inserir os dados na tabela "vendas"
   const query = `
     INSERT INTO simulacao_motos (
-      nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento, 
+      empresa, id_microwork, nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, forma_pagamento, 
       filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto, 
-      margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplcamento_custo, 
+      margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplacamento_custo, 
       frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas, 
       margem_liquida, comissao
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
-    nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, origiem_moto, forma_pagamento,
+    empresa, id_microwork, nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, forma_pagamento,
     filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
-    margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplcamento_custo,
+    margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplacamento_custo,
     frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas,
     margem_liquida, comissao
   ];
 
-  connection.query(query, values, (err) => {
-    if (err) {
-      console.error('Erro ao inserir dados: ', err);
-      return res.status(500).send('Erro ao registrar a venda');
-    }
+  try {
+    await connection.query(query, values);
     res.send('Simulação Realizada com Sucesso!');
-  });
+  } catch (err) {
+    console.error('Erro ao inserir dados:', err);
+    res.status(500).send('Erro ao registrar a venda');
+  }
 });
+
 
 // CHAMADO PARA VISUALIZAR OS MODELOS DISPONÍVEIS
 app.get('/api/motos/modelos-motos-disponiveis', async (req, res) => {
   try {
-    const [rows] = await connection.promise().query(`
+    const [rows] = await connection.query(`
     SELECT DISTINCT modelo FROM microwork.estoque_motos
     ORDER BY modelo ASC`);
 
@@ -958,7 +1075,7 @@ app.get('/api/motos/chassis-por-modelo', async (req, res) => {
   }
 
   try {
-    const [rows] = await connection.promise().query(
+    const [rows] = await connection.query(
       `SELECT DISTINCT 
           chassi, 
           cor, 
@@ -992,7 +1109,7 @@ app.get('/api/motos/detalhes-chassi', async (req, res) => {
   }
 
   try {
-    const [rows] = await connection.promise().query(
+    const [rows] = await connection.query(
       `SELECT custo_contabil, chassi 
        FROM microwork.estoque_motos 
        WHERE chassi = ? LIMIT 1`,
@@ -1054,7 +1171,7 @@ app.post('/venda_motor', (req, res) => {
 // CHAMADO PARA VISUALIZAR OS MODELOS DISPONÍVEIS
 app.get('/api/nautica/modelos-motores-disponiveis', async (req, res) => {
   try {
-    const [rows] = await connection.promise().query(`
+    const [rows] = await connection.query(`
       SELECT DISTINCT modelo FROM microwork.estoque_motores
       WHERE situacao IN ('loja', 'em demonstração', 'trânsito') AND modelo IS NOT NULL
       ORDER BY modelo ASC
@@ -1082,7 +1199,7 @@ app.get('/api/nautica/chassis-por-modelo', async (req, res) => {
     : modeloSelecionado.trim();
 
   try {
-    const [rows] = await connection.promise().query(
+    const [rows] = await connection.query(
       `SELECT DISTINCT chassi, cor, patio, dias_estoque FROM microwork.estoque_motores 
       WHERE situacao IN ('loja', 'em demonstração', 'trânsito') AND modelo LIKE ?`,
       [`%${termo}%`]
@@ -1104,7 +1221,7 @@ app.get('/api/nautica/detalhes-chassi', async (req, res) => {
   }
 
   try {
-    const [rows] = await connection.promise().query(
+    const [rows] = await connection.query(
       `SELECT custo_contabil, icms_compra, chassi 
        FROM microwork.estoque_motores 
        WHERE chassi = ? LIMIT 1`,

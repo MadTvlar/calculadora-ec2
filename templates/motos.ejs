@@ -40,6 +40,7 @@
           <a href="/minhasvendas">Minhas Vendas</a>
           <% if (grupo==='admin' || grupo==='sup' ) { %>
             <a href="/reservasmotos">Reservas</a>
+            <!-- <a href="/diapassor">Diapassor</a> -->
             <% } %>
               <a href="/resumomotos">Resumo do Mês</a>
               <% if (grupo==='admin' ) { %>
@@ -241,6 +242,10 @@
 
 
   <div id="dados_emplacamento" data-valor="<%= valorMesAtual %>"></div>
+  <div id="id_microwork" data-valor="<%= id %>"></div>
+  <div id="empresa" data-valor="<%= empresa %>"></div>
+
+
 
   <script src="/js/motos.js"></script>
 

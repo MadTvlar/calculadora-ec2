@@ -81,6 +81,7 @@
             <th>Posição</th>
             <th>Filial</th>
             <th>Vendedor</th>
+            <th>Bônus (29 a 31 jul)</th>
             <th>Pontos</th>
             <th>Vendas</th>
             <th>LLO (%)</th>
@@ -113,6 +114,9 @@
               </td>
               <td>
                 <%= v.vendedor %>
+              </td>
+              <td>
+                <%= v.pontos_extras ? '+' + v.pontos_extras : '-' %>
               </td>
               <td>
                 <%= v.val_pontos ? Math.floor(v.val_pontos) : '-' %>

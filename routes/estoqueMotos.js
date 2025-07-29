@@ -3,7 +3,7 @@ require('dotenv').config();
 
 async function fetchEstoqueMotos(pool) {
 
-  await pool.promise().query('TRUNCATE TABLE microwork.estoque_motos');
+  await pool.query('TRUNCATE TABLE microwork.estoque_motos');
   console.log('Tabela estoque_motos limpa com sucesso.');
 
   const filtros = `ESemProposta=False;
@@ -78,7 +78,7 @@ async function fetchEstoqueMotos(pool) {
       moto.diasreserva
     ];
 
-    await pool.promise().query(query, values);
+    await pool.query(query, values);
     console.log(`Chassi ${moto.chassi} inserido com sucesso.`);
   }
 }

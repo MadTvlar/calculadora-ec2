@@ -25,7 +25,7 @@ async function fetchAltervision() {
 
     for (const [dataStr, empresas] of Object.entries(data)) {
       for (const [empresa, quantidade] of Object.entries(empresas)) {
-        await connection.promise().query(
+        await connection.query(
           `INSERT INTO altervision.altervision (data, empresa, quantidade)
            VALUES (?, ?, ?)
            ON DUPLICATE KEY UPDATE quantidade = VALUES(quantidade)`,

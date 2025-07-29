@@ -30,7 +30,7 @@ async function atualizarRankings(pool) {
 
 
   console.log('\nLimpando a tabela de ranking_geral');
-  await pool.promise().query('TRUNCATE TABLE tropa_azul.ranking_geral');
+  await pool.query('TRUNCATE TABLE tropa_azul.ranking_geral');
 
   const inserirDados = async (dados, tipo, campoValor, incluirDadosExtras = false) => {
     for (let i = 0; i < dados.length; i++) {
@@ -44,7 +44,7 @@ async function atualizarRankings(pool) {
         const empresa = incluirDadosExtras ? dados[i].empresa || null : null;
         const id_microwork = incluirDadosExtras ? dados[i].id_microwork || null : null;
 
-        await pool.promise().query(
+        await pool.query(
           'INSERT INTO ranking_geral (tipo, filial, id_microwork, vendedor, valor, posicao, referente_mes) VALUES (?, ?, ?, ?, ?, ?, ?)',
           [tipo, empresa, id_microwork, vendedor, valor, posicao, referenteMes]
         );
@@ -52,7 +52,7 @@ async function atualizarRankings(pool) {
     }
   };
 
-  const [rankVolume] = await pool.promise().query(`
+  const [rankVolume] = await pool.query(`
   SELECT 
     id_microwork,
     ANY_VALUE(empresa) AS empresa,
@@ -94,7 +94,7 @@ async function atualizarRankings(pool) {
 `);
 
 
-  const [rankLLO] = await pool.promise().query(`
+  const [rankLLO] = await pool.query(`
   SELECT 
     id_microwork,
     ANY_VALUE(empresa) AS empresa,
@@ -138,7 +138,7 @@ async function atualizarRankings(pool) {
 `);
 
 
-  const [rankCaptacao] = await pool.promise().query(`
+  const [rankCaptacao] = await pool.query(`
   SELECT 
     id_microwork,
     TRIM(
@@ -157,7 +157,7 @@ async function atualizarRankings(pool) {
 `);
 
 
-  const [rankContrato] = await pool.promise().query(`
+  const [rankContrato] = await pool.query(`
   SELECT 
     id_microwork,
     empresa,
@@ -176,7 +176,7 @@ async function atualizarRankings(pool) {
 `);
 
 
-  const [rankRetorno] = await pool.promise().query(`
+  const [rankRetorno] = await pool.query(`
   SELECT 
     id_microwork,
     empresa,
@@ -197,7 +197,7 @@ async function atualizarRankings(pool) {
 
 
 
-  const [retornoDetalhado] = await pool.promise().query(`
+  const [retornoDetalhado] = await pool.query(`
   SELECT 
     id_microwork,
     empresa,
@@ -232,14 +232,14 @@ async function atualizarRankings(pool) {
       if (representante.has(vendedor)) continue;
 
       if (r2 > 0) {
-        await pool.promise().query(
+        await pool.query(
           'INSERT INTO ranking_geral (tipo, filial, id_microwork, vendedor, valor, referente_mes) VALUES (?, ?, ?, ?, ?, ?)',
           ['r2', empresa || null, id_microwork || null, vendedor, r2, referenteMes]
         );
       }
 
       if (r4 > 0) {
-        await pool.promise().query(
+        await pool.query(
           'INSERT INTO ranking_geral (tipo, filial, id_microwork, vendedor, valor, referente_mes) VALUES (?, ?, ?, ?, ?, ?)',
           ['r4', empresa || null, id_microwork || null, vendedor, r4, referenteMes]
         );

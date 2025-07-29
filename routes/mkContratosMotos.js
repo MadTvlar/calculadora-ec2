@@ -94,7 +94,7 @@ async function fetchMkContratosMotos(pool) {
     ];
 
     try {
-      await pool.promise().query(query, values);
+      await pool.query(query, values);
       console.log(`Contrato ${moto.contrato}, se não existir, inserido com sucesso.`);
     } catch (error) {
       console.error(`Erro ao inserir Contrato ${moto.contrato}:`, error.message);

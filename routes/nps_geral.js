@@ -100,7 +100,7 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
       ) VALUES ?
     `;
 
-    await connection.promise().query(insertSql, [valores]);
+    await connection.query(insertSql, [valores]);
 
     const updateSql = `
       UPDATE tropa_azul.nps_geral AS n
@@ -123,7 +123,7 @@ router.post('/upload', upload.single('excelFile'), async (req, res) => {
         n.modelo = vm_extr.modelo;
     `;
 
-    await connection.promise().query(updateSql);
+    await connection.query(updateSql);
 
     res.send(`Arquivo processado com sucesso. ${valores.length} registros processados (novos ignoraram duplicatas).`);
   } catch (err) {

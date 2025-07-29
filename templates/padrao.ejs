@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/padrao.css">
+
+
+  <title>Tropa Azul - Mercado</title>
+
+  <style>
+
+  </style>
+
+
+</head>
+
+<body>
+  <div class="top-container">
+    <div class="logo-container">
+      <a href="/segmentos">
+        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
+      </a>
+    </div>
+
+    <div class="user-container">
+      <div class="user-menu">
+        <%= usuario %>
+          <button class="menu-toggle" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </button>
+      </div>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <a href="/motos" onclick="editarPerfil()">📝 Voltar</a>
+      <a href="#" onclick="alterarSenha()">🔒 Alterar Senha</a>
+      <a href="#" onclick="configuracoes()">⚙️ Configurações</a>
+      <a href="#" onclick="ajuda()">❓ Ajuda</a>
+      <a href="/logout" class="logout-option">🚪 Sair</a>
+    </div>
+  </div>
+
+
+
+
+  <footer class="footer">
+    <div class="footer-text">
+      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+      <span class="animate scroll" style="--i:1;"></span>
+    </div>
+    <div class="footer-iconTop">
+      <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+      <span class="animate scroll" style="--i:3;"></span>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('dropdownMenu');
+      const toggle = document.querySelector('.menu-toggle');
+
+      menu.classList.toggle('active');
+      toggle.classList.toggle('active');
+    }
+
+    // Fechar menu quando clicar fora dele
+    document.addEventListener('click', function (event) {
+      const menu = document.getElementById('dropdownMenu');
+      const toggle = document.querySelector('.menu-toggle');
+
+      if (!toggle.contains(event.target) && !menu.contains(event.target)) {
+        menu.classList.remove('active');
+        toggle.classList.remove('active');
+      }
+    });
+  </script>
+
+</body>
+
+</html>

@@ -2,9 +2,9 @@ const fetchrankingPontosMotos = async (connection) => {
   const referente_mes = new Date().toISOString().slice(0, 7); // "YYYY-MM"
 
   console.log('\nLimpando a tabela de ranking_pontos');
-  await connection.promise().query('TRUNCATE TABLE ranking_pontos');
+  await connection.query('TRUNCATE TABLE ranking_pontos');
 
-  const [rankingGeral] = await connection.promise().query(`
+  const [rankingGeral] = await connection.query(`
     SELECT 
       vendedor_normalizado AS vendedor,
       MAX(CASE WHEN tipo = 'llo' THEN valor END) AS val_lucro,
@@ -91,7 +91,7 @@ const fetchrankingPontosMotos = async (connection) => {
       pontosPorRetorno + pontosPorNPS;
 
     // Busca id_microwork e filial via vendedor
-    const [[usuario]] = await connection.promise().query(`
+    const [[usuario]] = await connection.query(`
       SELECT id_microwork, filial 
       FROM tropa_azul.ranking_geral 
       WHERE vendedor = ?
@@ -101,7 +101,7 @@ const fetchrankingPontosMotos = async (connection) => {
     const idMicrowork = usuario ? usuario.id_microwork : null;
     const filial = usuario ? usuario.filial : null;
 
-    await connection.promise().query(`
+    await connection.query(`
       INSERT INTO ranking_pontos 
         (filial, id_microwork, vendedor, pontos, vendas, llo, captacao, contrato, retorno, NPS, referente_mes)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

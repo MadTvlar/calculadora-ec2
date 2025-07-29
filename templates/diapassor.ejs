@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/padrao.css">
+
+
+  <title>Tropa Azul - Mercado</title>
+
+  <style>
+    .carousel-container {
+      max-width: 90%;
+      margin: 7%;
+      padding: 0 10px;
+      user-select: none;
+      perspective: 1000px;
+      position: relative;
+      /* necessário para posicionar os fades */
+    }
+
+    .carousel-container::before,
+    .carousel-container::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 60px;
+      height: 100%;
+      z-index: 5;
+      pointer-events: none;
+      border-radius: 10px;
+      /* 🔵 todas as 4 pontas arredondadas */
+    }
+
+    .carousel-container::before {
+      left: 0;
+      background: linear-gradient(to right, rgba(0, 2, 198, 0.4), transparent);
+    }
+
+    .carousel-container::after {
+      right: 0;
+      background: linear-gradient(to left, rgba(0, 2, 198, 0.4), transparent);
+    }
+
+
+    .container-cards {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: auto;
+      gap: 20px;
+      padding: 10px 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overscroll-behavior-x: contain;
+      transform-style: preserve-3d;
+    }
+
+    .container-cards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .container-cards::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .container-cards::-webkit-scrollbar-thumb {
+      background-color: rgba(44, 62, 80, 0.3);
+      border-radius: 4px;
+    }
+
+    .card-loja {
+      min-width: 250px;
+      flex-shrink: 0;
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.15),
+        0 6px 6px rgba(0, 0, 0, 0.10);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transform: rotateY(0deg) translateZ(0);
+      opacity: 0;
+      animation: fadeInUp 0.6s forwards;
+      border-top: 6px solid #0002c6;
+    }
+
+    .card-loja:hover {
+      transform: rotateY(5deg) translateY(-10px) scale(1.03);
+      box-shadow:
+        0 20px 30px rgba(0, 0, 0, 0.25),
+        0 10px 15px rgba(0, 0, 0, 0.15);
+      z-index: 2;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateY(0deg);
+      }
+    }
+
+    .card-loja h2 {
+      margin-bottom: 14px;
+      color: #0002c6;
+      font-size: 1.4rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .card-loja ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .card-loja li {
+      padding: 8px 0;
+      font-size: 16px;
+      border-bottom: 1px solid #eee;
+      color: #333;
+    }
+
+    .card-loja li strong {
+      color: #0002c6;
+    }
+
+    @media (max-width: 720px) {
+      .card-loja {
+        width: 220px;
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card-loja {
+        width: 180px;
+        min-height: 240px;
+      }
+    }
+
+    #loadingContainer {
+      width: 600px;
+    }
+
+    #loadingText {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #loadingBar {
+      position: relative;
+      width: 100%;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    #loadingProgress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: #00f;
+      width: 0%;
+      border-radius: 15px 0 0 15px;
+      transition: width 0.05s linear;
+    }
+
+    #loadingMoto {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      transform: translate(-50%, -50%);
+      transition: left 0.05s linear;
+    }
+
+    /* Moto SVG color fix */
+    #loadingMoto svg {
+      fill: white;
+      stroke: white;
+      stroke-width: 2;
+    }
+  </style>
+
+
+
+
+
+</head>
+
+<body>
+  <div class="top-container">
+    <div class="logo-container">
+      <a href="/segmentos">
+        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
+      </a>
+    </div>
+
+    <div class="user-container">
+      <div class="user-menu">
+        <%= usuario %>
+          <button class="menu-toggle" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </button>
+      </div>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <a href="/motos" onclick="editarPerfil()">📝 Voltar</a>
+      <a href="#" onclick="alterarSenha()">🔒 Alterar Senha</a>
+      <a href="#" onclick="configuracoes()">⚙️ Configurações</a>
+      <a href="#" onclick="ajuda()">❓ Ajuda</a>
+      <a href="/logout" class="logout-option">🚪 Sair</a>
+    </div>
+  </div>
+
+  <!-- substitua a parte onde estava duplicando os cards com o seguinte -->
+
+  <div class="carousel-container">
+    <div class="container-cards" id="carousel">
+      <% empresas.forEach((empresa)=> { %>
+        <div class="card-loja">
+          <h2>
+            <%= empresa.nome %>
+          </h2>
+          <ul>
+            <% empresa.vendedores.forEach((vendedor)=> { %>
+              <li>
+                <strong>
+                  <%= vendedor.nome_vendedor %>
+                </strong>:
+                <%= vendedor.total_vendas %> Vendas –
+                  <%= vendedor.total_simulacoes %> Simulações –
+                    <%= vendedor.percentual_exito %>% de êxito
+                      <% if (vendedor.percentual_exito>= 70) { %> 🟢 <% } else if (vendedor.percentual_exito>= 40) { %>
+                          🟡 <% } else { %> 🔴 <% } %>
+              </li>
+              <% }) %>
+          </ul>
+        </div>
+        <% }) %>
+    </div>
+  </div>
+
+
+
+  <footer class="footer">
+    <div class="footer-text">
+      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+      <span class="animate scroll" style="--i:1;"></span>
+    </div>
+    <div class="footer-iconTop">
+      <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+      <span class="animate scroll" style="--i:3;"></span>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('dropdownMenu');
+      const toggle = document.querySelector('.menu-toggle');
+
+      menu.classList.toggle('active');
+      toggle.classList.toggle('active');
+    }
+
+    // Fechar menu quando clicar fora dele
+    document.addEventListener('click', function (event) {
+      const menu = document.getElementById('dropdownMenu');
+      const toggle = document.querySelector('.menu-toggle');
+
+      if (!toggle.contains(event.target) && !menu.contains(event.target)) {
+        menu.classList.remove('active');
+        toggle.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+    const carousel = document.getElementById("carousel");
+    const cards = Array.from(carousel.children);
+    const totalCards = cards.length;
+
+    // Cria o overlay de loading dinamicamente e adiciona ao body
+    const loadingOverlay = document.createElement("div");
+    loadingOverlay.id = "loadingOverlay";
+    loadingOverlay.style.cssText = `
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 2, 198, 0.8);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-radius: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+  `;
+
+    loadingOverlay.innerHTML = `
+    <div style="margin-bottom: 20px;">Carregando...</div>
+    <div id="loadingBar" style="
+      position: relative;
+      width: 500px;
+      height: 20px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+      overflow: visible;
+    ">
+      <div id="loadingProgress" style="
+        position: absolute;
+        top: 0; left: 0; height: 100%;
+        background: #0002c6;
+        border-radius: 10px 0 0 10px;
+        width: 0%;
+        z-index: 5;
+      "></div>
+      <div id="loadingMoto" style="
+        position: absolute;
+        top: -30px;
+        left: 0;
+        font-size: 40px;
+        transform: translateX(-50%) scaleX(-1);
+        transition: left 0.05s linear;
+        user-select: none;
+        z-index: 10;
+        filter: drop-shadow(0 0 5px #0002c6);
+      ">
+        🏍️
+      </div>
+    </div>
+  `;
+
+    carousel.parentElement.style.position = "relative";
+    carousel.parentElement.appendChild(loadingOverlay);
+
+    const resetThreshold = 50;
+    let isResetting = false;
+
+    // Duplicar cards para loop infinito
+    cards.forEach(card => {
+      carousel.appendChild(card.cloneNode(true));
+      carousel.insertBefore(card.cloneNode(true), carousel.firstChild);
+    });
+
+    const cardWidth = cards[0].offsetWidth;
+    const totalWidth = cardWidth * totalCards;
+    carousel.scrollLeft = totalWidth;
+
+    let autoScrollSpeed = 0.7;
+    let autoScrollPaused = false;
+
+    const loadingProgress = loadingOverlay.querySelector("#loadingProgress");
+    const loadingMoto = loadingOverlay.querySelector("#loadingMoto");
+
+    function showLoading() {
+      loadingOverlay.style.opacity = "1";
+      loadingOverlay.style.pointerEvents = "auto";
+
+      let start = null;
+      function animateLoading(timestamp) {
+        if (!start) start = timestamp;
+        const elapsed = timestamp - start;
+        const progressPercent = Math.min((elapsed / 2000) * 100, 100);
+
+        loadingProgress.style.width = progressPercent + "%";
+
+        const barWidth = loadingProgress.parentElement.offsetWidth;
+        loadingMoto.style.left = (barWidth * progressPercent) / 100 + "px";
+
+        if (elapsed < 2000) {
+          requestAnimationFrame(animateLoading);
+        }
+      }
+
+      requestAnimationFrame(animateLoading);
+    }
+
+    function hideLoading() {
+      loadingOverlay.style.opacity = "0";
+      loadingOverlay.style.pointerEvents = "none";
+      loadingProgress.style.width = "0%";
+      loadingMoto.style.left = "0px";
+    }
+
+    function loop() {
+      if (isResetting || autoScrollPaused) {
+        requestAnimationFrame(loop);
+        return;
+      }
+
+      carousel.scrollLeft += autoScrollSpeed;
+
+      if (carousel.scrollLeft >= carousel.scrollWidth - totalWidth - resetThreshold) {
+        showLoading();
+
+        if (!isResetting) {
+          isResetting = true;
+          setTimeout(() => {
+            carousel.scrollLeft = totalWidth;
+            hideLoading();
+            isResetting = false;
+          }, 2000);
+        }
+      } else {
+        hideLoading();
+      }
+
+      if (carousel.scrollLeft <= 0) {
+        carousel.scrollLeft = totalWidth;
+        hideLoading();
+      }
+
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+
+    // Drag com inércia + pausa de scroll
+    let isDown = false;
+    let startX, scrollLeft, lastX, velocity, rafId;
+
+    carousel.addEventListener("mousedown", (e) => {
+      isDown = true;
+      autoScrollPaused = true; // pausa carrossel ao clicar
+      startX = e.pageX;
+      lastX = startX;
+      scrollLeft = carousel.scrollLeft;
+      velocity = 0;
+      cancelAnimationFrame(rafId);
+      carousel.style.cursor = "grabbing";
+    });
+
+    carousel.addEventListener("mouseup", () => {
+      isDown = false;
+      carousel.style.cursor = "grab";
+      applyInertia();
+      setTimeout(() => {
+        autoScrollPaused = false; // retoma o carrossel após inércia
+      }, 500);
+    });
+
+    carousel.addEventListener("mouseleave", () => {
+      if (isDown) {
+        isDown = false;
+        carousel.style.cursor = "grab";
+        applyInertia();
+        setTimeout(() => {
+          autoScrollPaused = false;
+        }, 500);
+      }
+    });
+
+    carousel.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX;
+      const walk = x - startX;
+      carousel.scrollLeft = scrollLeft - walk;
+
+      velocity = x - lastX;
+      lastX = x;
+    });
+
+    function applyInertia() {
+      const friction = 0.95;
+
+      function animate() {
+        if (Math.abs(velocity) < 0.5) return;
+        carousel.scrollLeft -= velocity;
+        velocity *= friction;
+
+        if (carousel.scrollLeft >= carousel.scrollWidth - totalWidth) {
+          carousel.scrollLeft = totalWidth;
+        }
+        if (carousel.scrollLeft <= 0) {
+          carousel.scrollLeft = totalWidth;
+        }
+
+        rafId = requestAnimationFrame(animate);
+      }
+
+      rafId = requestAnimationFrame(animate);
+    }
+  </script>
+
+
+
+
+</body>
+
+</html>

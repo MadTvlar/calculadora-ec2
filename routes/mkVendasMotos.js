@@ -60,7 +60,7 @@ async function fetchMkVendasMotos(pool) {
 
     const dataMovimentacaoFormatada = moto.datamovimentacao ? moto.datamovimentacao.substring(0, 10) : null;
 
-    const [rows] = await pool.promise().query(
+    const [rows] = await pool.query(
       'SELECT empresa FROM microwork.vendas_motos WHERE doc_fiscal = ?',
       [moto.docfiscal]
     );
@@ -133,7 +133,7 @@ async function fetchMkVendasMotos(pool) {
       ];
 
       try {
-        await pool.promise().query(query, values);
+        await pool.query(query, values);
         console.log(`Chassi ${moto.chassi} com data ${dataMovimentacaoFormatada} inserido com sucesso.`);
       } catch (error) {
         console.error(`Erro ao inserir chassi ${moto.chassi} com data ${dataMovimentacaoFormatada}:`, error.message);
