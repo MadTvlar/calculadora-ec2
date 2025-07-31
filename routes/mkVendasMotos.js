@@ -6,8 +6,8 @@ const year = now.getFullYear();
 const month = String(now.getMonth() + 1).padStart(2, '0');
 const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
 
-const dataInicial = `2025-01-01 00:00:00`;
-const dataFinal = `2025-06-30 23:59:59`;
+const dataInicial = `${year}-${month}-01 00:00:00`;
+const dataFinal = `${year}-${month}-${day} 23:59:59`;
 
 async function fetchMkVendasMotos(pool) {
   console.log('Iniciando a consulta API de para a tabela microwork.vendas_motos');
@@ -19,7 +19,7 @@ async function fetchMkVendasMotos(pool) {
         Tipodemovimento=2,25,26,22,11,9,17,10,21,32;
         Municipio=null;
         Consorcio=null;
-        TipoVeiculo=null;
+        TipoVeiculo=4,3;
         Pontodevendadovendedor=null;
         FinanceiraLeasing=null;
         Origemdavenda=null;
@@ -41,7 +41,7 @@ async function fetchMkVendasMotos(pool) {
     idrelatorioconfiguracao: 248,
     idrelatorioconsulta: 50,
     idrelatorioconfiguracaoleiaute: 248,
-    idrelatoriousuarioleiaute: 1177,
+    idrelatoriousuarioleiaute: 1178,
     ididioma: 1,
     listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13],
     filtros: filtros
@@ -61,12 +61,12 @@ async function fetchMkVendasMotos(pool) {
     const query = `
       INSERT INTO microwork.vendas_motos (
         empresa, municipio, quantidade, financiada, banco, id_microwork, vendedor, 
-        cpf_cnpj, data_venda, pedido, doc_fiscal, modelo, cor, chassi, ano,
+        cpf_cnpj, data_venda, pedido, doc_fiscal, modelo, cor, chassi, ano, cliente, telefone_cliente,
         dias_estoque, tipo_venda, custo_contabil, valor_venda,
         entrada_bonificada, valor_venda_real, valor_financiado,
         valor_retorno, retorno_porcent, despesa_emplac, despesa_ope,
         lucro_ope
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         empresa = VALUES(empresa),
         municipio = VALUES(municipio),
@@ -82,6 +82,8 @@ async function fetchMkVendasMotos(pool) {
         cor = VALUES(cor),
         chassi = VALUES(chassi),
         ano = VALUES(ano),
+        cliente = VALUES(cliente),
+        telefone_cliente = VALUES(telefone_cliente),
         dias_estoque = VALUES(dias_estoque),
         tipo_venda = VALUES(tipo_venda),
         custo_contabil = VALUES(custo_contabil),
@@ -110,6 +112,8 @@ async function fetchMkVendasMotos(pool) {
       moto.cor,
       moto.chassi,
       moto.anofabrmod,
+      moto.pessoa,
+      moto.telefonecelularformatado,
       moto.diasestoque,
       moto.tipovenda,
       moto.custocontabil,
