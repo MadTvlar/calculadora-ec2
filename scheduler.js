@@ -71,6 +71,4 @@ async function executarAtualizacao() {
 // Execução inicial
 executarAtualizacao();
 
-
-
 console.log('Iniciando as tarefas!');
