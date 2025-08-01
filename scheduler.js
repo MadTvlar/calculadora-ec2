@@ -33,6 +33,7 @@ async function executarAtualizacao() {
     await fetchEstoqueMotos(pool);
     await delay(delayMs);
 
+    /*
     await fetchMkVendasMotos(pool);
     await delay(delayMs);
 
@@ -44,7 +45,7 @@ async function executarAtualizacao() {
 
     await fetchMkcaptacaoMotos(pool);
     await delay(delayMs);
-
+    */
     await atualizarNPS(pool);
     await delay(delayMs);
 
