@@ -1,4 +1,6 @@
 require('dotenv').config();
+// Altere aqui o mês que você deseja consultar (formato 'YYYY-MM')
+const referenteMes = '2025-07';
 
 const representante = new Set([
   'HUDSON SANTOS DE LIMA',
@@ -26,10 +28,9 @@ const representante = new Set([
   'NAYARA SERRAO DA SILVA'
 ]);
 
-async function atualizarRankings(pool) {
-  const referenteMes = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
-  console.log(referenteMes);
 
+async function atualizarRankings(pool) {
+  console.log('Referente ao mês:', referenteMes);
 
   console.log('\nLimpando a tabela de ranking_geral');
   await pool.query('TRUNCATE TABLE tropa_azul.ranking_geral');
@@ -73,7 +74,7 @@ async function atualizarRankings(pool) {
       ) AS vendedor,
       quantidade
     FROM microwork.vendas_motos
-    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
 
     UNION ALL
 
@@ -89,11 +90,11 @@ async function atualizarRankings(pool) {
       ) AS vendedor,
       quantidade
     FROM microwork.vendas_seminovas
-    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
   ) AS uniao
   GROUP BY id_microwork, vendedor
   ORDER BY total_vendas DESC;
-`);
+`, [referenteMes, referenteMes]);
 
 
   const [rankLLO] = await pool.query(`
@@ -116,7 +117,7 @@ async function atualizarRankings(pool) {
       lucro_ope,
       valor_venda_real
     FROM microwork.vendas_motos
-    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
 
     UNION ALL
 
@@ -133,11 +134,11 @@ async function atualizarRankings(pool) {
       lucro_ope,
       valor_venda_real
     FROM microwork.vendas_seminovas
-    WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
   ) AS uniao
   GROUP BY id_microwork, vendedor
   ORDER BY percentual_lucro DESC;
-`);
+`, [referenteMes, referenteMes]);
 
 
   const [rankCaptacao] = await pool.query(`
@@ -153,10 +154,10 @@ async function atualizarRankings(pool) {
     COUNT(*) AS totalCaptado
   FROM microwork.captacao_motos
   WHERE vendedor IS NOT NULL
-    AND DATE_FORMAT(data_conclusao, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    AND DATE_FORMAT(data_conclusao, '%Y-%m') = ?
   GROUP BY id_microwork, vendedor
   ORDER BY totalCaptado DESC;
-`);
+`, [referenteMes]);
 
 
   const [rankContrato] = await pool.query(`
@@ -172,10 +173,10 @@ async function atualizarRankings(pool) {
     ) AS vendedor,
     COUNT(*) AS totalContratos
   FROM microwork.contratos_motos
-  WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+  WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor
   ORDER BY totalContratos DESC;
-`);
+`, [referenteMes]);
 
 
   const [rankRetorno] = await pool.query(`
@@ -192,10 +193,10 @@ async function atualizarRankings(pool) {
     COUNT(*) - SUM(CASE WHEN quantidade = -1 THEN 2 ELSE 0 END) AS quantidadeRetorno
   FROM microwork.vendas_motos
   WHERE retorno_porcent >= 2
-    AND DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    AND DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor
   ORDER BY quantidadeRetorno DESC;
-`);
+`, [referenteMes]);
 
 
 
@@ -224,9 +225,9 @@ async function atualizarRankings(pool) {
       END
     ) AS r4
   FROM microwork.vendas_motos
-  WHERE DATE_FORMAT(data_venda, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+  WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor;
-`);
+`, [referenteMes]);
 
 
   const inserirRetornoPorTipo = async (dados) => {

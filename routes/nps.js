@@ -5,6 +5,8 @@ async function atualizarNPS() {
   console.log(`Limpando a tabela tropa_azul.nps`)
   await connection.query(`TRUNCATE TABLE nps`);
 
+  const mesReferente = '2025-07';
+
   const [resultados] = await connection.query(`
   SELECT 
     id_microwork,
@@ -13,9 +15,9 @@ async function atualizarNPS() {
     SUM(neutra) AS neutras,
     SUM(detratora) AS detratoras
     FROM nps_geral
-    WHERE DATE_FORMAT(data, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    WHERE DATE_FORMAT(data, '%Y-%m') = ?
     GROUP BY id_microwork, vendedor
-`);
+`, [mesReferente]);
 
 
   for (const row of resultados) {
