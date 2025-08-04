@@ -374,7 +374,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
         console.error('Erro ao buscar detalhes do chassi:', err);
       }
 
-      var filialSelecionada = document.getElementById('empresa').value;
+      const filialSelecionada = document.getElementById('empresa').dataset.valor;
       var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL"];
       var motoSelecionada = $('#motos_yamaha').val();
 

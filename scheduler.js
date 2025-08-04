@@ -62,7 +62,7 @@ async function executarAtualizacao() {
     //  'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
     // [agora]
     // );
-    console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
+    //console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
   } catch (err) {
     console.error('Erro na atualização:', err);
   }
