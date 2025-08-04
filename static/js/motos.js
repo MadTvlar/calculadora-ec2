@@ -1,5 +1,5 @@
 const filialSelecionada = document.getElementById('empresa').dataset.valor;
-var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL", "IRA"];
+var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL"];
 var freteManaus = document.getElementById('freteManaus');
 if (filiaisManaus.includes(filialSelecionada)) {
   freteManaus.style.display = "block";
@@ -375,7 +375,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
       }
 
       const filialSelecionada = document.getElementById('empresa').dataset.valor;
-      var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL", "IRA"];
+      var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL"];
       var motoSelecionada = $('#motos_yamaha').val();
 
       if (motoSelecionada) {
