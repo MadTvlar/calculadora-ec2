@@ -991,7 +991,7 @@ app.get('/obter_taxa/:nome_parcela', (req, res) => {
 app.post('/venda_moto', async (req, res) => {
   const {
     empresa, id_microwork, nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, forma_pagamento,
-    filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
+    banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
     margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplacamento_custo,
     frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas,
     margem_liquida, comissao
@@ -1004,17 +1004,17 @@ app.post('/venda_moto', async (req, res) => {
   const query = `
     INSERT INTO simulacao_motos (
       empresa, id_microwork, nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, forma_pagamento, 
-      filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto, 
+      banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto, 
       margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplacamento_custo, 
       frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas, 
       margem_liquida, comissao
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
     empresa, id_microwork, nome_vendedor, nome_cliente, cpf_cnpj_cliente, moto_selecionada, forma_pagamento,
-    filial_escolhida, banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
+    banco_selecionado, retorno_selecionado, valor_bem, valor_venda_real, custo_moto,
     margem_bruta, emplacamento_receita, frete_receita, acessorio, valor_retorno, emplacamento_custo,
     frete_custo, taxa_cartao, brinde, despesa_operacionais, total_despesas, total_receitas,
     margem_liquida, comissao

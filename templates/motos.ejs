@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/motos.css">
+  <link rel="stylesheet" href="/css/padrao.css">
   <title>SIMULADOR MOTOS</title>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap"
     rel="stylesheet">
@@ -19,40 +20,33 @@
       </a>
     </div>
 
-    <div class="filial-container">
-
-      <select id="filialTipo" name="filialTipo">
-        <option value="">Loja</option>
-        <% filiais.forEach(filial=> { %>
-          <option value="<%= filial %>">
-            <%= filial %>
-          </option>
-          <% }); %>
-      </select>
-
-      <div class="user-menu">
-        <button id="user-button">
-          <%= usuario %>
-        </button>
-        <div id="user-dropdown" class="dropdown-content">
-          <a href="#" id="save-pdf">Salvar em PDF</a>
-          <a href="/rankmotos">Ranking Geral</a>
-          <a href="/minhasvendas">Minhas Vendas</a>
-          <% if (grupo==='admin' || grupo==='sup' ) { %>
-            <a href="/reservasmotos">Reservas</a>
-            <!-- <a href="/diapassor">Diapassor</a> -->
-            <% } %>
-              <a href="/resumomotos">Resumo do Mês</a>
-              <% if (grupo==='admin' ) { %>
-                <a href="/nps">NPS</a>
-                <a href="/rh">RH</a>
-                <a href="/mercado">Mercado</a>
-                <% } %>
-                  <a href="/logout">Logout</a>
-        </div>
+    <div class="user-container">
+      <div class="user-menu" id="user">
+        <%= usuario %>
+          <button class="menu-toggle" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </button>
       </div>
-
     </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <a href="#" id="save-pdf">🧾 Salvar em PDF</a>
+      <a href="/rankmotos">🏆 Ranking Estadual</a>
+      <a href="/minhasvendas">💵 Minhas Vendas</a>
+      <a href="/resumomotos">📊 Resumo do Mês</a>
+      <% if (grupo==='admin' || grupo==='sup' ) { %>
+        <a href="/reservasmotos">📌 Reservas de Moto</a>
+        <a href="/diapassor">📅 Diapassor</a>
+        <% } %>
+          <% if (grupo==='admin' ) { %>
+            <a href="/nps">NPS</a>
+            <a href="/rh">RH</a>
+            <a href="/mercado">Mercado</a>
+            <% } %>
+              <a href="/logout">🚪 Logout</a>
+    </div>
+  </div>
 
 
   </div>
@@ -175,17 +169,11 @@
         <label for="brinde">BRINDE:</label>
         <input type="text" id="retorno_brinde" placeholder="R$00,00" disabled>
       </div>
-
-
-
-
-
-
     </div>
   </div>
 
   <div id="card4" style="display: none; margin-left: -15px">
-    <p style="text-align: center;"><strong>RELATÓRIO - CHASSI </strong> <span id="mensagemFilial"
+    <p style="text-align: center;"><strong>FILIAL <%= empresa %> - CHASSI </strong> <span id="mensagemFilial"
         style="text-transform: uppercase;"></span></p>
 
     <div id="caixa_destacada1" class="caixa-destacada">
@@ -224,30 +212,62 @@
     </div>
   </div>
 
-  <footer class="footer" id="fim-da-pagina">
-    <div class="footer-text">
-      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
-
-      <span class="animate scroll" style="--i:1;"></span>
-    </div>
-
-    <div class="footer-iconTop">
-      <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
-
-      <span class="animate scroll" style="--i:3;"></span>
-    </div>
+  <footer class="footer">
+    <p>&copy; 2025 Departamento de T.I | Todos os direitos reservados.</p>
   </footer>
 
-  <a href="#fim-da-pagina" id="showCard4Button" class="scroll-top-btn">Simular</a>
+  <a id="showCard4Button" class="scroll-top-btn">Simular</a>
 
 
   <div id="dados_emplacamento" data-valor="<%= valorMesAtual %>"></div>
   <div id="id_microwork" data-valor="<%= id %>"></div>
   <div id="empresa" data-valor="<%= empresa %>"></div>
 
+  <script src="./js/motos.js"></script>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('dropdownMenu');
+      const toggle = document.querySelector('.menu-toggle');
+
+      menu.classList.toggle('active');
+      toggle.classList.toggle('active');
+    }
+
+    // Fecha o menu ao clicar fora
+    document.addEventListener('click', function (event) {
+      const menu = document.getElementById('dropdownMenu');
+      const toggle = document.querySelector('.menu-toggle');
+
+      if (!toggle.contains(event.target) && !menu.contains(event.target)) {
+        menu.classList.remove('active');
+        toggle.classList.remove('active');
+      }
+    });
+
+    // Alterna a classe do footer com base no tamanho da página
+    function ajustarFooter() {
+      const footer = document.getElementById('footer');
+      if (!footer) return;
+
+      // Altura total da página, incluindo o conteúdo principal
+      const alturaConteudo = document.documentElement.scrollHeight;
+      const alturaJanela = window.innerHeight;
+
+      if (alturaConteudo > alturaJanela) {
+        footer.classList.remove('footer-fixed');
+        footer.classList.add('footer-relative');
+      } else {
+        footer.classList.remove('footer-relative');
+        footer.classList.add('footer-fixed');
+      }
+    }
+
+    window.addEventListener('load', ajustarFooter);
+    window.addEventListener('resize', ajustarFooter);
+  </script>
 
 
-  <script src="/js/motos.js"></script>
 
 </body>
 

@@ -1,5 +1,15 @@
+const filialSelecionada = document.getElementById('empresa').dataset.valor;
+var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL"];
+var freteManaus = document.getElementById('freteManaus');
+if (filiaisManaus.includes(filialSelecionada)) {
+  freteManaus.style.display = "block";
+
+} else {
+  freteManaus.style.display = "none";
+}
+
+
 function verificarCamposCard1() {
-  const filialSelecionada = document.getElementById('filialTipo').value.trim();
   const motosYamaha = document.getElementById('motos_yamaha').value;
   const formaPagamento = document.getElementById('forma_pagamento').value.trim();
   const cliente = document.getElementById('cliente').value;
@@ -18,28 +28,7 @@ function verificarCamposCard1() {
     }
   });
 
-  var filiaisManaus = ["Cachoeirinha", "Compensa", "Cidade Nova", "Max Teixeira", "Grande Circular"];
-  var freteManaus = document.getElementById('freteManaus');
-  if (filiaisManaus.includes(filialSelecionada)) {
-    freteManaus.style.display = "block";
-
-  } else {
-    freteManaus.style.display = "none";
-  }
-
-  if (filialSelecionada) {
-    document.getElementById('card1').classList.remove('suspended');
-    document.getElementById('card1').classList.add('active');
-  } else {
-    document.getElementById('card1').classList.add('suspended');
-    document.getElementById('card1').classList.remove('active');
-    document.getElementById('card2').classList.add('suspended');
-    document.getElementById('card2').classList.remove('active');
-    document.getElementById('card3').classList.add('suspended');
-    document.getElementById('card3').classList.remove('active');
-  }
-
-  if (filialSelecionada && motosYamaha && cliente && cpfCnpjValido && formaPagamento) {
+  if (motosYamaha && cliente && cpfCnpjValido && formaPagamento) {
     if (formaPagamento === "À Vista" || formaPagamento === "Cartão de Crédito") {
       document.getElementById('card2').classList.add('suspended');
       document.getElementById('card2').classList.remove('active');
@@ -120,9 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.getElementById('entradaAlter').innerText = `ENTRADA REAL`;
 
 
-document.getElementById('filialTipo').addEventListener('change', verificarCamposCard1);
-
-document.getElementById('card1').classList.add('suspended');
 document.getElementById('card2').classList.add('suspended');
 document.getElementById('card3').classList.add('suspended');
 
@@ -248,9 +234,6 @@ function validarCNPJ(cnpj) {
   return true;
 }
 
-document.getElementById("user-button").addEventListener("click", function () {
-  document.getElementById("user-dropdown").classList.toggle("show");
-});
 
 window.onclick = function (event) {
   if (!event.target.matches('#user-button')) {
@@ -263,24 +246,16 @@ window.onclick = function (event) {
   }
 };
 
-document.getElementById('save-pdf').addEventListener('click', function (event) {
-  event.preventDefault();
+document.addEventListener('DOMContentLoaded', function () {
+  const saveBtn = document.getElementById('save-pdf');
+  if (!saveBtn) return;
 
-  // Esconde o menu
-  const menu = document.getElementById('menu'); // ajusta o id se for diferente
-  if (menu) {
-    menu.style.display = 'none';
-  }
+  saveBtn.addEventListener('click', function (event) {
+    event.preventDefault();
 
-  // Aguarda um pouquinho e depois chama o print
-  setTimeout(function () {
+    // Apenas dispara a impressão. O menu será escondido via CSS
     window.print();
-
-    // Depois do print, mostra o menu de volta
-    if (menu) {
-      menu.style.display = 'block';
-    }
-  }, 200); // 200ms de atraso para dar tempo de esconder o menu
+  });
 });
 
 
@@ -356,8 +331,8 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
       if (retornoAcessorio > 0) {
         const receitaAcessorio = retornoAcessorio;
         const custoAcessorio = retornoAcessorio * 0.7;
-        document.getElementById('receita_acessorio').innerText = `Acessórios Receita:${'.'.repeat(83)} R$ ${receitaAcessorio.toFixed(2).replace('.', ',')}`;
-        document.getElementById('custo_acessorio').innerText = `Acessórios Custo:${'.'.repeat(86)} R$ -${custoAcessorio.toFixed(2).replace('.', ',')}`;
+        document.getElementById('receita_acessorio').innerText = `Acessórios Receita:${'.'.repeat(73)} R$ ${receitaAcessorio.toFixed(2).replace('.', ',')}`;
+        document.getElementById('custo_acessorio').innerText = `Acessórios Custo:${'.'.repeat(76)} R$ -${custoAcessorio.toFixed(2).replace('.', ',')}`;
 
       } else {
         retornoAcessorio = 0;
@@ -369,7 +344,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
         const resultadoBrinde = retornoBrinde;
         resultBrinde = retornoBrinde;
 
-        document.getElementById('resultado_brinde').innerText = `Brinde:${'.'.repeat(105)} R$ -${resultadoBrinde.toFixed(2).replace('.', ',')}`;
+        document.getElementById('resultado_brinde').innerText = `Brinde:${'.'.repeat(95)} R$ -${resultadoBrinde.toFixed(2).replace('.', ',')}`;
       } else {
         resultBrinde = 0;
         document.getElementById('resultado_brinde').innerText = '';
@@ -399,14 +374,14 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
         console.error('Erro ao buscar detalhes do chassi:', err);
       }
 
-      var filialSelecionada = document.getElementById('filialTipo').value;
-      var filiaisManaus = ["Cachoeirinha", "Compensa", "Cidade Nova", "Max Teixeira", "Grande Circular"];
+      var filialSelecionada = document.getElementById('empresa').value;
+      var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL"];
       var motoSelecionada = $('#motos_yamaha').val();
 
       if (motoSelecionada) {
 
         document.getElementById('mensagemFilial').innerText = `${chassiProduto}`;
-        document.getElementById('custo_produto').innerHTML = `Custo da Moto: ${'.'.repeat(90)} R$ ${custoProduto.toFixed(2).replace('.', ',')}`;
+        document.getElementById('custo_produto').innerHTML = `Custo da Moto: ${'.'.repeat(80)} R$ ${custoProduto.toFixed(2).replace('.', ',')}`;
 
         if (filiaisManaus.includes(filialSelecionada)) {
           $('#card4').show();
@@ -429,9 +404,9 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
           const valor_bem = precoNegociado;
 
-          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(82)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
 
-          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(71)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
           const bancoRetorno = document.getElementById('banco_retorno').value.trim();
           const resultBanco = precoNegociado - entradaReal - entradaBonificada;
@@ -440,27 +415,27 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
           if (bancoRetorno === "R0") {
             resultadoBanco = resultBanco * 0;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
 
           } else if (bancoRetorno === "R1") {
             resultadoBanco = resultBanco * 0.012;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
 
           } else if (bancoRetorno === "R2") {
             resultadoBanco = resultBanco * 0.024;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
 
           } else if (bancoRetorno === "R3") {
             resultadoBanco = resultBanco * 0.036;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
 
           } else if (bancoRetorno === "R4") {
             resultadoBanco = resultBanco * 0.048;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
 
           } else {
             resultadoBanco = 0;
-            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(84)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
           }
 
 
@@ -471,9 +446,9 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
           const valor_bem = entradaReal;
 
-          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+          document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(82)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
 
-          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+          document.getElementById('valor_venda_real').innerText = `Valor de Venda Real: ${'.'.repeat(71)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
         } if (formaPagamento === "Cartão de Crédito") {
 
@@ -493,122 +468,122 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
             // Atualiza os valores no HTML
 
-            $('#parcelas_taxa').text(`Parcelas de ${data.parcela}x: ${'.'.repeat(88)} R$ ${parcelaCartao.toFixed(2).replace('.', ',')} `);
+            $('#parcelas_taxa').text(`Parcelas de ${data.parcela}x: ${'.'.repeat(78)} R$ ${parcelaCartao.toFixed(2).replace('.', ',')} `);
 
             const valor_bem = entradaReal;
 
-            document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(92)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
+            document.getElementById('valor_bem').innerText = `Valor do Bem: ${'.'.repeat(82)} R$ ${valor_bem.toFixed(2).replace('.', ',')}`;
 
             document.getElementById('valor_venda_real').innerText =
-              `Valor de Venda Real: ${'.'.repeat(81)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
+              `Valor de Venda Real: ${'.'.repeat(71)} R$ ${valorVendaReal.toFixed(2).replace('.', ',')}`;
 
             document.getElementById('taxa_cartao').innerText =
-              `Taxa do Cartão: ${'.'.repeat(90)} R$ -${taxaCartao.toFixed(2).replace('.', ',')}`;
+              `Taxa do Cartão: ${'.'.repeat(80)} R$ -${taxaCartao.toFixed(2).replace('.', ',')}`;
 
             document.getElementById('margem_bruta').innerText =
-              `Margem Bruta: ${'.'.repeat(91)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
+              `Margem Bruta: ${'.'.repeat(81)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
 
             if (checkboxEmplacamento.checked) {
               despEmplacamento = (valorVendaReal * valorMesAtual) + 140.75 + 290 + 227.08;
               document.getElementById('custo_emplacamento').innerText =
-                `Emplacamento Custo: ${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+                `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
 
               document.getElementById('receita_emplacamento').innerText =
-                `Emplacamento Receita: ${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+                `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
             } else {
               despEmplacamento = 0;
               retornoEmplacamento = 0;
               document.getElementById('custo_emplacamento').innerText =
-                `Emplacamento Custo: ${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+                `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
 
               document.getElementById('receita_emplacamento').innerText =
-                `Emplacamento Receita: ${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+                `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
             }
 
             var despOpeFinMkt = entradaReal * 0.06;
             document.getElementById('despesas_ope_fin_mkt').innerText =
-              `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
+              `Despesas Operacionais: ${'.'.repeat(65)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
 
             var totalDespesas = despOpeFinMkt + resultBrinde + despEmplacamento + despesaFrete + retornoAcessorio * 0.7 + taxaCartao;
             document.getElementById('resultado_despesas').innerText =
-              `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
+              `Total de Despesas: ${'.'.repeat(74)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
 
             var totalReceitas = retornoAcessorio + resultadoBanco + retornoEmplacamento + receitaFrete;
             document.getElementById('resultado_receitas').innerText =
-              `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+              `Total de Receitas: ${'.'.repeat(76)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
 
             var margemLiquida = margem_bruta - totalDespesas + totalReceitas;
             document.getElementById('resultado_liquido').innerText =
-              `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+              `Margem Líquida: ${'.'.repeat(78)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
 
             const margemPercentual = margemLiquida / entradaReal * 100;
-            document.getElementById('resultado_porcentual').innerText = `LLO: ${'.'.repeat(109)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+            document.getElementById('resultado_porcentual').innerText = `LLO Previsto: ${'.'.repeat(83)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
             console.log('valor margem percentual', margemPercentual);
 
             var comissao = margemLiquida * 0.085;
             if (comissao < 0) {
               comissao = 0
-              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(67)} R$ ${comissao.toFixed(2).replace('.', ',')}`
 
             } else {
-              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+              document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(67)} R$ ${comissao.toFixed(2).replace('.', ',')}`
 
             }
           });
         }
 
         const margemBruta = margem_bruta
-        document.getElementById('margem_bruta').innerText = `Margem Bruta: ${'.'.repeat(91)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
+        document.getElementById('margem_bruta').innerText = `Margem Bruta: ${'.'.repeat(81)}  R$ ${margemBruta.toFixed(2).replace('.', ',')}`;
 
-        document.getElementById('custo_frete').innerText = `Frete Custo: ${'.'.repeat(96)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
-        document.getElementById('receita_frete').innerText = `Frete Receita: ${'.'.repeat(93)} R$ ${receitaFrete.toFixed(2).replace('.', ',')}`;
+        document.getElementById('custo_frete').innerText = `Frete Custo: ${'.'.repeat(85)} R$ -${despesaFrete.toFixed(2).replace('.', ',')}`;
+        document.getElementById('receita_frete').innerText = `Frete Receita: ${'.'.repeat(82)} R$ ${receitaFrete.toFixed(2).replace('.', ',')}`;
 
 
         const checkboxEmplacamento = document.getElementById('enableEmplacamento');
         if (checkboxEmplacamento.checked && formaPagamento === "Financiado") {
           despEmplacamento = (precoNegociado * valorMesAtual) + 140.75 + 290 + 335.52;
-          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
         } else if (checkboxEmplacamento.checked && formaPagamento === "À Vista") {
           despEmplacamento = (entradaReal * valorMesAtual) + 140.75 + 290 + 227.08;
-          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
         } else if (formaPagamento !== "Cartão de Crédito") {
           despEmplacamento = 0;
 
-          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(79)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(76)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
         }
 
 
         if (formaPagamento !== "Cartão de Crédito") {
 
           const despOpeFinMkt = valor_op * 0.06;
-          document.getElementById('despesas_ope_fin_mkt').innerText = `Despesas Operacionais: ${'.'.repeat(75)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
+          document.getElementById('despesas_ope_fin_mkt').innerText = `Despesas Operacionais: ${'.'.repeat(65)} R$ -${despOpeFinMkt.toFixed(2).replace('.', ',')}`;
 
           const totalDespesas = despOpeFinMkt + resultBrinde + despEmplacamento + despesaFrete + retornoAcessorio * 0.7;
-          document.getElementById('resultado_despesas').innerText = `Total de Despesas: ${'.'.repeat(84)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
+          document.getElementById('resultado_despesas').innerText = `Total de Despesas: ${'.'.repeat(74)} R$ -${totalDespesas.toFixed(2).replace('.', ',')}`;
 
           const totalReceitas = retornoAcessorio + resultadoBanco + retornoEmplacamento + receitaFrete;
-          document.getElementById('resultado_receitas').innerText = `Total de Receitas: ${'.'.repeat(86)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
+          document.getElementById('resultado_receitas').innerText = `Total de Receitas: ${'.'.repeat(76)} R$ ${totalReceitas.toFixed(2).replace('.', ',')}`;
 
           const margemLiquida = margemBruta - totalDespesas + totalReceitas;
-          document.getElementById('resultado_liquido').innerText = `Margem Líquida: ${'.'.repeat(88)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
+          document.getElementById('resultado_liquido').innerText = `Margem Líquida: ${'.'.repeat(78)} R$ ${margemLiquida.toFixed(2).replace('.', ',')}`;
 
           if (formaPagamento != 'Financiado') {
 
             const margemPercentual = margemLiquida / entradaReal * 100;
-            document.getElementById('resultado_porcentual').innerText = `LLO: ${'.'.repeat(109)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+            document.getElementById('resultado_porcentual').innerText = `LLO Previsto: ${'.'.repeat(83)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
             console.log('valor margem percentual', margemPercentual);
           } else {
 
             const margemPercentual = margemLiquida / valorVendaReal * 100;
-            document.getElementById('resultado_porcentual').innerText = `LLO: ${'.'.repeat(109)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
+            document.getElementById('resultado_porcentual').innerText = `LLO Previsto: ${'.'.repeat(83)} ${margemPercentual.toFixed(2).replace('.', ',')}%`;
 
             console.log('valor margem percentual', margemPercentual);
           }
@@ -616,10 +591,10 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
           comissao = margemLiquida * 0.085;
           if (comissao < 0) {
             comissao = 0
-            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(67)} R$ ${comissao.toFixed(2).replace('.', ',')}`
 
           } else {
-            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(77)} R$ ${comissao.toFixed(2).replace('.', ',')}`
+            document.getElementById('comissao').innerText = `Comissão Aproximada: ${'.'.repeat(67)} R$ ${comissao.toFixed(2).replace('.', ',')}`
 
           }
         }
@@ -643,17 +618,17 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
       function enviarFormulario() {
         const empresa = document.getElementById('empresa').dataset.valor;
         const id = document.getElementById('id_microwork').dataset.valor;
-        const vendedor = document.getElementById('user-button').innerText;
+        const vendedor = document.getElementById('user').innerText;
         const cliente = document.getElementById('cliente').value;
         const cpf = document.getElementById('cpf').value;
         const moto = document.getElementById('motos_yamaha').value;
-        const filialTipo = document.getElementById('filialTipo').value;
+
         const formaPagamento = document.getElementById('forma_pagamento').value.trim();
         const bancoSelecionado = document.getElementById('forma_banco').value;
         const retornoSelecionado = document.getElementById('banco_retorno').value;
 
         // Verifica se todos os campos obrigatórios estão preenchidos
-        if (!vendedor || !cliente || !cpf || !moto || !filialTipo || !formaPagamento) {
+        if (!vendedor || !cliente || !cpf || !moto || !formaPagamento) {
           alert('Todos os campos devem ser preenchidos!');
           return;
         }
@@ -691,7 +666,6 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
             cpf_cnpj_cliente: cpf,
             moto_selecionada: moto,
             forma_pagamento: formaPagamento,
-            filial_escolhida: filialTipo,
             banco_selecionado: bancoSelecionado,
             retorno_selecionado: retornoSelecionado,
             valor_bem,

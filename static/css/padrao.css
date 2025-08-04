@@ -1,5 +1,6 @@
  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
+
  body {
    font-family: 'Inter', Arial, sans-serif;
    background: #f6f8fa;
@@ -9,17 +10,25 @@
    min-height: 100vh;
    text-align: center;
    overflow-x: hidden;
-   overflow-y: hidden;
+   overflow-y: auto;
    position: relative;
    letter-spacing: 0.5px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+
+ }
+
+ main {
+   flex: 1;
+   width: 100%;
  }
 
  .top-container {
    display: flex;
    justify-content: space-between;
    align-items: center;
-   width: 100vw;
-   position: fixed;
+   width: 100%;
    top: 0;
    background: #0002c6;
    padding: 6px 60px 6px 60px;
@@ -27,6 +36,7 @@
    backdrop-filter: blur(8px);
    animation: surgindo 2s forwards;
    opacity: 0;
+   z-index: 1000;
  }
 
 
@@ -45,7 +55,7 @@
    align-items: center;
    gap: 18px;
    position: relative;
-   right: 30px;
+   right: -10px;
  }
 
  .logo {
@@ -59,7 +69,7 @@
    align-items: center;
    gap: 18px;
    position: relative;
-   right: 75px;
+   right: 10px;
  }
 
  /* User Menu */
@@ -116,7 +126,7 @@
  .dropdown-menu {
    position: absolute;
    top: 80%;
-   right: 130px;
+   right: 70px;
    background: white;
    border-radius: 8px;
    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -170,27 +180,11 @@
  }
 
  .footer {
-   position: fixed;
-   bottom: 0;
-   width: 100vw;
-   background: #0203c5;
+   background-color: #0203c5;
    color: white;
-   font-size: 1rem;
    text-align: center;
-   z-index: 1002;
-   backdrop-filter: blur(6px);
-   animation: surgindo 2s forwards;
- }
-
- .footer-fixed {
-   position: fixed;
-   bottom: 0;
-   left: 0;
-   width: 100vw;
-   z-index: 1002;
- }
-
- .footer-relative {
-   position: relative;
-   width: 100vw;
+   padding: auto;
+   width: 100%;
+   backdrop-filter: blur(4px);
+   margin-top: auto;
  }
