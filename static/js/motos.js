@@ -277,7 +277,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
   const cliente = document.getElementById('cliente').value;
   const cpf = document.getElementById('cpf').value.trim();
 
-  if (!cpf || cliente || formaPagamento || chassi || motosYamaha) {
+  if (!cpf || !cliente || !formaPagamento || !chassi || !motosYamaha) {
     alert('Por favor, Preencha todos os campos do primeiro card!!');
     return;
   }
