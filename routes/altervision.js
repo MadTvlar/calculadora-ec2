@@ -1,3 +1,5 @@
+// Essa rota é para requisição de API da altervision
+
 require('dotenv').config();
 const axios = require('axios');
 const connection = require('../services/db');

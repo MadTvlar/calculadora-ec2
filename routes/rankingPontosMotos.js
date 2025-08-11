@@ -1,3 +1,5 @@
+// Essa rota faz a orgnanização da pontuação dos KPI's em um Ranking por pontos
+
 const fetchrankingPontosMotos = async (connection) => {
   const referente_mes = new Date().toISOString().slice(0, 7); // "YYYY-MM"
 

@@ -1,3 +1,5 @@
+// PORCENTAGEM DA EQUAÇAÕ DE EMPLACAMENTO, VARIA POR MÊS
+
 const emplacamento = {
   "janeiro": 0.03, "fevereiro": 0.0275, "março": 0.025,
   "abril": 0.0225, "maio": 0.02, "junho": 0.0175,

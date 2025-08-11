@@ -27,8 +27,8 @@ async function executarAtualizacao() {
   try {
     const delayMs = 1000;
 
-    //await fetchEstoqueMotores(pool);
-    //await delay(delayMs);
+    await fetchEstoqueMotores(pool);
+    await delay(delayMs);
 
     await fetchEstoqueMotos(pool);
     await delay(delayMs);
@@ -45,30 +45,30 @@ async function executarAtualizacao() {
     await fetchMkcaptacaoMotos(pool);
     await delay(delayMs);
 
-    //await atualizarNPS(pool);
-    //await delay(delayMs);
+    await atualizarNPS(pool);
+    await delay(delayMs);
 
     await fetchAltervision(pool);
     await delay(delayMs);
 
-    //await atualizarRankings(pool);
-    // await delay(delayMs);
+    await atualizarRankings(pool);
+    await delay(delayMs);
 
-    //await fetchrankingPontosMotos(pool);
-    //await delay(delayMs);
+    await fetchrankingPontosMotos(pool);
+    await delay(delayMs);
 
-    //const agora = new Date();
-    // await pool.query(
-    //  'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
-    // [agora]
-    // );
-    //console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
+    const agora = new Date();
+    await pool.query(
+      'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
+      [agora]
+    );
+    console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
   } catch (err) {
     console.error('Erro na atualização:', err);
   }
 }
 
 // Execução inicial
-//executarAtualizacao();
+executarAtualizacao();
 
 console.log('Iniciando as tarefas!');

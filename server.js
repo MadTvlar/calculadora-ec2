@@ -7,7 +7,6 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
-const util = require('util');
 const bcrypt = require('bcrypt');
 const ExcelJS = require('exceljs');
 
@@ -18,7 +17,6 @@ const taxas = require('./services/taxa');
 const emplacamento = require('./services/emplacamento');
 const app = express();
 const PORT = 8080;
-//require('./scheduler');
 
 // MIDDLEWARES
 app.use(express.json());
@@ -39,8 +37,7 @@ app.use('/nps', rotaNPS);
 const rotaMercado = require('./routes/mercado');
 app.use('/', rotaMercado);
 
-// CONFIGURAÇÃO AUXILIAres
-//const query = util.promisify(connection.query).bind(connection);
+// CONFIGURAÇÃO DE GERAL DE VENDAS RANK - RESUMO E MINHAS VENDAS
 const referenteMes = '2025-07';
 
 // FUNÇÃO PARA SE OBTER O VALOR DO EMPLACAMENTO NO MÊS QUE ESTAMOS
@@ -78,10 +75,16 @@ const icms_venda = {
   "Base Reduzida": 0.07,
 }
 
+
 // CHAMADO PARA A TELA DE LOGIN 
 app.get('/', (req, res) => {
   const errors = req.flash('error');
   res.render('home', { errors });
+});
+
+// LOGOUT
+app.get('/logout', (req, res) => {
+  res.clearCookie('usuario_logado').redirect('/');
 });
 
 // CHAMADO PARA TELA DE SEGMENTOS, APÓS O LOGIN
@@ -111,7 +114,7 @@ app.post('/login', async (req, res) => {
     res.redirect('/segmentos');
   } catch (err) {
     console.error('Erro no login:', err);
-    res.status(500).send('Erro no login');
+    res.status(500).send('ERRO DE CONEXÃO AO BANCO - ACIONE O SUPORTE IMEDIATAMENTE');
   }
 });
 
@@ -128,24 +131,6 @@ app.get('/segmentos', (req, res) => {
   }
 
   res.render('segmentos', {
-    usuario: usuarioLogado,
-    grupo: grupoLogado
-  });
-});
-
-// CHAMADO PARA SEGMENTOS ASSIM QUE O USUARIO CLICAR NA LOGO
-app.get('/apresentacao', (req, res) => {
-  const usuarioLogado = req.cookies.usuario_logado;
-  const grupoLogado = req.cookies.grupo_logado;
-
-  console.log(req.cookies)
-
-
-  if (!usuarioLogado) {
-    return res.redirect('/');
-  }
-
-  res.render('apresentacao', {
     usuario: usuarioLogado,
     grupo: grupoLogado
   });
@@ -245,28 +230,8 @@ app.get('/mercado', (req, res) => {
     inseridos,
     usuario: usuarioLogado,
     grupo: grupoLogado,
-    ultimaDataUpload: ultimaDataUpload ? new Date(ultimaDataUpload).toLocaleString('pt-BR') : null
+
   });
-});
-
-// Variável para armazenar a data do último upload (em memória)
-let ultimaDataUpload = null;
-
-const multer = require('multer');
-const upload = multer({
-  dest: path.join(__dirname, 'uploads'),
-  limits: {
-    fileSize: 50 * 1024 * 1024 // 50 MB
-  }
-});
-
-
-// Rota para upload do Excel
-app.post('/upload-excel', upload.single('excelFile'), (req, res) => {
-  if (req.file) {
-    ultimaDataUpload = Date.now();
-  }
-  res.redirect('/mercado');
 });
 
 // CHAMADO PARA O BOTÃO DE ADICIONAR USUÁRIO
@@ -383,7 +348,6 @@ app.get('/minhasvendas', async (req, res) => {
   }
 });
 
-
 // CHAMADO PARA O RANK DE MOTOS
 app.get('/rankmotos', async (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
@@ -471,7 +435,6 @@ app.get('/rankmotos', async (req, res) => {
     res.status(500).send("Erro ao carregar o ranking.");
   }
 });
-
 
 // CHAMADO PARA CADA KPI NA PAGINA REUMO MêS
 app.get('/resumomotos', async (req, res) => {
@@ -834,7 +797,6 @@ app.get('/rh', async (req, res) => {
   }
 });
 
-
 // CHAMADO PARA A PAGINA DE CALCULO DE MOTOS
 app.get('/motos', (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
@@ -1029,7 +991,6 @@ app.post('/venda_moto', async (req, res) => {
   }
 });
 
-
 // CHAMADO PARA VISUALIZAR OS MODELOS DISPONÍVEIS
 app.get('/api/motos/modelos-motos-disponiveis', async (req, res) => {
   try {
@@ -1078,7 +1039,6 @@ app.get('/api/motos/chassis-por-modelo', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar chassis' });
   }
 });
-
 
 // CHAMADO PARA ADICIONAR NO CALCULO O CUSTO CONTABIL E O CHASSI
 app.get('/api/motos/detalhes-chassi', async (req, res) => {
@@ -1217,11 +1177,6 @@ app.get('/api/nautica/detalhes-chassi', async (req, res) => {
     console.error('Erro ao buscar detalhes do chassi:', err);
     res.status(500).json({ error: 'Erro ao buscar detalhes do chassi' });
   }
-});
-
-// LOGOUT
-app.get('/logout', (req, res) => {
-  res.clearCookie('usuario_logado').redirect('/');
 });
 
 app.get('/health', (req, res) => {

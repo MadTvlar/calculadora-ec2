@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/segmentos.css">
+  <link rel="stylesheet" href="/css/default.css">
   <title>Segmentos - Tropa Azul</title>
 </head>
 
@@ -12,22 +13,25 @@
   <div class="top-container">
     <div class="logo-container">
       <a href="/segmentos">
-        <img src="/images/tropa_azul.png" alt="TVLAR MOTORS" class="logo">
+        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
       </a>
     </div>
 
-    <div class="filial-container">
-      <div class="user-menu">
-        <button id="user-button">
-          <%= usuario %>
-        </button>
-        <div id="user-dropdown" class="dropdown-content">
-          <% if (grupo==='admin' ) { %>
-            <a href="/usuarios">Usuários</a>
-            <% } %>
-              <a href="/logout">Logout</a>
-        </div>
+    <div class="user-container">
+      <div class="user-menu" id="user">
+        <%= usuario %>
+          <button class="menu-toggle" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </button>
       </div>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <% if (grupo==='admin' ) { %>
+        <a href="/usuarios">👤 Criar Usuario</a>
+        <% } %>
+          <a href="/logout">🚪 Logout</a>
     </div>
   </div>
 
@@ -44,22 +48,23 @@
     <div class="card" id="config">
       <img src="/images/card_config.png" alt="Config" class="card-image">
     </div>
+  </div>
 
-    <footer class="footer">
-      <div class="footer-text">
-        <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
+  <footer class="footer">
+    <p>Copyright &copy; 2025 Departamento de T.I | Todos os direitos reservados.</p>
+  </footer>
 
-        <span class="animate scroll" style="--i:1;"></span>
-      </div>
+  <script src="/js/default.js"></script>
 
-      <div class="footer-iconTop">
-        <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
+  <script>
+    document.getElementById('motos').addEventListener('click', () => {
+      window.location.href = '/motos';
+    });
 
-        <span class="animate scroll" style="--i:3;"></span>
-      </div>
-    </footer>
-
-    <script src="/js/segmentos.js"></script>
+    document.getElementById('nautica').addEventListener('click', () => {
+      window.location.href = '/nautica';
+    });
+  </script>
 </body>
 
 </html>

@@ -1,3 +1,5 @@
+// Essa rota faz a orgnanização da pontuação do mês selecionado na variavel mesReferente do NPS
+
 const connection = require('../services/db');
 
 async function atualizarNPS() {
@@ -5,6 +7,7 @@ async function atualizarNPS() {
   console.log(`Limpando a tabela tropa_azul.nps`)
   await connection.query(`TRUNCATE TABLE nps`);
 
+  // SELECIONAR A DATA NA QUAL A PONTUAÇÃO IRÁ VALER
   const mesReferente = '2025-07';
 
   const [resultados] = await connection.query(`

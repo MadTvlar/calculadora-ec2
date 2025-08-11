@@ -1,3 +1,5 @@
+// VALORES USADOS PARA CALCULAR OS JUROS DAS PARCELAS, QUANDO A COMPRA É SELECIONADA "CARTÃO DE CRÉDITO"
+
 const taxas = {
   "Até 12 Parcelas": {
     "valor": 0,

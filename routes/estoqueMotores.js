@@ -1,3 +1,5 @@
+// Essa rota faz requisição de API do microwork, do relatório de estoque.
+
 const axios = require('axios');
 require('dotenv').config();
 

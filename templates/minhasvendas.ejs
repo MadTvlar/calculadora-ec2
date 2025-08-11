@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/minhasvendas.css">
-  <title>MOTORS SIMULATOR</title>
+  <link rel="stylesheet" href="/css/default.css">
+  <title>Minhas Vendas - Tropa Azul</title>
 </head>
 
 <body>
@@ -16,16 +17,19 @@
       </a>
     </div>
 
-    <div class="filial-container">
-      <div class="user-menu">
-        <button id="user-button">
-          <%= usuario %>
-        </button>
-        <div id="user-dropdown" class="dropdown-content">
-          <a href="/motos">Voltar</a>
-          <a href="/logout">Logout</a>
-        </div>
+    <div class="user-container">
+      <div class="user-menu" id="user">
+        <%= usuario %>
+          <button class="menu-toggle" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </button>
       </div>
+    </div>
+    <div class="dropdown-menu" id="dropdownMenu">
+      <a href="/motos">↩️ Voltar</a>
+      <a href="/logout">🚪 Logout</a>
     </div>
   </div>
 
@@ -138,34 +142,11 @@
     </div>
   </main>
 
-
   <footer class="footer">
-    <div class="footer-text">
-      <p>Copyright &copy; 2025 by Departamento de T.I | All Rights Reserved.</p>
-      <span class="animate scroll" style="--i:1;"></span>
-    </div>
-    <div class="footer-iconTop">
-      <a href="#"><i class='bx bx-up-arrow-alt'></i></a>
-      <span class="animate scroll" style="--i:3;"></span>
-    </div>
+    <p>Copyright &copy; 2025 Departamento de T.I | Todos os direitos reservados.</p>
   </footer>
 
-  <script>
-    document.getElementById("user-button").addEventListener("click", function () {
-      document.getElementById("user-dropdown").classList.toggle("show");
-    });
-
-    window.onclick = function (event) {
-      if (!event.target.matches('#user-button')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        for (var i = 0; i < dropdowns.length; i++) {
-          if (dropdowns[i].classList.contains('show')) {
-            dropdowns[i].classList.remove('show');
-          }
-        }
-      }
-    };
-  </script>
+  <script src="/js/default.js"></script>
 
   <script>
     function animateCountUp(elementId, finalValue, duration = 2500) {
@@ -198,8 +179,6 @@
           coin.remove();
         });
       }
-
-
 
       function step() {
         start += increment;

@@ -1,7 +1,4 @@
-
-
-
-
+// CALCULO DE COMISSÃO PARA NAUTICA
 
 function verificarCamposCard1() {
   const filialSelecionada = document.getElementById('filialTipo').value.trim();

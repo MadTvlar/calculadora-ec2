@@ -1,3 +1,4 @@
+// Essa parte é responsável por adicionar o campo de despesa de Frete
 const filialSelecionada = document.getElementById('empresa').dataset.valor;
 var filiaisManaus = ["CAC", "COM", "CID", "MCD", "GRA", "MUL"];
 var freteManaus = document.getElementById('freteManaus');
@@ -8,9 +9,10 @@ if (filiaisManaus.includes(filialSelecionada)) {
   freteManaus.style.display = "none";
 }
 
-
+// Função é responsável por validar as regras de quando os cards de dados serão habilitados
 function verificarCamposCard1() {
   const motosYamaha = document.getElementById('motos_yamaha').value;
+  const chassi = document.getElementById('chassi_moto').value;
   const formaPagamento = document.getElementById('forma_pagamento').value.trim();
   const cliente = document.getElementById('cliente').value;
   const cpfCnpj = document.getElementById('cpf').value;
@@ -28,7 +30,8 @@ function verificarCamposCard1() {
     }
   });
 
-  if (motosYamaha && cliente && cpfCnpjValido && formaPagamento) {
+  // Campos obrigatório a ser preenchidos para o card 2 e 3 serem habilitados
+  if (motosYamaha && cliente && cpfCnpjValido && formaPagamento && chassi) {
     if (formaPagamento === "À Vista" || formaPagamento === "Cartão de Crédito") {
       document.getElementById('card2').classList.add('suspended');
       document.getElementById('card2').classList.remove('active');
@@ -50,6 +53,7 @@ function verificarCamposCard1() {
   }
 }
 
+// API de Modelos e chassis disponíveis no banco de dados
 document.addEventListener('DOMContentLoaded', async () => {
   const motoSelect = document.getElementById('motos_yamaha');
   const chassiSelect = document.getElementById('chassi_moto');
@@ -106,12 +110,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-document.getElementById('entradaAlter').innerText = `ENTRADA REAL`;
+document.getElementById('entradaAlter').innerText = `ENTRADA REAL`; // Padrão card 3 será ENTRADA REAL
+document.getElementById('card2').classList.add('suspended'); // Padrão card 2 é suspenso
+document.getElementById('card3').classList.add('suspended'); // Padrão card 3 é suspenso
 
-
-document.getElementById('card2').classList.add('suspended');
-document.getElementById('card3').classList.add('suspended');
-
+// Função responsável por movimentar o card 2 e 3 suspender/habilitar
 function habilitarCamposCard2e3(habilitar) {
   const camposCard2 = document.querySelectorAll('#card2 input, #card2 select');
   const camposCard3 = document.querySelectorAll('#card3 input, #card3 select');
@@ -134,6 +137,7 @@ function habilitarCamposCard2e3(habilitar) {
   camposCard3.forEach(campo => campo.disabled = !habilitar);
 }
 
+// Função responsável por movimentar o card 3 suspender/habilitar
 function habilitarCamposCard3(habilitar) {
   const camposCard3 = document.querySelectorAll('#card3 input, #card3 select');
   const card3 = document.getElementById('card3');
@@ -147,6 +151,7 @@ function habilitarCamposCard3(habilitar) {
   }
 }
 
+// Dá forma de CPF e CNPJ com pontos, barra e hífen (. / -)
 function formatarDocumento(campo) {
   let documento = campo.value.replace(/[^\d]/g, '');
 
@@ -176,6 +181,7 @@ function formatarDocumento(campo) {
   }
 }
 
+// Regra de chamada validar corretamente CPF com CPF e CNPJ para CNPJ
 function validarDocumento(documento) {
   documento = documento.replace(/[^\d]+/g, '');
 
@@ -188,6 +194,7 @@ function validarDocumento(documento) {
   }
 }
 
+// Regra para validar o CPF
 function validarCPF(cpf) {
 
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
@@ -226,6 +233,7 @@ function validarCPF(cpf) {
   return true;
 }
 
+// Regra para validar o CNPJ
 function validarCNPJ(cnpj) {
   if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) {
     return false;
@@ -234,18 +242,7 @@ function validarCNPJ(cnpj) {
   return true;
 }
 
-
-window.onclick = function (event) {
-  if (!event.target.matches('#user-button')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    for (var i = 0; i < dropdowns.length; i++) {
-      if (dropdowns[i].classList.contains('show')) {
-        dropdowns[i].classList.remove('show');
-      }
-    }
-  }
-};
-
+// Função para Salvar a página em PDF
 document.addEventListener('DOMContentLoaded', function () {
   const saveBtn = document.getElementById('save-pdf');
   if (!saveBtn) return;
@@ -258,31 +255,44 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-
+// Chamada para função de formatar o CPF e CNPJ
 document.getElementById('cpf').addEventListener('input', function () {
   formatarDocumento(this);
 });
 
+// Regra para quando for preenchido os campos do card 1, acione a tentativa de atividar os outros cards
 document.getElementById('motos_yamaha').addEventListener('change', verificarCamposCard1);
+document.getElementById('chassi_moto').addEventListener('change', verificarCamposCard1);
 document.getElementById('cliente').addEventListener('input', verificarCamposCard1);
+document.getElementById('cpf').addEventListener('input', verificarCamposCard1);
 document.getElementById('forma_pagamento').addEventListener('change', verificarCamposCard1);
 
+// Função que dá inicio aos cáculos (Quando o botão "simular" for apertado)
 document.getElementById('showCard4Button').addEventListener('click', async function () {
+
+  // Regra para validar se todos os campos do card 1 foram preenchidos para poder dá continuidade com a simulação
+  const motosYamaha = document.getElementById('motos_yamaha').value;
+  const chassi = document.getElementById('chassi_moto').value;
+  const formaPagamento = document.getElementById('forma_pagamento').value.trim();
+  const cliente = document.getElementById('cliente').value;
   const cpf = document.getElementById('cpf').value.trim();
 
-  if (!cpf) {
-    alert('Por favor, insira um CPF ou CNPJ.');
+  if (!cpf || cliente || formaPagamento || chassi || motosYamaha) {
+    alert('Por favor, Preencha todos os campos do primeiro card!!');
     return;
   }
 
+
   try {
+
+    // Bloqueia o CPF que está no banco de dados, que seria de funcionário
     const response = await fetch(`/verificar-cpf?cpf=${encodeURIComponent(cpf)}`);
     const resultado = await response.json();
 
     if (resultado.bloqueado) {
       alert('Este CPF/CNPJ está bloqueado e não pode ser usado.');
     } else {
-      // Redireciona para o ID do botão (pula pra seção da página)
+
       const camposCard = document.querySelectorAll('#card2 input:not([disabled]):not([type="select-one"]), #card3 input:not([disabled]):not([type="select-one"])');
 
 
