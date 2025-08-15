@@ -400,7 +400,7 @@ app.get('/rankmotos', async (req, res) => {
       if (nomes.length > 1) {
         item.vendedor = `${nomes[0]} ${nomes[nomes.length - 1]}`;
       }
-    });
+    
 
 
     const [ultimaAtualizacaoRows] = await connection.query(`
