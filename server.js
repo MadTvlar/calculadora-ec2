@@ -395,12 +395,18 @@ app.get('/rankmotos', async (req, res) => {
     //   bonusMap.set(row.id_microwork, row.qtd_bonus * 50);
     // });
 
+    // ➕ AQUI ENTRA A PARTE QUE ADICIONA OS BÔNUS AO RANKING:
+    rankingGeral.forEach(item => {
+      const bonus = bonusMap.get(item.id_microwork) || 0;
+      item.pontos_extras = bonus; // novo campo com os bônus
+
+
       // Formata o nome do vendedor
       const nomes = item.vendedor.split(' ');
       if (nomes.length > 1) {
         item.vendedor = `${nomes[0]} ${nomes[nomes.length - 1]}`;
       }
-    
+    });
 
 
     const [ultimaAtualizacaoRows] = await connection.query(`
