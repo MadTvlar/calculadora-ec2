@@ -1,8 +1,8 @@
 // Essa rota faz a orgnanização da pontuação por KPI's do mês selecionado na variavel mesReferente do NPS
 
 require('dotenv').config();
-// Altere aqui o mês que você deseja consultar (formato 'YYYY-MM')
-const referenteMes = '2025-07';
+// Altere aqui o mês que você deseja consultar (formato 'YYYY-MM') mudar mes do rank
+const referenteMes = '2025-08';
 
 const representante = new Set([
   'HUDSON SANTOS DE LIMA',
