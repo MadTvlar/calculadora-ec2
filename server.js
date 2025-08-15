@@ -348,93 +348,93 @@ app.get('/minhasvendas', async (req, res) => {
   }
 });
 
-// CHAMADO PARA O RANK DE MOTOS
-app.get('/rankmotos', async (req, res) => {
-  const usuarioLogado = req.cookies.usuario_logado;
+// CHAMADO PARA O RANK DE MOTOS - rota de BONUS QUE APARECE NO FRONT
+// app.get('/rankmotos', async (req, res) => {
+//   const usuarioLogado = req.cookies.usuario_logado;
 
-  if (!usuarioLogado) {
-    return res.redirect('/');
-  }
+//   if (!usuarioLogado) {
+//     return res.redirect('/');
+//   }
 
-  try {
-    // 1. Consulta as vendas de 29, 30 e 31 de julho nas duas tabelas
-    const [bonusVendas] = await connection.query(`
-      SELECT id_microwork, COUNT(*) AS qtd_bonus
-      FROM (
-        SELECT id_microwork, data_venda
-        FROM microwork.vendas_motos
-        WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
-        UNION ALL
-        SELECT id_microwork, data_venda
-        FROM microwork.vendas_seminovas
-        WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
-      ) AS todas_vendas
-      GROUP BY id_microwork
-    `);
+//   try {
+//     // 1. Consulta as vendas de 29, 30 e 31 de julho nas duas tabelas
+//     const [bonusVendas] = await connection.query(`
+//       SELECT id_microwork, COUNT(*) AS qtd_bonus
+//       FROM (
+//         SELECT id_microwork, data_venda
+//         FROM microwork.vendas_motos
+//         WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
+//         UNION ALL
+//         SELECT id_microwork, data_venda
+//         FROM microwork.vendas_seminovas
+//         WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
+//       ) AS todas_vendas
+//       GROUP BY id_microwork
+//     `);
 
-    // 2. Consulta o ranking original
-    const [rankingGeral] = await connection.query(`
-      SELECT 
-        id_microwork,
-        filial,
-        vendedor,
-        pontos AS val_pontos,
-        vendas AS val_vendas,
-        llo AS val_lucro,
-        captacao AS val_captacao,
-        contrato AS val_contratos,
-        retorno AS val_retorno,
-        nps AS nota_oficial
-      FROM ranking_pontos
-      ORDER BY pontos DESC, vendas DESC, llo DESC
-    `);
+//     // 2. Consulta o ranking original
+//     const [rankingGeral] = await connection.query(`
+//       SELECT 
+//         id_microwork,
+//         filial,
+//         vendedor,
+//         pontos AS val_pontos,
+//         vendas AS val_vendas,
+//         llo AS val_lucro,
+//         captacao AS val_captacao,
+//         contrato AS val_contratos,
+//         retorno AS val_retorno,
+//         nps AS nota_oficial
+//       FROM ranking_pontos
+//       ORDER BY pontos DESC, vendas DESC, llo DESC
+//     `);
 
-    // 3. Aplica os bônus de +50 pontos por venda especial
-    const bonusMap = new Map();
-    bonusVendas.forEach(row => {
-      bonusMap.set(row.id_microwork, row.qtd_bonus * 50);
-    });
+//     // 3. Aplica os bônus de +50 pontos por venda especial MUDAR O VALOR DA CAMPANHA BONUS
+//     const bonusMap = new Map();
+//     bonusVendas.forEach(row => {
+//       bonusMap.set(row.id_microwork, row.qtd_bonus * 50);
+//     });
 
-    // ➕ AQUI ENTRA A PARTE QUE ADICIONA OS BÔNUS AO RANKING:
-    rankingGeral.forEach(item => {
-      const bonus = bonusMap.get(item.id_microwork) || 0;
-      item.pontos_extras = bonus; // novo campo com os bônus
-
-
-      // Formata o nome do vendedor
-      const nomes = item.vendedor.split(' ');
-      if (nomes.length > 1) {
-        item.vendedor = `${nomes[0]} ${nomes[nomes.length - 1]}`;
-      }
-    });
+//     // ➕ AQUI ENTRA A PARTE QUE ADICIONA OS BÔNUS AO RANKING:
+//     rankingGeral.forEach(item => {
+//       const bonus = bonusMap.get(item.id_microwork) || 0;
+//       item.pontos_extras = bonus; // novo campo com os bônus
 
 
-    const [ultimaAtualizacaoRows] = await connection.query(`
-      SELECT MAX(atualizado_em) AS ultimaAtualizacao FROM ranking_pontos
-    `);
+//       // Formata o nome do vendedor
+//       const nomes = item.vendedor.split(' ');
+//       if (nomes.length > 1) {
+//         item.vendedor = `${nomes[0]} ${nomes[nomes.length - 1]}`;
+//       }
+//     });
 
-    const ultimaAtualizacao = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
 
-    const meses = [
-      'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
-      'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
-    ];
-    const mesAtual = meses[new Date().getMonth()];
-    const anoAtual = new Date().getFullYear();
+//     const [ultimaAtualizacaoRows] = await connection.query(`
+//       SELECT MAX(atualizado_em) AS ultimaAtualizacao FROM ranking_pontos
+//     `);
 
-    res.render('rankvendasmotos', {
-      usuario: usuarioLogado,
-      rankingGeral,
-      ultimaAtualizacao,
-      mesAtual,
-      anoAtual
-    });
+//     const ultimaAtualizacao = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
 
-  } catch (error) {
-    console.error("Erro ao buscar ranking de motos:", error);
-    res.status(500).send("Erro ao carregar o ranking.");
-  }
-});
+//     const meses = [
+//       'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
+//       'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
+//     ];
+//     const mesAtual = meses[new Date().getMonth()];
+//     const anoAtual = new Date().getFullYear();
+
+//     res.render('rankvendasmotos', {
+//       usuario: usuarioLogado,
+//       rankingGeral,
+//       ultimaAtualizacao,
+//       mesAtual,
+//       anoAtual
+//     });
+
+//   } catch (error) {
+//     console.error("Erro ao buscar ranking de motos:", error);
+//     res.status(500).send("Erro ao carregar o ranking.");
+//   }
+// });
 
 // CHAMADO PARA CADA KPI NA PAGINA REUMO MêS
 app.get('/resumomotos', async (req, res) => {

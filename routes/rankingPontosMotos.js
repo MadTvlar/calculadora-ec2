@@ -6,27 +6,27 @@ const fetchrankingPontosMotos = async (connection) => {
   console.log('\nLimpando a tabela de ranking_pontos');
   await connection.query('TRUNCATE TABLE ranking_pontos');
 
-  console.log('\nBuscando vendas bônus dos dias 29, 30 e 31 de julho');
+  // console.log('\nBuscando vendas bônus dos dias 29, 30 e 31 de julho VENDAS BONUS EXTRA AQUI');
 
-  const [bonusVendas] = await connection.query(`
-    SELECT 
-      CASE 
-        WHEN LOCATE('-', vendedor) > 0 AND LOCATE('(', vendedor) > 0 
-        THEN TRIM(SUBSTRING(vendedor, LOCATE('-', vendedor) + 1, LOCATE('(', vendedor) - LOCATE('-', vendedor) - 1))
-        ELSE TRIM(vendedor)
-      END AS vendedor_normalizado,
-      COUNT(*) AS vendas_bonus
-    FROM microwork.vendas_motos
-    WHERE DATE(data_venda) IN ('2025-07-29', '2025-07-30', '2025-07-31')
-      AND MONTH(data_venda) = 7
-    GROUP BY vendedor_normalizado
-  `);
+  // const [bonusVendas] = await connection.query(`
+  //   SELECT 
+  //     CASE 
+  //       WHEN LOCATE('-', vendedor) > 0 AND LOCATE('(', vendedor) > 0 
+  //       THEN TRIM(SUBSTRING(vendedor, LOCATE('-', vendedor) + 1, LOCATE('(', vendedor) - LOCATE('-', vendedor) - 1))
+  //       ELSE TRIM(vendedor)
+  //     END AS vendedor_normalizado,
+  //     COUNT(*) AS vendas_bonus
+  //   FROM microwork.vendas_motos
+  //   WHERE DATE(data_venda) IN ('2025-07-29', '2025-07-30', '2025-07-31')
+  //     AND MONTH(data_venda) = 7
+  //   GROUP BY vendedor_normalizado
+  // `);
 
-  // Criar objeto para acesso rápido ao bônus por vendedor
-  const bonusPorVendedor = {};
-  for (const row of bonusVendas) {
-    bonusPorVendedor[row.vendedor_normalizado] = row.vendas_bonus;
-  }
+  // // Criar objeto para acesso rápido ao bônus por vendedor
+  // const bonusPorVendedor = {};
+  // for (const row of bonusVendas) {
+  //   bonusPorVendedor[row.vendedor_normalizado] = row.vendas_bonus;
+  // }
 
 
   const [rankingGeral] = await connection.query(`
@@ -110,13 +110,14 @@ const fetchrankingPontosMotos = async (connection) => {
     else if (nps >= 97 && nps < 98) pontosPorNPS = 300;
     else if (nps >= 98) pontosPorNPS = 500;
 
-    const vendasBonus = bonusPorVendedor[vendedor.vendedor] || 0; // pega do objeto
-    const pontosBonus = vendasBonus * 50; // 50 pontos por venda bônus
+    // const vendasBonus = bonusPorVendedor[vendedor.vendedor] || 0; // pega do objeto
+    //  // AQUI É O CALCULO QUE VAI VALER DO BONUS BACKEND
+    // const pontosBonus = vendasBonus * 50; // 50 pontos por venda bônus
 
     const pontosTotais = (pontosPorVenda * vendas) + pontoPorLLO +
       (captacao * pontosPorCaptacao) +
       (contrato * pontosPorContrato) +
-      pontosPorRetorno + pontosPorNPS + pontosBonus;
+      pontosPorRetorno + pontosPorNPS; //+ pontosBonus;
 
     // Busca id_microwork e filial via vendedor
     const [[usuario]] = await connection.query(`
