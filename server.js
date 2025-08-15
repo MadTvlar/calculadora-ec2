@@ -397,8 +397,8 @@ app.get('/rankmotos', async (req, res) => {
 
     // ➕ AQUI ENTRA A PARTE QUE ADICIONA OS BÔNUS AO RANKING:
     rankingGeral.forEach(item => {
-      const bonus = bonusMap.get(item.id_microwork) || 0;
-      item.pontos_extras = bonus; // novo campo com os bônus
+      // const bonus = bonusMap.get(item.id_microwork) || 0;
+      // item.pontos_extras = bonus; // novo campo com os bônus
 
 
       // Formata o nome do vendedor
