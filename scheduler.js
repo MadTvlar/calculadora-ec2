@@ -69,7 +69,7 @@ async function executarAtualizacao() {
 }
 
 // Execução inicial
-//executarAtualizacao();
-atualizarNPS(pool);
+executarAtualizacao();
+
 
 console.log('Iniciando as tarefas!');
