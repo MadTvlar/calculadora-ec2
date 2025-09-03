@@ -38,7 +38,7 @@ const rotaMercado = require('./routes/mercado');
 app.use('/', rotaMercado);
 
 // CONFIGURAÇÃO DE GERAL DE VENDAS RANK - RESUMO E MINHAS VENDAS
-const referenteMes = '2025-07';
+const referenteMes = '2025-08';
 
 // FUNÇÃO PARA SE OBTER O VALOR DO EMPLACAMENTO NO MÊS QUE ESTAMOS
 function obterValorMesAtual() {
@@ -348,7 +348,7 @@ app.get('/minhasvendas', async (req, res) => {
   }
 });
 
-// CHAMADO PARA O RANK DE MOTOS
+// CHAMADO PARA O RANK DE MOTOS - rota de BONUS QUE APARECE NO FRONT
 app.get('/rankmotos', async (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
 
@@ -358,19 +358,19 @@ app.get('/rankmotos', async (req, res) => {
 
   try {
     // 1. Consulta as vendas de 29, 30 e 31 de julho nas duas tabelas
-    const [bonusVendas] = await connection.query(`
-      SELECT id_microwork, COUNT(*) AS qtd_bonus
-      FROM (
-        SELECT id_microwork, data_venda
-        FROM microwork.vendas_motos
-        WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
-        UNION ALL
-        SELECT id_microwork, data_venda
-        FROM microwork.vendas_seminovas
-        WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
-      ) AS todas_vendas
-      GROUP BY id_microwork
-    `);
+    // const [bonusVendas] = await connection.query(`
+    //   SELECT id_microwork, COUNT(*) AS qtd_bonus
+    //   FROM (
+    //     SELECT id_microwork, data_venda
+    //     FROM microwork.vendas_motos
+    //     WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
+    //     UNION ALL
+    //     SELECT id_microwork, data_venda
+    //     FROM microwork.vendas_seminovas
+    //     WHERE DAY(data_venda) IN (29, 30, 31) AND MONTH(data_venda) = 7 AND YEAR(data_venda) = 2025
+    //   ) AS todas_vendas
+    //   GROUP BY id_microwork
+    // `);
 
     // 2. Consulta o ranking original
     const [rankingGeral] = await connection.query(`
@@ -389,16 +389,16 @@ app.get('/rankmotos', async (req, res) => {
       ORDER BY pontos DESC, vendas DESC, llo DESC
     `);
 
-    // 3. Aplica os bônus de +50 pontos por venda especial
-    const bonusMap = new Map();
-    bonusVendas.forEach(row => {
-      bonusMap.set(row.id_microwork, row.qtd_bonus * 50);
-    });
+    // 3. Aplica os bônus de +50 pontos por venda especial MUDAR O VALOR DA CAMPANHA BONUS
+    // const bonusMap = new Map();
+    // bonusVendas.forEach(row => {
+    //   bonusMap.set(row.id_microwork, row.qtd_bonus * 50);
+    // });
 
     // ➕ AQUI ENTRA A PARTE QUE ADICIONA OS BÔNUS AO RANKING:
     rankingGeral.forEach(item => {
-      const bonus = bonusMap.get(item.id_microwork) || 0;
-      item.pontos_extras = bonus; // novo campo com os bônus
+      // const bonus = bonusMap.get(item.id_microwork) || 0;
+      // item.pontos_extras = bonus; // novo campo com os bônus
 
 
       // Formata o nome do vendedor
