@@ -8,7 +8,7 @@ async function atualizarNPS() {
   await connection.query(`TRUNCATE TABLE nps`);
 
   // SELECIONAR A DATA NA QUAL A PONTUAÇÃO IRÁ VALER
-  const mesReferente = '2025-08';
+  const mesReferente = '2025-09';
 
   const [resultados] = await connection.query(`
   SELECT 
