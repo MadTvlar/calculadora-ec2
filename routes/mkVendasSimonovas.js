@@ -73,10 +73,10 @@ async function fetchMkVendasSeminovas(pool) {
     empresa, quantidade, financiada, banco, id_microwork, vendedor, 
     cpf_cnpj, data_venda, pedido, doc_fiscal, modelo, cor, chassi, ano,
     dias_estoque, tipo_venda, custo_contabil, valor_venda,
-    entrada_bonificada, valor_venda_real, valor_financiado,
+    entrada_bonificada, valor_venda_real, receita_despesa, valor_financiado,
     valor_retorno, retorno_porcent, icms_venda, despesa_emplac, despesa_ope,
     lucro_ope
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON DUPLICATE KEY UPDATE
           empresa = VALUES(empresa),
           quantidade = VALUES(quantidade),
@@ -97,6 +97,7 @@ async function fetchMkVendasSeminovas(pool) {
           valor_venda = VALUES(valor_venda),
           entrada_bonificada = VALUES(entrada_bonificada),
           valor_venda_real = VALUES(valor_venda_real),
+          receita_despesa = VALUES(receita_despesa),
           valor_financiado = VALUES(valor_financiado),
           valor_retorno = VALUES(valor_retorno),
           retorno_porcent = VALUES(retorno_porcent),
@@ -127,6 +128,7 @@ async function fetchMkVendasSeminovas(pool) {
         moto.valorvenda,
         moto.acessorios,
         moto.valorvenda - moto.acessorios,
+        moto.propostaloja,
         moto.valorfinanciamento,
         moto.valorbonus,
         moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,

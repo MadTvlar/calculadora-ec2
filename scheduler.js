@@ -69,9 +69,7 @@ async function executarAtualizacao() {
 }
 
 // Execução inicial
-//executarAtualizacao();
-
-fetchrankingPontosMotos(pool);
+executarAtualizacao();
 
 
 console.log('Iniciando as tarefas!');
