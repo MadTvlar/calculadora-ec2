@@ -139,7 +139,7 @@ async function fetchMkVendasSeminovas(pool) {
         moto.cofins,
         moto.documentacao,
         (moto.valorvenda - moto.acessorios) * 0.06,
-        moto.lucrooperacionalantescomissao - moto.valorvenda * 0.01
+        moto.lucrooperacionalantescomissao
       ];
 
       try {
