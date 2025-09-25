@@ -44,7 +44,7 @@ async function fetchMkVendasSeminovas(pool) {
     idrelatorioconfiguracao: 248,
     idrelatorioconsulta: 50,
     idrelatorioconfiguracaoleiaute: 248,
-    idrelatoriousuarioleiaute: 1145,
+    idrelatoriousuarioleiaute: 1212,
     ididioma: 1,
     listaempresas: [15],
     filtros: filtros
@@ -74,9 +74,9 @@ async function fetchMkVendasSeminovas(pool) {
     cpf_cnpj, data_venda, pedido, doc_fiscal, modelo, cor, chassi, ano,
     dias_estoque, tipo_venda, custo_contabil, valor_venda,
     entrada_bonificada, valor_venda_real, receita_despesa, valor_financiado,
-    valor_retorno, retorno_porcent, icms_venda, despesa_emplac, despesa_ope,
+    valor_retorno, retorno_porcent, icms_venda, pis, cofins, despesa_emplac, despesa_ope,
     lucro_ope
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
    ON DUPLICATE KEY UPDATE
           empresa = VALUES(empresa),
           quantidade = VALUES(quantidade),
@@ -102,6 +102,8 @@ async function fetchMkVendasSeminovas(pool) {
           valor_retorno = VALUES(valor_retorno),
           retorno_porcent = VALUES(retorno_porcent),
           icms_venda = VALUES(icms_venda),
+          pis = VALUES(pis),
+          cofins = VALUES(cofins),
           despesa_emplac = VALUES(despesa_emplac),
           despesa_ope = VALUES(despesa_ope),
           lucro_ope = VALUES(lucro_ope)
@@ -133,6 +135,8 @@ async function fetchMkVendasSeminovas(pool) {
         moto.valorbonus,
         moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,
         moto.valorvenda * 0.01,
+        moto.pis,
+        moto.cofins,
         moto.documentacao,
         (moto.valorvenda - moto.acessorios) * 0.06,
         moto.lucrooperacionalantescomissao - moto.valorvenda * 0.01
