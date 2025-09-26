@@ -182,18 +182,45 @@ async function atualizarRankings(pool) {
 
 
   const [rankRetorno] = await pool.query(`
-  SELECT 
+  WITH vendas AS (
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''),
+          ' [0-9.-]+$',
+          ''
+        )
+      ) AS vendedor,
+      quantidade,
+      retorno_porcent,
+      data_venda
+    FROM microwork.vendas_motos
+
+    UNION ALL
+
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''),
+          ' [0-9.-]+$',
+          ''
+        )
+      ) AS vendedor,
+      quantidade,
+      retorno_porcent,
+      data_venda
+    FROM microwork.vendas_seminovas
+  )
+  SELECT
     id_microwork,
     empresa,
-    TRIM(
-      REGEXP_REPLACE(
-        REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''),
-        ' [0-9.-]+$',
-        ''
-      )
-    ) AS vendedor,
+    vendedor,
     COUNT(*) - SUM(CASE WHEN quantidade = -1 THEN 2 ELSE 0 END) AS quantidadeRetorno
-  FROM microwork.vendas_motos
+  FROM vendas
   WHERE retorno_porcent >= 2
     AND DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor
@@ -201,35 +228,61 @@ async function atualizarRankings(pool) {
 `, [referenteMes]);
 
 
-
   const [retornoDetalhado] = await pool.query(`
+  WITH vendas AS (
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''), 
+          ' [0-9.-]+$', ''
+        )
+      ) AS vendedor,
+      quantidade,
+      retorno_porcent,
+      data_venda
+    FROM microwork.vendas_motos
+
+    UNION ALL
+
+    SELECT 
+      id_microwork,
+      empresa,
+      TRIM(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''), 
+          ' [0-9.-]+$', ''
+        )
+      ) AS vendedor,
+      quantidade,
+      retorno_porcent,
+      data_venda
+    FROM microwork.vendas_seminovas
+  )
   SELECT 
     id_microwork,
     empresa,
-    TRIM(
-      REGEXP_REPLACE(
-        REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''), 
-        ' [0-9.-]+$', ''
-      )
-    ) AS vendedor,
+    vendedor,
     SUM(
       CASE 
-        WHEN retorno_porcent >= 2 AND retorno_porcent < 4 THEN 
-          CASE WHEN quantidade = -1 THEN -1 ELSE 1 END
+        WHEN retorno_porcent >= 2 AND retorno_porcent < 4
+          THEN CASE WHEN quantidade = -1 THEN -1 ELSE 1 END
         ELSE 0
       END
     ) AS r2,
     SUM(
       CASE 
-        WHEN retorno_porcent >= 4 THEN 
-          CASE WHEN quantidade = -1 THEN -1 ELSE 1 END
+        WHEN retorno_porcent >= 4
+          THEN CASE WHEN quantidade = -1 THEN -1 ELSE 1 END
         ELSE 0
       END
     ) AS r4
-  FROM microwork.vendas_motos
+  FROM vendas
   WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor;
 `, [referenteMes]);
+
 
 
   const inserirRetornoPorTipo = async (dados) => {
