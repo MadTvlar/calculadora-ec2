@@ -522,6 +522,28 @@
 
 
 /* Pódio dos 3 primeiros */
+title-podium{
+
+  color: #0002c6;
+  font-size: clamp(18px, 4vw, 24px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0; 
+  transform: translateY(10px); 
+  animation: fadeInUp 0.8s ease forwards;
+  animation-delay: 1.5s;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .podio-container {
   margin-top: 2%;
   display: flex;

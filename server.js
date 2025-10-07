@@ -38,7 +38,7 @@ const rotaMercado = require('./routes/mercado');
 app.use('/', rotaMercado);
 
 // CONFIGURAÇÃO DE GERAL DE VENDAS RANK - RESUMO E MINHAS VENDAS
-const referenteMes = '2025-09';
+const referenteMes = '2025-10';
 
 // FUNÇÃO PARA SE OBTER O VALOR DO EMPLACAMENTO NO MÊS QUE ESTAMOS
 function obterValorMesAtual() {
@@ -387,7 +387,7 @@ app.get('/rankmotos', async (req, res) => {
         nps AS nota_oficial
       FROM ranking_pontos
       ORDER BY pontos DESC, vendas DESC, llo DESC
-    `);
+    `,);
 
     // 3. Aplica os bônus de +50 pontos por venda especial MUDAR O VALOR DA CAMPANHA BONUS
     // const bonusMap = new Map();

@@ -2,7 +2,7 @@
 
 require('dotenv').config();
 // Altere aqui o mês que você deseja consultar (formato 'YYYY-MM') mudar mes do rank
-const referenteMes = '2025-09';
+const referenteMes = '2025-10';
 
 const representante = new Set([
   'HUDSON SANTOS DE LIMA',
