@@ -522,7 +522,7 @@
 
 
 /* Pódio dos 3 primeiros */
-title-podium{
+.title-podium{
 
   color: #0002c6;
   font-size: clamp(18px, 4vw, 24px);
