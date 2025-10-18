@@ -1,8 +1,4 @@
-// SERVIÇO RESPONSÁVEL POR CONECTAR AO BANCO DE DADOS, E CRIAR AS TABELAS NECESSÁRIAS PARA RODAR AS QUERY
-
 const mysql = require('mysql2');
-
-// Configure o pool de conexões com o banco de dados
 require('dotenv').config();
 
 const pool = mysql.createPool({
@@ -15,16 +11,14 @@ const pool = mysql.createPool({
   queueLimit: 0
 }).promise();
 
-// Conectar ao banco de dados
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados: ', err);
-    return;
-  }
-  console.log('Conectado ao banco de dados "tropa_azul"!');
+// Criação de tabelas usando async/await
+(async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log('Conectado ao banco de dados "tropa_azul"!');
 
-  // Criar a tabela 'vendas' caso não exista
-  const createSimulacaoMotos = `
+    // Criar a tabela 'vendas' caso não exista
+    const createSimulacaoMotos = `
     CREATE TABLE IF NOT EXISTS simulacao_motos (
       id int NOT NULL AUTO_INCREMENT,
       empresa varchar(5) DEFAULT NULL,
@@ -58,10 +52,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createSimulacaoMotos);
+    connection.query(createSimulacaoMotos);
 
 
-  const createSimulacaoMotores = `
+    const createSimulacaoMotores = `
     CREATE TABLE IF NOT EXISTS simulacao_motores (
       id int NOT NULL AUTO_INCREMENT,
       nome_vendedor varchar(50) DEFAULT NULL,
@@ -91,10 +85,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createSimulacaoMotores);
+    connection.query(createSimulacaoMotores);
 
 
-  const createEstoqueMotores = `
+    const createEstoqueMotores = `
     CREATE TABLE IF NOT EXISTS microwork.estoque_motores (
       id int NOT NULL AUTO_INCREMENT,
         patio varchar(100) DEFAULT NULL,
@@ -112,10 +106,10 @@ pool.getConnection((err, connection) => {
       );
     `;
 
-  connection.query(createEstoqueMotores);
+    connection.query(createEstoqueMotores);
 
 
-  const creatEstoqueMotos = `
+    const creatEstoqueMotos = `
     CREATE TABLE IF NOT EXISTS microwork.estoque_motos (
       id int NOT NULL AUTO_INCREMENT,
       empresa varchar(5) DEFAULT NULL,
@@ -137,10 +131,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(creatEstoqueMotos);
+    connection.query(creatEstoqueMotos);
 
 
-  const createMkVendasMotos = `
+    const createMkVendasMotos = `
     CREATE TABLE IF NOT EXISTS microwork.vendas_motos (
       empresa varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
       municipio varchar(30) DEFAULT NULL,
@@ -176,10 +170,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createMkVendasMotos);
+    connection.query(createMkVendasMotos);
 
 
-  const createMkVendasSeminovas = `
+    const createMkVendasSeminovas = `
     CREATE TABLE IF NOT EXISTS microwork.vendas_seminovas (
       empresa varchar(5) DEFAULT NULL,
       quantidade int DEFAULT '0',
@@ -215,10 +209,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createMkVendasSeminovas);
+    connection.query(createMkVendasSeminovas);
 
 
-  const createUsuarios = `
+    const createUsuarios = `
     CREATE TABLE IF NOT EXISTS usuarios (
       id int NOT NULL AUTO_INCREMENT,
       grupo varchar(5) NOT NULL,
@@ -233,10 +227,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createUsuarios);
+    connection.query(createUsuarios);
 
 
-  const createUpdate = `
+    const createUpdate = `
     CREATE TABLE IF NOT EXISTS updates (
       id int NOT NULL,
       tualizado_em datetime DEFAULT NULL,
@@ -244,10 +238,10 @@ pool.getConnection((err, connection) => {
     );
    `;
 
-  connection.query(createUpdate);
+    connection.query(createUpdate);
 
 
-  const createBlockCpfCnpj = `
+    const createBlockCpfCnpj = `
     CREATE TABLE IF NOT EXISTS updates (
       id int NOT NULL AUTO_INCREMENT,
       empresa varchar(5) DEFAULT NULL,
@@ -258,10 +252,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createBlockCpfCnpj);
+    connection.query(createBlockCpfCnpj);
 
 
-  const createCnpjEmpresa = `
+    const createCnpjEmpresa = `
     CREATE TABLE IF NOT EXISTS cnpj_empresa (
       id int NOT NULL AUTO_INCREMENT,
       empresa varchar(60),
@@ -271,10 +265,10 @@ pool.getConnection((err, connection) => {
       );
     `;
 
-  connection.query(createCnpjEmpresa);
+    connection.query(createCnpjEmpresa);
 
 
-  const createContratosMotos = `
+    const createContratosMotos = `
     CREATE TABLE IF NOT EXISTS microwork.contratos_motos (
       data_venda date DEFAULT NULL,
       quantidade int DEFAULT NULL,
@@ -294,10 +288,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createContratosMotos);
+    connection.query(createContratosMotos);
 
 
-  const createcaptacaoMotos = `
+    const createcaptacaoMotos = `
     CREATE TABLE IF NOT EXISTS microwork.captacao_motos (
       empresa varchar(5) NOT NULL,
       quantidade int DEFAULT NULL,
@@ -320,10 +314,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createcaptacaoMotos);
+    connection.query(createcaptacaoMotos);
 
 
-  const createRankingGeral = `
+    const createRankingGeral = `
     CREATE TABLE IF NOT EXISTS ranking_geral (
       tipo varchar(20) DEFAULT NULL,
       filial varchar(5) DEFAULT NULL,
@@ -336,10 +330,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createRankingGeral);
+    connection.query(createRankingGeral);
 
 
-  const createAlterVision = `
+    const createAlterVision = `
     CREATE TABLE IF NOT EXISTS altervision.altervision (
     data date DEFAULT NULL,
     empresa varchar(30) DEFAULT NULL,
@@ -348,10 +342,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createAlterVision);
+    connection.query(createAlterVision);
 
 
-  const createNPS = `
+    const createNPS = `
     CREATE TABLE IF NOT EXISTS nps (
       id_microwork int DEFAULT NULL,
       vendedores varchar(255) DEFAULT NULL,
@@ -363,10 +357,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createNPS);
+    connection.query(createNPS);
 
 
-  const createNPSGeral = `
+    const createNPSGeral = `
     CREATE TABLE IF NOT EXISTS nps_geral (
       empresa varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
       data date DEFAULT NULL,
@@ -384,10 +378,10 @@ pool.getConnection((err, connection) => {
     );
   `;
 
-  connection.query(createNPSGeral);
+    connection.query(createNPSGeral);
 
 
-  const createRankingPontos = `
+    const createRankingPontos = `
     CREATE TABLE IF NOT EXISTS ranking_pontos (
       filial varchar(5) DEFAULT NULL,
       id_microwork int DEFAULT NULL,
@@ -405,11 +399,13 @@ pool.getConnection((err, connection) => {
   `;
 
 
-  connection.query(createRankingPontos);
+    connection.query(createRankingPontos);
 
+    connection.release();
+    console.log('Tabelas verificadas/criadas com sucesso.');
+  } catch (error) {
+    console.error('Erro ao conectar ou criar tabelas:', error);
+  }
+})();
 
-  connection.release();
-});
-
-// Exportar o pool de conexões
 module.exports = pool;
