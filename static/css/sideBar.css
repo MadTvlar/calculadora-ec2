@@ -1,0 +1,433 @@
+#sidebar{
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 250px;
+  background-color: blue;
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 20px;
+  transition: transform 0.3s ease;
+  z-index: 900;
+}
+#sidebar.fechado {
+  transform: translateX(-50%);
+  width: 150px; /* diminui a largura */
+}
+
+  #sidebar.fechado .logo {
+  display: none;
+}
+#sidebar.fechado .logoIcon {
+  display: block;
+  width: 40px;
+  margin-left: -30px;
+}
+
+#sidebar.fechado .item-description span {
+  display: none;
+}
+
+#sidebar.fechado .userMenu{
+    display: none;
+}
+#sidebar.fechado .adm i{
+  font-size: 24px;
+  margin-left: -15px;
+}
+#sidebar:not(.fechado) .adm:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+
+
+#sidebar.fechado .btn {
+  background: #0002c6;
+  color: white;
+}
+
+  .logoContainer{
+    width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 20px;
+  }
+  .logo{
+    width: 150px;
+    transition: opacity 0.3s ease;
+  }
+  .logoIcon{
+    display: none;
+    cursor: pointer;
+    
+  }
+
+  
+  .adm{
+     
+     font-weight: bold;
+    display: flex;
+     align-items: center;
+    justify-content: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 200px;
+    margin-left: 20px;
+    cursor: pointer;
+    bottom: 0;
+    transition: background-color 0.3s ease;
+    border-radius: 15px;
+    
+  }
+  .adm i{
+    font-size: 20px;
+  }
+  
+  a{
+    color: white;
+    text-decoration: none;
+    
+  }
+  .btLogout{
+     
+    display: flex;
+     align-items: center;
+    justify-content: center;
+    margin-bottom: 80%;
+    transition: background-color 0.3s ease;
+    height: 50px;
+    width: 200px;
+    margin-left: 20px;
+    border-radius: 15px;
+  }
+   .btFechar{
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+  }
+ 
+.listSideBar{
+ display: flex;
+ align-items: center;
+ flex-direction: column;
+ font-weight: bold;
+ gap: 30px;
+ 
+}
+.listMedium {
+  font-weight: bold;
+  margin-bottom: -250%;
+  margin-left: 25%;
+  
+}
+.listMedium a {
+  display: block; 
+  width: 50%; 
+  padding: 12px 15px; 
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  
+}
+.listMedium a:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+.listMedium i{
+  font-size: 15px;
+}
+#sidebar:not(.fechado) .listMedium a:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+#sidebar.fechado .listMedium a:hover {
+  background-color: transparent;
+  cursor: default;
+}
+
+#sidebar.fechado .listMedium a span{
+  display: none;
+}
+#sidebar.fechado .listMedium {
+  justify-content: center;  
+  width: 100%;
+  margin-left: 62%;
+  margin-bottom: -450%;
+  font-size: 20px;
+}
+
+
+
+.listSideBar a{
+  text-decoration: none;
+  width: 200px;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.listSideBar a:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  border-radius: 15px;
+}
+.listSideBar a i {
+  position: relative;
+  top: -1.5px; /* ou -1px dependendo do ícone */
+}
+/* Quando o sidebar estiver fechado */
+#sidebar.fechado .listSideBar a {
+  justify-content: center;  
+  width: 100%;
+  padding-left: 90px;
+}
+
+#sidebar.fechado .listSideBar a span{
+  display: none;
+}
+
+#sidebar.fechado .listSideBar a:hover {
+  background-color: transparent; 
+  transform: none;               
+  cursor: default;              
+}
+
+/* Hover do logout apenas quando sidebar aberto */
+#sidebar:not(.fechado) .btLogout:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  transform: scale(1.03); /* leve zoom */
+  cursor: pointer;
+}
+
+/* Quando fechado, remove hover */
+#sidebar.fechado .btLogout:hover {
+  background-color: transparent;
+  transform: none;
+  cursor: default;
+}
+/*============================================== responsividade para notebook ================================================*/
+@media (max-width: 1366px) and (min-width: 768px){
+  
+  #sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 90vh;
+  width: 150px;
+  background-color: blue;
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 20px;
+  transition: transform 0.3s ease;
+  overflow-y: auto; 
+  overflow-x: hidden;
+  
+  }
+  #sidebar::-webkit-scrollbar {
+    width: 5px;
+  }
+#sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+  }
+
+  #sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
+  .logo{
+    width: 100px;
+    transition: opacity 0.3s ease;
+  }
+ #sidebar.fechado .logoIcon {
+  display: block;
+  width: 40px;
+  margin-left: 50%;
+  }
+  .logoContainer{
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 10px;
+  }
+  .listSideBar a{
+  text-decoration: none;
+  width: 130px;
+  padding: 5px;
+  margin-top: 5px;
+  border-radius: 5%;
+  display: flex;
+  justify-content: flex-start;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  align-items: center;
+}
+.listSideBar{
+ display: flex;
+ align-items: center;
+ flex-direction: column;
+ font-weight: bold;
+ gap: 20px;
+ 
+}
+.listSideBar a i {
+  position: relative;
+  top: -1px; /* ou -1px dependendo do ícone */
+}
+.btLogout{
+     
+    display: flex;
+     align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    width: 90px;
+    margin-left: 12%;
+    border-radius: 15px;
+    margin-top: 10%;
+  }
+
+  #sidebar.fechado .btLogout{
+    margin-left: 45%;
+    margin-bottom: 20%;
+  }
+   .btFechar{
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .btFechar a {
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .btFechar i {
+    font-size: 15px;
+  }
+
+  #sidebar.fechado a i{
+    font-size: 15px;
+  }
+
+  a i{
+    font-size: 10px;
+  }
+
+  a {
+    font-size: 12px;
+  }
+  .adm{
+     
+     font-weight: bold;
+    display: flex;
+     align-items: center;
+    justify-content: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 120px;
+    margin-left: 20px;
+    cursor: pointer;
+    bottom: 0;
+    transition: background-color 0.3s ease;
+    border-radius: 15px;
+    
+  }
+  .adm i{
+    font-size: 15px;
+  }
+  #sidebar.fechado .adm i{
+     margin-left: 100%;
+     font-size: 20px;
+  }
+  #sidebar.fechado .adm{
+    width: 130px;
+  }
+
+  .listMedium {
+  font-weight: bold;
+  margin-bottom: -250%;
+  margin-left: 12%;
+  
+}
+.listMedium a {
+  display: block; 
+  width: 60%; 
+  padding: 12px 15px; 
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+
+}
+.listMedium a:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.listMedium i{
+  font-size: 15px;
+}
+
+#sidebar.fechado .listMedium a span{
+  display: none;
+}
+#sidebar.fechado .listMedium {
+  justify-content: center;  
+  width: 20%;
+  margin-left: 60%;
+  margin-bottom: -250%;
+  font-size: 15px;
+}
+ /* .dashboard, 
+  .card-container, 
+  .footer {
+    margin-left: 150px;
+  }
+  #sidebar.fechado ~ .dashboard,
+  #sidebar.fechado ~ .card-container,
+  #sidebar.fechado ~ .footer {
+    margin-left: 80px;
+  } */
+
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4); /* escurece o fundo */
+  backdrop-filter: blur(4px); /*embaça o conteúdo atrás */
+  opacity: 0;
+  pointer-events: none; /* evita clique quando invisível */
+  transition: opacity 0.3s ease;
+  z-index: 889; /* logo abaixo da sidebar */
+}
+
+#sidebar:not(.fechado) ~ #overlay {
+  opacity: 1;
+  pointer-events: all;
+
+}
+/* Garante que o conteúdo principal respeite o espaço do sidebar */
+/* .dashboard, 
+.card-container, 
+.footer {
+  margin-left: 250px; 
+  transition: margin-left 0.3s ease;
+} */
+
+/* Quando o sidebar estiver fechado */
+/* #sidebar.fechado ~ .dashboard,
+#sidebar.fechado ~ .card-container,
+#sidebar.fechado ~ .footer {
+  margin-left: 150px;
+} */
+
+/* Evita que o conteúdo fique por baixo do menu em resoluções menores */

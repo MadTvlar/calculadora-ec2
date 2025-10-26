@@ -23,6 +23,7 @@
   padding: 20px;
   margin-top: 5%;
   margin-bottom: 5%;
+  margin-left: 12%;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   height: auto;
@@ -336,7 +337,7 @@
 }
 
 /* Media Queries para Responsividade */
-@media screen and (max-width: 1200px) {
+/* @media screen and (max-width: 1200px) {
   .card {
     width: 90%;
     padding: 15px;
@@ -353,12 +354,12 @@
   .rank-table td {
     padding: 8px;
   }
-}
+} */
 
-@media screen and (max-width: 768px) {
+@media (max-width: 1366px) and (min-width: 768px){
   .card {
-    width: 98%;
-    margin: 10px auto;
+    width: 90%;
+   margin-left: 7%;
     padding: 10px;
   }
 
@@ -533,6 +534,7 @@
   transform: translateY(10px); 
   animation: fadeInUp 0.8s ease forwards;
   animation-delay: 1.5s;
+  margin-left: 40.5%;
 }
 @keyframes fadeInUp {
   from {
@@ -547,9 +549,11 @@
 .podio-container {
   margin-top: 2%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: flex-end;
-  gap: 0;
+  margin-left: 8%;
+  gap: -40%;
+  width: 90%;
 }
 
 .podio-img {
@@ -610,11 +614,13 @@
 }
 
 .podio-podium {
-  gap: 100px;
+  gap: 10px;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: flex-end;
   margin-top: -30px;
+  width: full;
+  margin-left: 5%;
 
 }
 

@@ -5,6 +5,7 @@
   padding: 20px;
   overflow-x: auto;
   margin-bottom: 2%;
+  margin-left: 19%;
 }
 
 .dashboard-table {
@@ -44,7 +45,7 @@ html {
 }
 
 /* Responsivo para telas pequenas */
-@media (max-width: 768px) {
+@media (max-width: 1366px) and (min-width: 768px){
   .top-container {
     flex-direction: column;
     padding: 20px;
@@ -60,6 +61,7 @@ html {
 
   .dashboard-container {
     padding: 10px;
+    margin-left: 8%;
   }
 
   .dashboard-table table {
@@ -76,6 +78,10 @@ html {
     left: 0;
     right: auto;
   }
+  .resumo-totais {
+  margin-left: 8.8% !important;
+}
+
 }
 
 .resumo-totais {
@@ -85,6 +91,7 @@ html {
   flex-wrap: wrap;
   width: 100%;
   max-width: 1200px;
+  margin-left: 20%;
 }
 
 .card-total {

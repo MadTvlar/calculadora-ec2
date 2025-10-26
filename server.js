@@ -150,7 +150,8 @@ app.get('/usuarios', async (req, res) => {
 
     res.render('usuarios', {
       usuarios,
-      usuario: usuarioLogado
+      usuario: usuarioLogado,
+      grupo: grupoLogado
     });
   } catch (err) {
     console.error('Erro ao buscar usuários:', err);

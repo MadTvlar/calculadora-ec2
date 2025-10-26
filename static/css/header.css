@@ -1,0 +1,15 @@
+.header{
+    background-color: #0002c6;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    height: 70px;
+    align-items: center;
+   
+}
+
+.userName{
+    color: white;
+    font-weight: bold;
+    margin-right: 40px;
+}
