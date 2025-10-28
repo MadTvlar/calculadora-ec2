@@ -1,0 +1,36 @@
+name: Deploy Homolog
+
+on:
+  push:
+    branches: [ homolog ]
+
+concurrency:
+  group: deploy-hml
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (logs)
+        uses: actions/checkout@v4
+
+      - name: Add EC2 to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Write SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Run deploy.sh on EC2 (homolog)
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes ubuntu@${{ secrets.EC2_HOST }} \
+            "/home/ubuntu/calculadora-ec2-hml/deploy.sh"
+
+      - name: Post-deploy healthcheck (8081)
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes ubuntu@${{ secrets.EC2_HOST }} \
+            'for i in {1..12}; do curl -fsS http://localhost:8081/health && exit 0; sleep 5; done; echo "Healthcheck failed" >&2; docker-compose -f ~/calculadora-ec2-hml/docker-compose.yml ps; cname=$(cd ~/calculadora-ec2-hml && docker-compose ps -q | head -n1); [ -n "$cname" ] && docker logs --tail=200 "$cname" || true; exit 1'
