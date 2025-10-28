@@ -1,2 +1,10 @@
+# Arquivos de ambiente e deploy locais
 .env
-node_modules/
+.env.*
+docker-compose.yml
+docker-compose*.yml
+node_modules
+
+# scripts locais de deploy
+deploy.sh
+deploy-hml.sh
