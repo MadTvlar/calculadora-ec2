@@ -356,6 +356,10 @@
     font-size: 0.85rem;
     margin-right: 6px;
   }
+  #overlay {
+    display: none !important;
+    visibility: hidden !important;
+  }
 }
 
 
