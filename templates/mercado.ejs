@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="/css/default.css">
 
 
-  <title>Tropa Azul - Mercado</title>
+  <title>Mercado - Tropa Azul</title>
 
   <style>
     /* Estilo para o formulário de upload */
@@ -105,29 +105,33 @@
 </head>
 
 <body>
- <header class="header"> <div class="userName" id="user"><span><%= usuario %></span></div></header>
+  <header class="header">
+    <div class="userName" id="user"><span>
+        <%= usuario %>
+      </span></div>
+  </header>
   <nav id="sidebar" class="fechado">
-      <div class="logoContainer">
-        <a href="/segmentos" class="logoLink">
+    <div class="logoContainer">
+      <a href="/segmentos" class="logoLink">
         <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
-         </a>
-       <img src="/images/tropa_azul_icon.png" alt="TVLAR MOTOS" class="logoIcon" id="toggleIcon">
-      </div>
-        
-      <div class="listMedium">
-        <a href="/motos"><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a>
-      </div>
-      
-         <div class="btLogout">
-          <button class="btFechar">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <a href="/logout" class="item-description">
-              <span>Sair</span>
-            </a>
-          </button>
-        </div>
+      </a>
+      <img src="/images/tropa_azul_icon.png" alt="TVLAR MOTOS" class="logoIcon" id="toggleIcon">
+    </div>
+
+    <div class="listMedium">
+      <a href="/motos"><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a>
+    </div>
+
+    <div class="btLogout">
+      <button class="btFechar">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <a href="/logout" class="item-description">
+          <span>Sair</span>
+        </a>
+      </button>
+    </div>
   </nav>
-<div id="overlay"></div>
+  <div id="overlay"></div>
 
   <div class="upload-form-container">
     <form id="upload-excel-form" action="/upload" method="POST" enctype="multipart/form-data">
