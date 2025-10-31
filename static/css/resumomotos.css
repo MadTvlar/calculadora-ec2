@@ -1,4 +1,4 @@
-grafico{
+grafico {
   margin: 0;
   padding: 0;
   display: flex;
@@ -10,9 +10,6 @@ grafico{
   overflow: auto;
   position: relative;
 }
-
-
-
 
 /* Animação surgindo */
 @keyframes surgindo {
@@ -148,13 +145,10 @@ grafico{
   gap: -15;
 }
 
-
-
 .card:hover {
   transform: translateY(-15px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
-
 
 /* Rank */
 .rank-title {
@@ -170,7 +164,6 @@ grafico{
   margin-top: -10px;
   margin-bottom: 20px;
 }
-
 
 .rank-title h2 {
   padding: 10px;
@@ -212,7 +205,7 @@ grafico{
 }
 
 .rank-item .gold {
-  color: gold
+  color: gold;
 }
 
 .rank-item .silver {

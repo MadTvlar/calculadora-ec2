@@ -45,7 +45,7 @@ html {
 }
 
 /* Responsivo para telas pequenas */
-@media (max-width: 1366px) and (min-width: 768px){
+@media (max-width: 1366px) and (min-width: 768px) {
   .top-container {
     flex-direction: column;
     padding: 20px;
@@ -79,9 +79,8 @@ html {
     right: auto;
   }
   .resumo-totais {
-  margin-left: 8.8% !important;
-}
-
+    margin-left: 8.8% !important;
+  }
 }
 
 .resumo-totais {
@@ -169,7 +168,6 @@ html {
   color: #000;
 }
 
-
 .top-container,
 .resumo-totais,
 .dashboard-container,
@@ -177,7 +175,6 @@ html {
   outline: none !important;
   caret-color: transparent;
 }
-
 
 .coin {
   position: absolute;
@@ -192,11 +189,9 @@ html {
   /* COMEÇA DEBAIXO DO CARD */
 }
 
-
 .card-verde:hover .coin {
   display: block;
 }
-
 
 @keyframes rise {
   0% {
@@ -210,7 +205,6 @@ html {
     opacity: 0;
   }
 }
-
 
 @keyframes bounce {
   0% {
@@ -232,4 +226,23 @@ html {
 
 .card-bounce {
   animation: bounce 0.8s ease;
+}
+@media (max-width: 1440px) {
+  .resumo-totais {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: 12%;
+  }
+  .dashboard-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    overflow-x: auto;
+    margin-bottom: 2%;
+    margin-left: 10.5%;
+  }
 }

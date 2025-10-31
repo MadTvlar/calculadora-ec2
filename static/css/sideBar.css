@@ -140,12 +140,13 @@ a {
 
 #sidebar.fechado .listMedium a span {
   display: none;
+  font-size: 40px;
 }
 #sidebar.fechado .listMedium {
   justify-content: center;
   width: 100%;
   margin-left: 62%;
-  margin-bottom: -450%;
+  margin-bottom: -430%;
   font-size: 20px;
 }
 
@@ -381,4 +382,22 @@ a {
 #sidebar:not(.fechado) ~ #overlay {
   opacity: 1;
   pointer-events: all;
+}
+
+@media (max-width: 1440px) {
+  .btLogout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40%;
+    transition: background-color 0.3s ease;
+    height: 50px;
+    width: 200px;
+    margin-left: 20px;
+    border-radius: 15px;
+  }
+  #sidebar.fechado .btLogout {
+    margin-left: 10%;
+    margin-bottom: 65%;
+  }
 }
