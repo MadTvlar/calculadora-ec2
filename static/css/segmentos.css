@@ -1,7 +1,6 @@
-.segmentos{
+.segmentos {
   display: flex;
 }
-
 
 .container {
   display: flex;
@@ -11,13 +10,12 @@
   width: 100%;
   max-width: 100%; /* deixa ocupar toda a tela */
   margin-top: 5%;
-  padding: 10px 0 100px 0;    
-
+  padding: 10px 0 100px 0;
 }
 
 .card {
-  flex: 0 1 200px;         /* largura máxima 300px, mas pode encolher */
-  max-width: 250px;
+  flex: 0 1 200px; /* largura máxima 300px, mas pode encolher */
+  max-width: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,20 +46,20 @@
     transform: none;
   }
 }
-
-@media (min-width: 1920px) and (max-width: 1920px) {
+//te de notebook medio
+@media (max-width: 1440px) {
   /* Container centralizado e largo */
   .container {
     max-width: 1800px; /* ocupa quase toda a tela */
-    gap: 60px;        /* mais espaço entre os cards */
+    gap: 60px; /* mais espaço entre os cards */
     margin-top: 5%;
     margin-left: 3%;
   }
 
   /* Cards maiores */
   .card {
-    flex: 1 1 400px;   /* podem crescer até 400px */
-    max-width: 400px;  /* força largura máxima */
+    flex: 1 1 400px; /* podem crescer até 400px */
+    max-width: 350px; /* força largura máxima */
   }
 
   /* Footer maior */
