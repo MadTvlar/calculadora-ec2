@@ -12,19 +12,19 @@
   padding-top: 20px;
   transition: transform 0.3s ease;
   z-index: 900;
-  overflow-y: auto; / ativa a rolagem vertical automática /
-  overflow-x: hidden;
-  scrollbar-width: thin; / Firefox /
-  scrollbar-color: rgba(255, 255, 255, 0.4) transparent; / Firefox /
+
 }
+
 #sidebar.fechado {
   transform: translateX(-50%);
-  width: 150px; /* diminui a largura */
+  width: 150px;
+  /* diminui a largura */
 }
 
 #sidebar.fechado .logo {
   display: none;
 }
+
 #sidebar.fechado .logoIcon {
   display: block;
   width: 40px;
@@ -38,10 +38,12 @@
 #sidebar.fechado .userMenu {
   display: none;
 }
+
 #sidebar.fechado .adm i {
   font-size: 24px;
   margin-left: -15px;
 }
+
 #sidebar:not(.fechado) .adm:hover {
   background-color: rgba(0, 0, 0, 0.2);
 }
@@ -58,10 +60,12 @@
   justify-content: center;
   padding-bottom: 20px;
 }
+
 .logo {
   width: 150px;
   transition: opacity 0.3s ease;
 }
+
 .logoIcon {
   display: none;
   cursor: pointer;
@@ -81,6 +85,7 @@
   transition: background-color 0.3s ease;
   border-radius: 15px;
 }
+
 .adm i {
   font-size: 20px;
 }
@@ -89,6 +94,7 @@ a {
   color: white;
   text-decoration: none;
 }
+
 .btLogout {
   display: flex;
   align-items: center;
@@ -100,6 +106,7 @@ a {
   margin-left: 20px;
   border-radius: 15px;
 }
+
 .btFechar {
   border: none;
   background-color: transparent;
@@ -108,18 +115,43 @@ a {
   cursor: pointer;
 }
 
+/* === Scroll apenas dentro da lista do sidebar === */
 .listSideBar {
   display: flex;
   align-items: center;
   flex-direction: column;
   font-weight: bold;
   gap: 30px;
+
+  max-height: calc(100vh - 180px);
+  /* deixa espaço p/ logo + botão sair */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
 }
+
+/* Scroll estilizado (Chrome/Edge/Safari) */
+.listSideBar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.listSideBar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+
+.listSideBar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+
 .listMedium {
   font-weight: bold;
   margin-bottom: -250%;
   margin-left: 25%;
 }
+
 .listMedium a {
   display: block;
   width: 50%;
@@ -128,15 +160,19 @@ a {
   text-decoration: none;
   color: white;
 }
+
 .listMedium a:hover {
   background-color: rgba(0, 0, 0, 0.25);
 }
+
 .listMedium i {
   font-size: 15px;
 }
+
 #sidebar:not(.fechado) .listMedium a:hover {
   background-color: rgba(0, 0, 0, 0.2);
 }
+
 #sidebar.fechado .listMedium a:hover {
   background-color: transparent;
   cursor: default;
@@ -146,6 +182,7 @@ a {
   display: none;
   font-size: 40px;
 }
+
 #sidebar.fechado .listMedium {
   justify-content: center;
   width: 100%;
@@ -164,15 +201,19 @@ a {
   justify-content: flex-start;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
 .listSideBar a:hover {
   background-color: rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
   border-radius: 15px;
 }
+
 .listSideBar a i {
   position: relative;
-  top: -1.5px; /* ou -1px dependendo do ícone */
+  top: -1.5px;
+  /* ou -1px dependendo do ícone */
 }
+
 /* Quando o sidebar estiver fechado */
 #sidebar.fechado .listSideBar a {
   justify-content: center;
@@ -193,7 +234,8 @@ a {
 /* Hover do logout apenas quando sidebar aberto */
 #sidebar:not(.fechado) .btLogout:hover {
   background-color: rgba(0, 0, 0, 0.2);
-  transform: scale(1.03); /* leve zoom */
+  transform: scale(1.03);
+  /* leve zoom */
   cursor: pointer;
 }
 
@@ -203,6 +245,7 @@ a {
   transform: none;
   cursor: default;
 }
+
 /*============================================== responsividade para notebook ================================================*/
 @media (max-width: 1366px) and (min-width: 768px) {
   #sidebar {
@@ -221,16 +264,20 @@ a {
     overflow-y: auto;
     overflow-x: hidden;
   }
+
   #sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-#sidebar::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 10px;
-}
-#sidebar:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.7);
-}
+    width: 6px;
+  }
+
+  #sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+  }
+
+  #sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+
   /* #listSideBar::-webkit-scrollbar {
     width: 5px;
   }
@@ -247,11 +294,13 @@ a {
     width: 100px;
     transition: opacity 0.3s ease;
   }
+
   #sidebar.fechado .logoIcon {
     display: block;
     width: 40px;
     margin-left: 50%;
   }
+
   .logoContainer {
     width: 150px;
     display: flex;
@@ -259,6 +308,7 @@ a {
     justify-content: center;
     padding-bottom: 10px;
   }
+
   .listSideBar a {
     text-decoration: none;
     width: 130px;
@@ -270,6 +320,7 @@ a {
     transition: background-color 0.3s ease, transform 0.2s ease;
     align-items: center;
   }
+
   .listSideBar {
     display: flex;
     align-items: center;
@@ -277,10 +328,13 @@ a {
     font-weight: bold;
     gap: 20px;
   }
+
   .listSideBar a i {
     position: relative;
-    top: -1px; /* ou -1px dependendo do ícone */
+    top: -1px;
+    /* ou -1px dependendo do ícone */
   }
+
   .btLogout {
     display: flex;
     align-items: center;
@@ -296,6 +350,7 @@ a {
     margin-left: 45%;
     margin-bottom: 20%;
   }
+
   .btFechar {
     border: none;
     background-color: transparent;
@@ -303,10 +358,12 @@ a {
     font-size: 20px;
     cursor: pointer;
   }
+
   .btFechar a {
     font-size: 15px;
     font-weight: bold;
   }
+
   .btFechar i {
     font-size: 15px;
   }
@@ -322,6 +379,7 @@ a {
   a {
     font-size: 12px;
   }
+
   .adm {
     font-weight: bold;
     display: flex;
@@ -336,13 +394,16 @@ a {
     transition: background-color 0.3s ease;
     border-radius: 15px;
   }
+
   .adm i {
     font-size: 15px;
   }
+
   #sidebar.fechado .adm i {
     margin-left: 100%;
     font-size: 20px;
   }
+
   #sidebar.fechado .adm {
     width: 130px;
   }
@@ -352,6 +413,7 @@ a {
     margin-bottom: -250%;
     margin-left: 12%;
   }
+
   .listMedium a {
     display: block;
     width: 60%;
@@ -360,9 +422,11 @@ a {
     text-decoration: none;
     color: white;
   }
+
   .listMedium a:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
+
   .listMedium i {
     font-size: 15px;
   }
@@ -370,6 +434,7 @@ a {
   #sidebar.fechado .listMedium a span {
     display: none;
   }
+
   #sidebar.fechado .listMedium {
     justify-content: center;
     width: 20%;
@@ -385,15 +450,19 @@ a {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.4); /* escurece o fundo */
-  backdrop-filter: blur(4px); /*embaça o conteúdo atrás */
+  background: rgba(0, 0, 0, 0.4);
+  /* escurece o fundo */
+  backdrop-filter: blur(4px);
+  /*embaça o conteúdo atrás */
   opacity: 0;
-  pointer-events: none; /* evita clique quando invisível */
+  pointer-events: none;
+  /* evita clique quando invisível */
   transition: opacity 0.3s ease;
-  z-index: 889; /* logo abaixo da sidebar */
+  z-index: 889;
+  /* logo abaixo da sidebar */
 }
 
-#sidebar:not(.fechado) ~ #overlay {
+#sidebar:not(.fechado)~#overlay {
   opacity: 1;
   pointer-events: all;
 }
@@ -410,9 +479,10 @@ a {
     margin-left: 20px;
     border-radius: 15px;
   }
+
   #sidebar.fechado .btLogout {
     margin-left: 10%;
     margin-bottom: 65%;
   }
-  
+
 }
