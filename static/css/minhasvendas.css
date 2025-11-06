@@ -235,7 +235,7 @@ html {
     flex-wrap: wrap;
     width: 100%;
     max-width: 1200px;
-    margin-left: 12%;
+    margin-left: 9.5%;
   }
   .dashboard-container {
     width: 100%;
@@ -243,6 +243,6 @@ html {
     padding: 20px;
     overflow-x: auto;
     margin-bottom: 2%;
-    margin-left: 10.5%;
+    margin-left: 8%;
   }
 }
