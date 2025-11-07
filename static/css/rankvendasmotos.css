@@ -22,7 +22,6 @@
   padding: 20px;
   margin-top: 5%;
   margin-bottom: 5%;
-  margin-left: 12%;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   height: auto;
@@ -36,6 +35,8 @@
   opacity: 0;
   perspective: 2000px;
   transform-style: preserve-3d;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card:hover {
@@ -353,114 +354,6 @@
   }
 } */
 
-@media (max-width: 1366px) and (min-width: 768px) {
-  .card {
-    width: 90%;
-    margin-left: 7%;
-    padding: 10px;
-  }
-
-  .rank-title h2 {
-    font-size: 20px;
-  }
-
-  .data-atualizacao {
-    font-size: 12px;
-  }
-
-  .rank-table th,
-  .rank-table td {
-    padding: 10px;
-    font-size: 13px;
-  }
-
-  .rank-table td:nth-child(4),
-  .rank-table td:nth-child(5),
-  .rank-table td:nth-child(6),
-  .rank-table td:nth-child(7),
-  .rank-table td:nth-child(8),
-  .rank-table td:nth-child(9),
-  .rank-table td:nth-child(10) {
-    padding-right: 15px;
-  }
-
-  .rank-table td:nth-child(1),
-  .rank-table td:nth-child(2),
-  .rank-table td:nth-child(3) {
-    padding-left: 15px;
-  }
-}
-
-@media screen and (max-width: 576px) {
-  .card {
-    width: 100%;
-    margin: 5px auto;
-    border-radius: 15px;
-  }
-
-  .rank-title h2 {
-    font-size: 18px;
-  }
-
-  .data-atualizacao {
-    font-size: 11px;
-  }
-
-  .rank-table th,
-  .rank-table td {
-    padding: 4px;
-    font-size: 11px;
-  }
-
-  /* Ajuste adicional para telas muito pequenas */
-  .rank-table {
-    border-spacing: 0 4px;
-  }
-
-  .rank-table tbody tr {
-    margin: 5px 0;
-  }
-}
-
-/* Ajustes para telas muito pequenas */
-@media screen and (max-width: 400px) {
-  .card {
-    padding: 5px;
-  }
-
-  .rank-title {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-  }
-
-  .rank-table th,
-  .rank-table td {
-    padding: 3px;
-    font-size: 10px;
-  }
-}
-
-/* Ajustes para telas muito grandes */
-@media screen and (min-width: 1600px) {
-  .card {
-    max-width: 1500px;
-  }
-
-  .rank-title h2 {
-    font-size: 28px;
-  }
-
-  .data-atualizacao {
-    font-size: 16px;
-  }
-
-  .rank-table th,
-  .rank-table td {
-    font-size: 16px;
-    padding: 20px;
-  }
-}
-
 /* Primeiros 5 lugares - Tons de Azul */
 .rank-table tbody tr:nth-child(-n + 5) {
   background: linear-gradient(145deg, #1e90ff, #4169e1);
@@ -526,7 +419,8 @@
   transform: translateY(10px);
   animation: fadeInUp 0.8s ease forwards;
   animation-delay: 1.5s;
-  margin-left: 40.5%;
+  margin-left: auto;
+  margin-right: auto;
 }
 @keyframes fadeInUp {
   from {
@@ -659,9 +553,4 @@
   z-index: 2;
   border: 2.5px solid #ffd700;
   animation-delay: 1.3s;
-}
-@media (max-width: 1440px) {
-  .card {
-    margin-left: 6%;
-  }
 }

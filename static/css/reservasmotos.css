@@ -44,7 +44,7 @@
   width: 120px;
   height: auto;
 }
-h2{
+h2 {
   margin-left: 40%;
 }
 /* Filial */
@@ -80,7 +80,7 @@ h2{
 
 .filial-container input:focus {
   outline: none;
-  border-color: #4169E1;
+  border-color: #4169e1;
 }
 
 /* Animação surgindo */
@@ -181,7 +181,8 @@ h2{
   margin-top: 5%;
   max-height: 550px;
   width: 80%;
-  margin-left:12%;
+  margin-left: auto;
+  margin-right: auto;
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 8px;
