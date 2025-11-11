@@ -341,18 +341,12 @@
     padding: 15px;
   }
 }
-
-@media screen and (max-width: 992px) {
+*/
+@media screen and (max-width: 1440px) {
   .card {
-    width: 95%;
-    padding: 10px;
+    margin-left: 6%;
   }
-
-  .rank-table th,
-  .rank-table td {
-    padding: 8px;
-  }
-} */
+}
 
 /* Primeiros 5 lugares - Tons de Azul */
 .rank-table tbody tr:nth-child(-n + 5) {
@@ -419,8 +413,7 @@
   transform: translateY(10px);
   animation: fadeInUp 0.8s ease forwards;
   animation-delay: 1.5s;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 41%;
 }
 @keyframes fadeInUp {
   from {
