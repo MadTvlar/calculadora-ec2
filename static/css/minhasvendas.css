@@ -5,7 +5,8 @@
   padding: 20px;
   overflow-x: auto;
   margin-bottom: 2%;
-  margin-left: 19%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .dashboard-table {
@@ -45,43 +46,6 @@ html {
 }
 
 /* Responsivo para telas pequenas */
-@media (max-width: 1366px) and (min-width: 768px) {
-  .top-container {
-    flex-direction: column;
-    padding: 20px;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .logo-container,
-  .filial-container {
-    position: static;
-    margin: 0 auto;
-  }
-
-  .dashboard-container {
-    padding: 10px;
-    margin-left: 8%;
-  }
-
-  .dashboard-table table {
-    font-size: 0.85rem;
-  }
-
-  #user-button {
-    width: 100px;
-    font-size: 0.8rem;
-    padding: 6px 12px;
-  }
-
-  .dropdown-content {
-    left: 0;
-    right: auto;
-  }
-  .resumo-totais {
-    margin-left: 8.8% !important;
-  }
-}
 
 .resumo-totais {
   display: flex;
@@ -90,7 +54,8 @@ html {
   flex-wrap: wrap;
   width: 100%;
   max-width: 1200px;
-  margin-left: 20%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card-total {
@@ -226,23 +191,4 @@ html {
 
 .card-bounce {
   animation: bounce 0.8s ease;
-}
-@media (max-width: 1440px) {
-  .resumo-totais {
-    display: flex;
-    justify-content: space-around;
-    gap: 20px;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 1200px;
-    margin-left: 9.5%;
-  }
-  .dashboard-container {
-    width: 100%;
-    max-width: 1200px;
-    padding: 20px;
-    overflow-x: auto;
-    margin-bottom: 2%;
-    margin-left: 8%;
-  }
 }

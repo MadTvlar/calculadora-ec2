@@ -146,7 +146,7 @@ a {
 
 .listMedium {
   font-weight: bold;
-  margin-bottom: -250%;
+  margin-bottom: -240%;
   margin-left: 25%;
 }
 
@@ -164,7 +164,7 @@ a {
 }
 
 .listMedium i {
-  font-size: 15px;
+  font-size: 18px;
 }
 
 #sidebar:not(.fechado) .listMedium a:hover {
@@ -183,8 +183,8 @@ a {
 #sidebar.fechado .listMedium {
   justify-content: center;
   width: 100%;
-  margin-left: 62%;
-  margin-bottom: -430%;
+  margin-left: 58%;
+  margin-bottom: -410%;
   font-size: 20px;
 }
 
