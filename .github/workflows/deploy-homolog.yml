@@ -1,0 +1,16 @@
+name: Deploy Homolog (self-hosted)
+
+on:
+  push:
+    branches: [ homolog ]
+
+concurrency:
+  group: deploy-hml
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, ec2-hml]
+    steps:
+      - name: Executar deploy.sh (HML)
+        run: /home/ubuntu/calculadora-ec2-hml/deploy.sh

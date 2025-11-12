@@ -6,55 +6,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/segmentos.css">
   <link rel="stylesheet" href="/css/default.css">
+  <link rel="stylesheet" href="/css/dropMenu.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/sideBar.css">
+  <link rel="stylesheet" href="/css/menuButton.css">
   <title>Segmentos - Tropa Azul</title>
 </head>
 
 <body>
-  <div class="top-container">
-    <div class="logo-container">
-      <a href="/segmentos">
-        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
-      </a>
-    </div>
+ 
+  <header class="header"> <div class="userName" id="user"><span><%= usuario %></span></div></header>
+  <div class="segmentos">   
+  <nav id="sidebar" class="fechado">
+    <div>
 
-    <div class="user-container">
-      <div class="user-menu" id="user">
-        <%= usuario %>
-          <button class="menu-toggle" onclick="toggleMenu()">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
+      <div class="logoContainer">
+        <a href="/segmentos" class="logoLink">
+        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
+         </a>
+       <img src="/images/tropa_azul_icon.png" alt="TVLAR MOTOS" class="logoIcon" id="toggleIcon">
+      </div>  
+      
+      <div class="adm" id="grupo">
+        <% if (grupo === 'admin') { %>
+          <a href="/usuarios" class="item-description">
+            <i class="fa-solid fa-user-tie" id="iconCriar"></i>
+            <span>Criar Usuário</span></a>
+          <% } %>
+          
+        </div>
+
+          
+      </div>
+        <div class="btLogout">
+          <button class="btFechar">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <a href="/logout" class="item-description">
+              <span>Sair</span>
+            </a>
           </button>
+        </div>
+
+  </nav>
+  <div id="overlay"></div>
+<div class="container">
+      <div class="card" id="motos">
+        <img src="/images/card_motos.png" alt="Motos" class="card-image">
+      </div>
+      
+      
+      <div class="card" id="nautica">
+        <img src="/images/card_nautica.png" alt="Nautica" class="card-image">
+      </div>
+      
+      <div class="card" id="config">
+        <img src="/images/card_config.png" alt="Config" class="card-image">
       </div>
     </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-      <% if (grupo==='admin' ) { %>
-        <a href="/usuarios">👤 Criar Usuario</a>
-        <% } %>
-          <a href="/logout">🚪 Logout</a>
-    </div>
   </div>
-
-
-  <div class="container">
-    <div class="card" id="motos">
-      <img src="/images/card_motos.png" alt="Motos" class="card-image">
-    </div>
-
-    <div class="card" id="nautica">
-      <img src="/images/card_nautica.png" alt="Nautica" class="card-image">
-    </div>
-
-    <div class="card" id="config">
-      <img src="/images/card_config.png" alt="Config" class="card-image">
-    </div>
   </div>
-
   <footer class="footer">
     <p>Copyright &copy; 2025 Departamento de T.I | Todos os direitos reservados.</p>
   </footer>
 
   <script src="/js/default.js"></script>
+   <script src="/js/sidebar.js"></script>
+   <script src="/js/overlay.js"></script>
 
   <script>
     document.getElementById('motos').addEventListener('click', () => {
