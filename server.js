@@ -38,7 +38,7 @@ const rotaMercado = require('./routes/mercado');
 app.use('/', rotaMercado);
 
 // CONFIGURAÇÃO DE GERAL DE VENDAS RANK - RESUMO E MINHAS VENDAS
-const referenteMes = '2025-10';
+const referenteMes = '2025-11';
 
 // FUNÇÃO PARA SE OBTER O VALOR DO EMPLACAMENTO NO MÊS QUE ESTAMOS
 function obterValorMesAtual() {
