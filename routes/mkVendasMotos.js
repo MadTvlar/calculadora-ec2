@@ -45,7 +45,7 @@ async function fetchMkVendasMotos(pool) {
     idrelatorioconfiguracaoleiaute: 248,
     idrelatoriousuarioleiaute: 1177,
     ididioma: 1,
-    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13],
+    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 15],
     filtros: filtros
   }, {
     headers: {
