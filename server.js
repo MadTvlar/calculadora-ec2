@@ -35,6 +35,7 @@ app.set('views', path.join(__dirname, 'templates'));
 const rotaNPS = require('./routes/nps_geral');
 app.use('/nps', rotaNPS);
 const rotaMercado = require('./routes/mercado');
+const { settings } = require('cluster');
 app.use('/', rotaMercado);
 
 // CONFIGURAÇÃO DE GERAL DE VENDAS RANK - RESUMO E MINHAS VENDAS
@@ -135,6 +136,22 @@ app.get('/segmentos', (req, res) => {
     grupo: grupoLogado
   });
 });
+// CHAMADO PAPRA CONFIGURAÇÕES ASSIM QUE CLICAR NO LOGO
+app.get('/settings', (req,res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+  
+  console.log(req.cookies)
+
+  if(grupoLogado!='admin'){
+    return res.redirect('/segmentos')
+  }
+
+  res.render('settings',{
+    usuario: usuarioLogado
+  })
+
+})
 
 // CHAMADO PARA PAGINA DE CADASTRO DE USUARIOS (APENAS PARA ADMIN)
 app.get('/usuarios', async (req, res) => {
