@@ -1,14 +1,14 @@
 // Essa rota faz a orgnanização da pontuação dos KPI's em um Ranking por pontos
 
-const fetchrankingPontosMotos = async (connection) => {
-  const referente_mes = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+const fetchrankingPontosMotos = async (pool, mesReferente) => {
+ 
 
   console.log('\nLimpando a tabela de ranking_pontos');
-  await connection.query('TRUNCATE TABLE ranking_pontos');
+  await pool.query('TRUNCATE TABLE ranking_pontos');
 
   // console.log('\nBuscando vendas bônus dos dias 29, 30 e 31 de julho VENDAS BONUS EXTRA AQUI');
 
-  // const [bonusVendas] = await connection.query(`
+  // const [bonusVendas] = await pool.query(`
   //   SELECT 
   //     CASE 
   //       WHEN LOCATE('-', vendedor) > 0 AND LOCATE('(', vendedor) > 0 
@@ -29,7 +29,7 @@ const fetchrankingPontosMotos = async (connection) => {
   // }
 
 
-  const [rankingGeral] = await connection.query(`
+  const [rankingGeral] = await pool.query(`
     SELECT 
       vendedor_normalizado AS vendedor,
       MAX(CASE WHEN tipo = 'llo' THEN valor END) AS val_lucro,
@@ -120,7 +120,7 @@ const fetchrankingPontosMotos = async (connection) => {
       pontosPorRetorno + pontosPorNPS; //+ pontosBonus;
 
     // Busca id_microwork e filial via vendedor
-    const [[usuario]] = await connection.query(`
+    const [[usuario]] = await pool.query(`
       SELECT id_microwork, filial 
       FROM tropa_azul.ranking_geral 
       WHERE vendedor = ?
@@ -130,7 +130,7 @@ const fetchrankingPontosMotos = async (connection) => {
     const idMicrowork = usuario ? usuario.id_microwork : null;
     const filial = usuario ? usuario.filial : null;
 
-    await connection.query(`
+    await pool.query(`
       INSERT INTO ranking_pontos 
         (filial, id_microwork, vendedor, pontos, vendas, llo, captacao, contrato, retorno, NPS, referente_mes)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -155,7 +155,7 @@ const fetchrankingPontosMotos = async (connection) => {
       contrato,
       retorno,
       nps,
-      referente_mes
+      mesReferente
     ]);
   }
 

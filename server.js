@@ -75,6 +75,29 @@ const icms_venda = {
   "Para Fora do Estado": 0.12,
   "Base Reduzida": 0.07,
 }
+  const atualizarRankings = require('./routes/rankingGeralMotos');
+  const fetchEstoqueMotores = require('./routes/estoqueMotores');
+  const fetchEstoqueMotos = require('./routes/estoqueMotos');
+  const fetchMkVendasMotos = require('./routes/mkVendasMotos');
+  const fetchMKVendasSeminovas = require('./routes/mkVendasSimonovas');
+  const fetchMkContratosMotos = require('./routes/mkContratosMotos');
+  const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
+  const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
+  const fetchAltervision = require('./routes/altervision');
+  const atualizarNPS = require('./routes/nps');
+
+const api_list = {
+  "Rankings": atualizarRankings,
+  "EstoqueMotores": fetchEstoqueMotores,
+  "EstoqueMotos": fetchEstoqueMotos,
+  "MkVendasMotos": fetchMkVendasMotos,
+  "MKVendasSeminovas": fetchMKVendasSeminovas,
+  "MkContratosMotos": fetchMkContratosMotos,
+  "MkcaptacaoMotos": fetchMkcaptacaoMotos,
+  "RankingPontosMotos": fetchrankingPontosMotos,
+  "Altervision": fetchAltervision,
+  "NPS": atualizarNPS
+};
 
 
 // CHAMADO PARA A TELA DE LOGIN 
@@ -137,21 +160,75 @@ app.get('/segmentos', (req, res) => {
   });
 });
 // CHAMADO PAPRA CONFIGURAÇÕES ASSIM QUE CLICAR NO LOGO
-app.get('/settings', (req,res) => {
+app.get('/settings', async (req, res) => {
   const usuarioLogado = req.cookies.usuario_logado;
   const grupoLogado = req.cookies.grupo_logado;
-  
-  console.log(req.cookies)
+  const pool = require('./services/db');
 
-  if(grupoLogado!='admin'){
-    return res.redirect('/segmentos')
+  if (grupoLogado != 'admin') {
+    return res.redirect('/segmentos');
   }
 
-  res.render('settings',{
-    usuario: usuarioLogado
-  })
+  try {
+    // Busca o registro da tabela settings onde id = 1
+    const [rows] = await pool.query(
+      "SELECT mesReferente FROM settings WHERE id = 1"
+    );
 
-})
+    // Se existir registro retorna, senão retorna valores vazios
+    const settingsData = rows.length > 0 ? rows[0] : {};
+
+    res.render('settings', {
+      usuario: usuarioLogado,
+      api: Object.keys(api_list),
+      apiFull: api_list,
+      settings: settingsData   // <<< Enviado para o template
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao carregar settings");
+  }
+});
+
+
+
+app.post('/settings/save', async (req, res) => {
+  const { mesAno } = req.body;
+  const pool = require('./services/db');
+
+  try {
+    await pool.query(
+      "UPDATE settings set mesReferente = ? WHERE id = 1",
+      [mesAno]
+    );
+
+    res.redirect('/settings?ok=1');
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao salvar configurações");
+  }
+});
+
+
+app.post('/run-api', async (req, res) => {
+  const { name } = req.body;
+  const pool = require('./services/db');
+
+  if (!api_list[name]) {
+    return res.status(400).json({ error: 'API não encontrada' });
+  }
+
+  try {
+    const resultado = await api_list[name](pool);  
+    res.json({ ok: true, resultado });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 
 // CHAMADO PARA PAGINA DE CADASTRO DE USUARIOS (APENAS PARA ADMIN)
 app.get('/usuarios', async (req, res) => {
