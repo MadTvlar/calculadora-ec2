@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SETTINGS</title>
+    <link rel="stylesheet" href="/css/settings.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sideBar.css" />
+    <link rel="stylesheet" href="/css/default.css" />
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="userName" id="user"><span><%= usuario %></span></div>
+    </header>
+    <nav id="sidebar" class="fechado">
+      <div class="logoContainer">
+        <a href="/segmentos" class="logoLink">
+          <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo" />
+        </a>
+        <img
+          src="/images/tropa_azul_icon.png"
+          alt="TVLAR MOTOS"
+          class="logoIcon"
+          id="toggleIcon"
+        />
+      </div>
+
+      <div class="listMedium">
+        <a href="/segmentos"
+          ><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a
+        >
+      </div>
+
+      <div class="btLogout">
+        <button class="btFechar">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <a href="/logout" class="item-description">
+            <span>Sair</span>
+          </a>
+        </button>
+      </div>
+    </nav>
+    <div id="overlay"></div>
+
+    <main class="settings-container">
+      <!-- Seção Superior Esquerda -->
+      <section class="settings-section top-left">
+        <div class="section-header">
+          <div class="input-group">
+            <label>Selecione o dia inicial</label>
+            <input type="number" min="1" max="31" value="03" />
+          </div>
+          <div class="input-group">
+            <label>Dia Final</label>
+            <input type="number" min="1" max="31" value="03" />
+          </div>
+          <div class="input-group">
+            <label>Mês</label>
+            <input type="number" min="1" max="12" value="03" />
+          </div>
+
+          <div class="input-group">
+            <label>API</label>
+            <select>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="btnInserir">Inserir</button>
+        </div>
+        <div class="section-content">
+          <!-- Conteúdo será adicionado aqui -->
+        </div>
+      </section>
+
+      <!-- Seção Superior Direita -->
+      <section class="settings-section top-right">
+        <div class="section-header">
+          <div class="input-group">
+            <label>Ano</label>
+            <input type="number" value="2025" />
+          </div>
+          <div class="input-group">
+            <label>Mês</label>
+            <input type="number" min="1" max="12" value="03" />
+          </div>
+          <button class="btn-secondary">Mudar mês</button>
+        </div>
+        <div class="section-actions">
+          <button class="btn-update">Atualizar Ranking</button>
+        </div>
+      </section>
+
+      <!-- Seção Vendas Motos Novas -->
+      <section class="settings-section middle-section">
+        <h2 class="section-title">Vendas de motos novas que são diferentes</h2>
+        <div class="section-content">
+          <!-- Conteúdo será adicionado aqui -->
+        </div>
+      </section>
+
+      <!-- Seção Vendas Motos Seminovas -->
+      <section class="settings-section bottom-section">
+        <h2 class="section-title">
+          Vendas de motos seminovas que são diferentes
+        </h2>
+        <div class="section-content">
+          <!-- Conteúdo será adicionado aqui -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast de Sucesso -->
+    <div id="toastSuccess" class="toast-message">
+      <i class="fa-solid fa-check-circle"></i>
+      <span>Dados inseridos com sucesso</span>
+    </div>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/overlay.js"></script>
+    <script src="/js/btnInserir.js"></script>
+  </body>
+</html>

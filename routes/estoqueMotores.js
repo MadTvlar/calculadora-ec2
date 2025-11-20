@@ -34,7 +34,7 @@ FabricacaoFinal=9999`;
     idrelatorioconfiguracaoleiaute: 47,
     idrelatoriousuarioleiaute: 1058,
     ididioma: 1,
-    listaempresas: [6, 7],
+    listaempresas: [17, 6, 7],
     filtros: filtros
   }, {
     headers: {

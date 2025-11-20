@@ -5,6 +5,8 @@
   padding: 20px;
   overflow-x: auto;
   margin-bottom: 2%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .dashboard-table {
@@ -44,39 +46,6 @@ html {
 }
 
 /* Responsivo para telas pequenas */
-@media (max-width: 768px) {
-  .top-container {
-    flex-direction: column;
-    padding: 20px;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .logo-container,
-  .filial-container {
-    position: static;
-    margin: 0 auto;
-  }
-
-  .dashboard-container {
-    padding: 10px;
-  }
-
-  .dashboard-table table {
-    font-size: 0.85rem;
-  }
-
-  #user-button {
-    width: 100px;
-    font-size: 0.8rem;
-    padding: 6px 12px;
-  }
-
-  .dropdown-content {
-    left: 0;
-    right: auto;
-  }
-}
 
 .resumo-totais {
   display: flex;
@@ -85,6 +54,8 @@ html {
   flex-wrap: wrap;
   width: 100%;
   max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card-total {
@@ -162,7 +133,6 @@ html {
   color: #000;
 }
 
-
 .top-container,
 .resumo-totais,
 .dashboard-container,
@@ -170,7 +140,6 @@ html {
   outline: none !important;
   caret-color: transparent;
 }
-
 
 .coin {
   position: absolute;
@@ -185,11 +154,9 @@ html {
   /* COMEÇA DEBAIXO DO CARD */
 }
 
-
 .card-verde:hover .coin {
   display: block;
 }
-
 
 @keyframes rise {
   0% {
@@ -203,7 +170,6 @@ html {
     opacity: 0;
   }
 }
-
 
 @keyframes bounce {
   0% {

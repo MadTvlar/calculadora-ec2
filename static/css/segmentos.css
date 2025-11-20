@@ -1,28 +1,24 @@
-.container {
-  box-sizing: border-box;
+.segmentos {
   display: flex;
-  gap: 150px;
-  justify-content: center;
+}
+
+.container {
+  display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* valor padrão */
   width: 100%;
-  max-width: 1200px;
+  margin-top: 5%;
+  padding: 10px 0 100px 0;
 }
 
 .card {
-  margin-top: 15%;
-  background-color: #e0e0e0;
-  width: 180px;
-  height: 230px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 350px;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   animation: fadeInForm 0.8s ease-out;
-  padding: 20px;
-  cursor: pointer;
 }
 
 .card:hover {
@@ -31,11 +27,10 @@
 }
 
 .card img {
-  width: 180%;
+  width: 100%;
   height: auto;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  object-fit: contain;
+  display: block;
+  border-radius: 8px; /* opcional */
 }
 
 @keyframes fadeInForm {
@@ -47,5 +42,26 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+//te de notebook medio
+@media (max-width: 1440px) {
+  /* Container centralizado e largo */
+  .container {
+    max-width: 1800px; /* ocupa quase toda a tela */
+    gap: 60px; /* mais espaço entre os cards */
+    margin-top: 5%;
+    margin-left: 3%;
+  }
+
+  /* Cards maiores */
+  .card {
+    width: 350px !important;
+  }
+  //TESTE2
+  /* Footer maior */
+  .footer {
+    padding: 40px;
+    font-size: 20px;
   }
 }
