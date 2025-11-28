@@ -54,11 +54,11 @@
         <div class="section-header">
           <div class="input-group">
             <label>Selecione o dia inicial</label>
-            <input type="date" />
+            <input type="date" id="dataInicial" />
           </div>
           <div class="input-group">
             <label>Dia Final</label>
-            <input type="date" />
+            <input type="date" id="dataFinal" />
           </div>
 
           <div class="input-group">
@@ -74,7 +74,17 @@
           <button class="btn-primary" id="btnInserir">Inserir</button>
         </div>
         <div class="section-content">
-          <!-- Conteúdo será adicionado aqui -->
+          <h3>Logs da API:</h3>
+          <pre
+            id="logArea"
+            style="
+              background: #111;
+              color: #0f0;
+              padding: 10px;
+              height: 300px;
+              overflow-y: auto;
+            "
+          ></pre>
         </div>
       </section>
 
@@ -124,10 +134,64 @@
       <span>Dados inseridos com sucesso</span>
     </div>
     <div id="apiFullData" data-json="<%- JSON.stringify(apiFull) %>"></div>
+    <script>
+      document
+        .getElementById("btnInserir")
+        .addEventListener("click", async () => {
+          const api = document.getElementById("selectApi").value;
+          const dataInicial = document.getElementById("dataInicial").value;
+          const dataFinal = document.getElementById("dataFinal").value;
 
-    <script src="/js/settings.js"></script>
+          if (!api) {
+            alert("Selecione a API");
+            return;
+          }
+
+          document.getElementById("logArea").innerText = "Iniciando...";
+
+          const response = await fetch("/run-api-stream", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: api, dataInicial, dataFinal }),
+          });
+
+          if (!response.ok) {
+            alert("Erro ao iniciar stream");
+            return;
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+
+          function lerStream() {
+            reader.read().then(({ done, value }) => {
+              if (done) return;
+
+              const texto = decoder.decode(value, { stream: true });
+
+              texto.split("\n").forEach((linha) => {
+                if (linha.startsWith("data: ")) {
+                  const msg = linha.replace("data: ", "").trim();
+
+                  const logArea = document.getElementById("logArea");
+                  logArea.innerText += "\n" + msg;
+                  logArea.scrollTop = logArea.scrollHeight;
+
+                  if (msg === "FINALIZADO") {
+                    console.log("Stream finalizada.");
+                  }
+                }
+              });
+
+              lerStream();
+            });
+          }
+
+          lerStream();
+        });
+    </script>
     <script src="/js/sidebar.js"></script>
     <script src="/js/overlay.js"></script>
-    <script src="/js/btnInserir.js"></script>
+    <!-- <script src="/js/btnInserir.js"></script> -->
   </body>
 </html>

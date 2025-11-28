@@ -4,7 +4,6 @@ const axios = require('axios');
 require('dotenv').config();
 
 async function fetchEstoqueMotores(pool) {
-
   console.log('\nLimpando estoque_motores.');
   await pool.query('TRUNCATE TABLE microwork.estoque_motores');
 

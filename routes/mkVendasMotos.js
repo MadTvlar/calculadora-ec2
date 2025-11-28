@@ -5,8 +5,8 @@ require('dotenv').config();
 
 
 
-async function fetchMkVendasMotos(pool, dataInicial, dataFinal) {
-  console.log('Iniciando a consulta API de para a tabela microwork.vendas_motos');
+async function fetchMkVendasMotos(pool, dataInicial, dataFinal, sendLog) {
+  sendLog('Iniciando a consulta API de para a tabela microwork.vendas_motos');
 
   const filtros = `DesconsiderarEstornadoDevolvido=False;
         SemAutorizacaoExpedicao=True;
@@ -128,9 +128,9 @@ async function fetchMkVendasMotos(pool, dataInicial, dataFinal) {
 
     try {
       await pool.query(query, values);
-      console.log(`Chassi ${moto.chassi} com data ${dataMovimentacaoFormatada} inserido/atualizado com sucesso.`);
+      sendLog(`Chassi ${moto.chassi} com data ${dataMovimentacaoFormatada} inserido/atualizado com sucesso.`);
     } catch (error) {
-      console.error(`Erro ao inserir/atualizar chassi ${moto.chassi} com data ${dataMovimentacaoFormatada}:`, error.message);
+      sendLog(`Erro ao inserir/atualizar chassi ${moto.chassi} com data ${dataMovimentacaoFormatada}:`, error.message);
     }
   }
 }

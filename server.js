@@ -213,21 +213,96 @@ app.post('/settings/save', async (req, res) => {
 
 
 app.post('/run-api', async (req, res) => {
-  const { name } = req.body;
+  const { name,dataInicial, dataFinal } = req.body;
   const pool = require('./services/db');
 
   if (!api_list[name]) {
     return res.status(400).json({ error: 'API não encontrada' });
   }
+  
+    const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
 
-  try {
-    const resultado = await api_list[name](pool);  
+    const [rows] = await pool.query(consulta);  
+    const mesReferente = rows[0].mesReferente; 
+ try {
+    let resultado;
+
+    // Se a função tiver parâmetros de datas, enviamos
+    const fn = api_list[name];
+
+      if (fn.length <= 2 ) {
+        // função com 2 parâmetros
+        resultado = await fn(pool, mesReferente);
+      }
+      else if (fn.length === 3) {
+        // função com 3 parâmetros
+        resultado = await fn(pool, dataInicial, dataFinal);
+      }
+
+
     res.json({ ok: true, resultado });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, error: err.message });
   }
 });
+
+
+app.post('/run-api-stream', async (req, res) => {
+  const { name, dataInicial, dataFinal } = req.body;
+  const pool = require('./services/db');
+
+  if (!api_list[name]) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.write(`data: API não encontrada\n\n`);
+    return res.end();
+  }
+
+  // Cabeçalhos SSE
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const sendLog = (msg) => {
+    res.write(`data: ${msg}\n\n`);
+  };
+
+  try {
+    sendLog(`Iniciando processamento da API: ${name}`);
+    sendLog(`Data Inicial: ${dataInicial}`);
+    sendLog(`Data Final: ${dataFinal}`);
+
+    const fn = api_list[name];
+
+    let resultado;
+
+    // Decide dinamicamente quantos argumentos enviar
+    if (fn.length === 4) {
+      // pool, dataInicial, dataFinal, sendLog
+      resultado = await fn(pool, dataInicial, dataFinal, sendLog);
+    } else if (fn.length === 3) {
+      // pool, dataInicial, sendLog
+      resultado = await fn(pool, dataInicial, sendLog);
+    } else if (fn.length === 2) {
+      // pool, sendLog
+      resultado = await fn(pool, sendLog);
+    } else {
+      // função sem uso de sendLog
+      resultado = await fn(pool);
+    }
+
+    sendLog("FINALIZADO");
+    sendLog(JSON.stringify(resultado));
+
+  } catch (err) {
+    sendLog("ERRO: " + err.message);
+  } finally {
+    res.end();
+  }
+});
+
 
 
 // CHAMADO PARA PAGINA DE CADASTRO DE USUARIOS (APENAS PARA ADMIN)
