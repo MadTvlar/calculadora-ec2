@@ -4,9 +4,9 @@ const axios = require('axios');
 require('dotenv').config();
 
 
-async function fetchMkcaptacaoMotos(pool, dataInicial, dataFinal) {
+async function fetchMkcaptacaoMotos(pool, dataInicial, dataFinal,sendLog) {
 
-  console.log('Iniciando a consulta API de Contratos Motos')
+  sendLog('Iniciando a consulta API de Contratos Motos')
 
   const filtros = `DataInicial=${dataInicial};
         DataFinal=${dataFinal};
@@ -68,9 +68,9 @@ async function fetchMkcaptacaoMotos(pool, dataInicial, dataFinal) {
 
     try {
       await pool.query(query, values);
-      console.log(`Chassi ${moto.chassi} inserido com sucesso.`);
+      sendLog(`Chassi ${moto.chassi} inserido com sucesso.`);
     } catch (error) {
-      console.error(`Erro ao inserir o Chassi ${moto.chassi}:`, error.message);
+      sendLog(`Erro ao inserir o Chassi ${moto.chassi}:`, error.message);
     }
   }
 }

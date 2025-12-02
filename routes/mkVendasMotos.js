@@ -5,7 +5,7 @@ require('dotenv').config();
 
 
 
-async function fetchMkVendasMotos(pool, dataInicial, dataFinal, sendLog) {
+async function fetchMkVendasMotos(pool, sendLog, dataInicial, dataFinal) {
   sendLog('Iniciando a consulta API de para a tabela microwork.vendas_motos');
 
   const filtros = `DesconsiderarEstornadoDevolvido=False;

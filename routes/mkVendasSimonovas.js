@@ -4,9 +4,9 @@ const axios = require('axios');
 require('dotenv').config();
 
 
-async function fetchMkVendasSeminovas(pool, dataInicial, dataFinal) {
+async function fetchMkVendasSeminovas(pool, dataInicial, dataFinal, sendLog) {
 
-  console.log('Iniciando a consulta API de para a tabela microwork.vendas_seminovas')
+  sendLog('Iniciando a consulta API de para a tabela microwork.vendas_seminovas')
 
   const filtros = `DesconsiderarEstornadoDevolvido=False;
         SemAutorizacaoExpedicao=True;
@@ -137,9 +137,9 @@ async function fetchMkVendasSeminovas(pool, dataInicial, dataFinal) {
 
       try {
         await pool.query(query, values);
-        console.log(`Chassi ${moto.chassi} com data ${dataVendaFormatada} inserido com sucesso.`);
+        sendLog(`Chassi ${moto.chassi} com data ${dataVendaFormatada} inserido com sucesso.`);
       } catch (error) {
-        console.error(`Erro ao inserir chassi ${moto.chassi} com data ${dataVendaFormatada}:`, error.message);
+        sendLog(`Erro ao inserir chassi ${moto.chassi} com data ${dataVendaFormatada}:`, error.message);
       }
     }
   }

@@ -274,27 +274,27 @@ app.post('/run-api-stream', async (req, res) => {
     sendLog(`Data Inicial: ${dataInicial}`);
     sendLog(`Data Final: ${dataFinal}`);
 
+    const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
+
+    const [rows] = await pool.query(consulta);  
+    const mesReferente = rows[0].mesReferente; 
+
     const fn = api_list[name];
 
     let resultado;
 
     // Decide dinamicamente quantos argumentos enviar
-    if (fn.length === 4) {
-      // pool, dataInicial, dataFinal, sendLog
-      resultado = await fn(pool, dataInicial, dataFinal, sendLog);
-    } else if (fn.length === 3) {
-      // pool, dataInicial, sendLog
-      resultado = await fn(pool, dataInicial, sendLog);
-    } else if (fn.length === 2) {
-      // pool, sendLog
-      resultado = await fn(pool, sendLog);
-    } else {
-      // função sem uso de sendLog
-      resultado = await fn(pool);
-    }
+      if (fn.length === 4) {
+        // pool, dataInicial, dataFinal, sendLog
+        resultado = await fn(pool, sendLog, dataInicial, dataFinal);
+      } else {
+        // pool, dataInicial, sendLog
+        sendLog(`Referente ao mês: ${mesReferente}`)
+        resultado = await fn(pool, sendLog, mesReferente);
+      }
 
     sendLog("FINALIZADO");
-    sendLog(JSON.stringify(resultado));
+   
 
   } catch (err) {
     sendLog("ERRO: " + err.message);

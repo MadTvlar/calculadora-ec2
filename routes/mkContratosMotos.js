@@ -3,9 +3,9 @@
 const axios = require('axios');
 require('dotenv').config();
 
-async function fetchMkContratosMotos(pool, dataInicial, dataFinal) {
+async function fetchMkContratosMotos(pool, dataInicial, dataFinal, sendLog) {
 
-  console.log('Iniciando a consulta API de Contratos Motos')
+  sendLog('Iniciando a consulta API de Contratos Motos')
 
   const filtros = `Reposicao=True;
         PontoVenda=null;
@@ -89,9 +89,9 @@ async function fetchMkContratosMotos(pool, dataInicial, dataFinal) {
 
     try {
       await pool.query(query, values);
-      console.log(`Contrato ${moto.contrato}, se não existir, inserido com sucesso.`);
+      sendLog(`Contrato ${moto.contrato}, se não existir, inserido com sucesso.`);
     } catch (error) {
-      console.error(`Erro ao inserir Contrato ${moto.contrato}:`, error.message);
+      sendLog(`Erro ao inserir Contrato ${moto.contrato}:`, error.message);
     }
   }
 }

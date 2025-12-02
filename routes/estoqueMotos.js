@@ -3,10 +3,10 @@
 const axios = require('axios');
 require('dotenv').config();
 
-async function fetchEstoqueMotos(pool) {
+async function fetchEstoqueMotos(pool,sendLog) {
 
   await pool.query('TRUNCATE TABLE microwork.estoque_motos');
-  console.log('Tabela estoque_motos limpa com sucesso.');
+  sendLog('Tabela estoque_motos limpa com sucesso.');
 
   const filtros = `ESemProposta=False;
         FabricacaoInicial=0;
@@ -81,7 +81,7 @@ async function fetchEstoqueMotos(pool) {
     ];
 
     await pool.query(query, values);
-    console.log(`Chassi ${moto.chassi} inserido com sucesso.`);
+    sendLog(`Chassi ${moto.chassi} inserido com sucesso.`);
   }
 }
 

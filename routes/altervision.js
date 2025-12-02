@@ -4,7 +4,7 @@ require('dotenv').config();
 const axios = require('axios');
 
 
-async function fetchAltervision(pool, dataInicial, dataFinal) {
+async function fetchAltervision(pool, dataInicial, dataFinal, sendLog) {
   const url = `https://bergasls.painelalter.com/api/v2/count?dateBegin=${dataInicial}&dateEnd=${dataFinal}&eventType=11&groupBy=day`;
 
   try {
@@ -25,13 +25,13 @@ async function fetchAltervision(pool, dataInicial, dataFinal) {
            ON DUPLICATE KEY UPDATE quantidade = VALUES(quantidade)`,
           [dataStr, empresa, quantidade]
         );
-        console.log(`Salvo: ${dataStr} - ${empresa} - ${quantidade}`);
+        sendLog(`Salvo: ${dataStr} - ${empresa} - ${quantidade}`);
       }
     }
 
-    console.log('Processo concluído.');
+    sendLog('Processo concluído.');
   } catch (error) {
-    console.error('Erro ao buscar ou inserir dados:', error);
+    sendLog('Erro ao buscar ou inserir dados:', error);
   }
 }
 

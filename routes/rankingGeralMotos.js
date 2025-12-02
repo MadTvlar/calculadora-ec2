@@ -2,8 +2,7 @@
 
 require('dotenv').config();
 
-async function atualizarRankings(pool, mesReferente) {
-  console.log('Referente ao mês:', mesReferente);
+async function atualizarRankings(pool,sendLog, mesReferente) {
   const representante = new Set([
   'HUDSON SANTOS DE LIMA',
   'KEDMA NASCIMENTO MORAES',
@@ -43,7 +42,7 @@ async function atualizarRankings(pool, mesReferente) {
   'FERNANDO PEREIRA DA SILVA',
 ]);
 
-  console.log('\nLimpando a tabela de ranking_geral');
+  sendLog('\nLimpando a tabela de ranking_geral');
   await pool.query('TRUNCATE TABLE tropa_azul.ranking_geral');
 
   const inserirDados = async (dados, tipo, campoValor, incluirDadosExtras = false) => {
@@ -53,7 +52,8 @@ async function atualizarRankings(pool, mesReferente) {
       const posicao = i + 1;
 
       if (representante.has(vendedor)) continue;
-
+        sendLog(`Trabalhando na pontuação do vendedor ${vendedor}`)
+        
       if (vendedor && valor !== null && valor !== undefined) {
         const empresa = incluirDadosExtras ? dados[i].empresa || null : null;
         const id_microwork = incluirDadosExtras ? dados[i].id_microwork || null : null;
@@ -322,7 +322,7 @@ async function atualizarRankings(pool, mesReferente) {
   await inserirDados(rankContrato, 'contratos', 'totalContratos', true); // inclui empresa como filial
   await inserirDados(rankRetorno, 'retorno', 'quantidadeRetorno', true); // inclui empresa e id_microwork
 
-  console.log('...Tabela de ranking_geral atualizada!');
+  sendLog('Tabela de ranking_geral atualizada!');
 }
 
 module.exports = atualizarRankings;

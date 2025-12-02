@@ -1,8 +1,8 @@
 // Essa rota faz a orgnanização da pontuação do mês selecionado na variavel mesReferente do NPS
 
-async function atualizarNPS(pool, mesReferente) {
+async function atualizarNPS(pool, mesReferente, sendLog) {
 
-  console.log(`Limpando a tabela tropa_azul.nps`)
+  sendLog(`Limpando a tabela tropa_azul.nps`)
   await pool.query(`TRUNCATE TABLE nps`);
 
   const [resultados] = await pool.query(`
@@ -40,7 +40,7 @@ async function atualizarNPS(pool, mesReferente) {
     `, [id_microwork, vendedores, promotoras, neutras, detratoras, nota_oficial]);
   }
 
-  console.log(`tabela tropa_azul.nps atualizado!`)
+  sendLog(`tabela tropa_azul.nps atualizado!`)
 }
 
 module.exports = atualizarNPS;

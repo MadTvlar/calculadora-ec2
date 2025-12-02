@@ -1,12 +1,10 @@
 // Essa rota faz a orgnanização da pontuação dos KPI's em um Ranking por pontos
 
-const fetchrankingPontosMotos = async (pool, mesReferente) => {
+const fetchrankingPontosMotos = async (pool,sendLog, mesReferente) => {
  
-
-  console.log('\nLimpando a tabela de ranking_pontos');
   await pool.query('TRUNCATE TABLE ranking_pontos');
 
-  // console.log('\nBuscando vendas bônus dos dias 29, 30 e 31 de julho VENDAS BONUS EXTRA AQUI');
+  // sendLog('\nBuscando vendas bônus dos dias 29, 30 e 31 de julho VENDAS BONUS EXTRA AQUI');
 
   // const [bonusVendas] = await pool.query(`
   //   SELECT 
@@ -129,8 +127,10 @@ const fetchrankingPontosMotos = async (pool, mesReferente) => {
 
     const idMicrowork = usuario ? usuario.id_microwork : null;
     const filial = usuario ? usuario.filial : null;
-
-    await pool.query(`
+     
+    sendLog(`Trabalhando na pontuação do vendedor ${vendedor.vendedor}`)
+    await pool.query(
+      `
       INSERT INTO ranking_pontos 
         (filial, id_microwork, vendedor, pontos, vendas, llo, captacao, contrato, retorno, NPS, referente_mes)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -159,7 +159,7 @@ const fetchrankingPontosMotos = async (pool, mesReferente) => {
     ]);
   }
 
-  console.log('Tabela de ranking_pontos, atualizado!');
+  sendLog('Tabela de ranking_pontos, atualizado!');
 };
 
 module.exports = fetchrankingPontosMotos;
