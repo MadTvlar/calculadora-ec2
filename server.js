@@ -213,7 +213,7 @@ app.post('/settings/save', async (req, res) => {
 
 
 app.post('/run-api', async (req, res) => {
-  const { name,dataInicial, dataFinal } = req.body;
+  const { name, dataInicial, dataFinal } = req.body;
   const pool = require('./services/db');
 
   if (!api_list[name]) {
@@ -271,8 +271,6 @@ app.post('/run-api-stream', async (req, res) => {
 
   try {
     sendLog(`Iniciando processamento da API: ${name}`);
-    sendLog(`Data Inicial: ${dataInicial}`);
-    sendLog(`Data Final: ${dataFinal}`);
 
     const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
 
@@ -286,6 +284,7 @@ app.post('/run-api-stream', async (req, res) => {
     // Decide dinamicamente quantos argumentos enviar
       if (fn.length === 4) {
         // pool, dataInicial, dataFinal, sendLog
+        sendLog(`Data Inical: ${dataInicial}  Data Final: ${dataFinal}`)
         resultado = await fn(pool, sendLog, dataInicial, dataFinal);
       } else {
         // pool, dataInicial, sendLog
