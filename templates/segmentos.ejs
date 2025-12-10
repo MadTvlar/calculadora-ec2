@@ -60,8 +60,8 @@
         <img src="/images/card_nautica.png" alt="Nautica" class="card-image">
       </div>
       
-      <div class="card" id="config">
-        <img src="/images/card_config.png" alt="Config" class="card-image">
+      <div class="card" id="settings">
+        <img src="/images/card_config.png" alt="Settings" class="card-image">
       </div>
     </div>
   </div>
@@ -82,7 +82,11 @@
     document.getElementById('nautica').addEventListener('click', () => {
       window.location.href = '/nautica';
     });
-  </script>
+
+    document.getElementById('settings').addEventListener('click',() =>{
+     window.location.href = '/settings'
+    })
+    </script>
 </body>
 
 </html>

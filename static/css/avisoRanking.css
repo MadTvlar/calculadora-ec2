@@ -1,0 +1,45 @@
+.aviso-desativacao {
+  background: #f8e9c4;
+  border: 2px solid #c89d36;
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 900px;
+  text-align: center;
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+  font-family: Arial, sans-serif;
+}
+
+.aviso-desativacao h2 {
+  color: #8a6a00;
+  margin-bottom: 12px;
+  font-size: 28px;
+}
+
+.aviso-desativacao p {
+  font-size: 19px;
+  color: #4a3a00;
+  line-height: 1.6;
+}
+
+.botao-pontuacao {
+  background: #0057d9;
+  color: #fff;
+  padding: 14px 26px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+  margin-left: 0 auto;
+  margin-right: 0 auto;
+}
+
+.botao-pontuacao:hover {
+  background: #003fa6;
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}

@@ -1,10 +1,9 @@
 // Essa rota faz a orgnanização da pontuação por KPI's do mês selecionado na variavel mesReferente do NPS
 
 require('dotenv').config();
-// Altere aqui o mês que você deseja consultar (formato 'YYYY-MM') mudar mes do rank
-const referenteMes = '2025-11';
 
-const representante = new Set([
+async function atualizarRankings(pool,sendLog, mesReferente) {
+  const representante = new Set([
   'HUDSON SANTOS DE LIMA',
   'KEDMA NASCIMENTO MORAES',
   'JANDERSON MOCAMBIQUE DE SOUZA',
@@ -41,14 +40,9 @@ const representante = new Set([
   'SHAYANNE CUNHA DA SILVA',
   'GLEBER DE SOUZA MORAES JÚNIOR',
   'FERNANDO PEREIRA DA SILVA',
-
 ]);
 
-
-async function atualizarRankings(pool) {
-  console.log('Referente ao mês:', referenteMes);
-
-  console.log('\nLimpando a tabela de ranking_geral');
+  sendLog('\nLimpando a tabela de ranking_geral');
   await pool.query('TRUNCATE TABLE tropa_azul.ranking_geral');
 
   const inserirDados = async (dados, tipo, campoValor, incluirDadosExtras = false) => {
@@ -58,14 +52,15 @@ async function atualizarRankings(pool) {
       const posicao = i + 1;
 
       if (representante.has(vendedor)) continue;
-
+        sendLog(`Trabalhando na pontuação do vendedor ${vendedor}`)
+        
       if (vendedor && valor !== null && valor !== undefined) {
         const empresa = incluirDadosExtras ? dados[i].empresa || null : null;
         const id_microwork = incluirDadosExtras ? dados[i].id_microwork || null : null;
 
         await pool.query(
           'INSERT INTO ranking_geral (tipo, filial, id_microwork, vendedor, valor, posicao, referente_mes) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [tipo, empresa, id_microwork, vendedor, valor, posicao, referenteMes]
+          [tipo, empresa, id_microwork, vendedor, valor, posicao, mesReferente]
         );
       }
     }
@@ -110,7 +105,7 @@ async function atualizarRankings(pool) {
   ) AS uniao
   GROUP BY id_microwork, vendedor
   ORDER BY total_vendas DESC;
-`, [referenteMes, referenteMes]);
+`, [mesReferente, mesReferente]);
 
 
   const [rankLLO] = await pool.query(`
@@ -154,7 +149,7 @@ async function atualizarRankings(pool) {
   ) AS uniao
   GROUP BY id_microwork, vendedor
   ORDER BY percentual_lucro DESC;
-`, [referenteMes, referenteMes]);
+`, [mesReferente, mesReferente]);
 
 
   const [rankCaptacao] = await pool.query(`
@@ -173,7 +168,7 @@ async function atualizarRankings(pool) {
     AND DATE_FORMAT(data_conclusao, '%Y-%m') = ?
   GROUP BY id_microwork, vendedor
   ORDER BY totalCaptado DESC;
-`, [referenteMes]);
+`, [mesReferente]);
 
 
   const [rankContrato] = await pool.query(`
@@ -192,7 +187,7 @@ async function atualizarRankings(pool) {
   WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor
   ORDER BY totalContratos DESC;
-`, [referenteMes]);
+`, [mesReferente]);
 
 
   const [rankRetorno] = await pool.query(`
@@ -239,7 +234,7 @@ async function atualizarRankings(pool) {
     AND DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor
   ORDER BY quantidadeRetorno DESC;
-`, [referenteMes]);
+`, [mesReferente]);
 
 
   const [retornoDetalhado] = await pool.query(`
@@ -295,7 +290,7 @@ async function atualizarRankings(pool) {
   FROM vendas
   WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
   GROUP BY id_microwork, empresa, vendedor;
-`, [referenteMes]);
+`, [mesReferente]);
 
 
 
@@ -306,14 +301,14 @@ async function atualizarRankings(pool) {
       if (r2 > 0) {
         await pool.query(
           'INSERT INTO ranking_geral (tipo, filial, id_microwork, vendedor, valor, referente_mes) VALUES (?, ?, ?, ?, ?, ?)',
-          ['r2', empresa || null, id_microwork || null, vendedor, r2, referenteMes]
+          ['r2', empresa || null, id_microwork || null, vendedor, r2, mesReferente]
         );
       }
 
       if (r4 > 0) {
         await pool.query(
           'INSERT INTO ranking_geral (tipo, filial, id_microwork, vendedor, valor, referente_mes) VALUES (?, ?, ?, ?, ?, ?)',
-          ['r4', empresa || null, id_microwork || null, vendedor, r4, referenteMes]
+          ['r4', empresa || null, id_microwork || null, vendedor, r4, mesReferente]
         );
       }
     }
@@ -327,7 +322,7 @@ async function atualizarRankings(pool) {
   await inserirDados(rankContrato, 'contratos', 'totalContratos', true); // inclui empresa como filial
   await inserirDados(rankRetorno, 'retorno', 'quantidadeRetorno', true); // inclui empresa e id_microwork
 
-  console.log('...Tabela de ranking_geral atualizada!');
+  sendLog('Tabela de ranking_geral atualizada!');
 }
 
 module.exports = atualizarRankings;
