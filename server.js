@@ -191,6 +191,23 @@ app.get('/settings', async (req, res) => {
   }
 });
 
+app.get('/aviso', (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+
+  console.log(req.cookies)
+
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+    res.render('avisoRanking', {
+    usuario: usuarioLogado,
+    grupo: grupoLogado,
+
+  });
+
+});
 
 
 app.post('/settings/save', async (req, res) => {
@@ -457,6 +474,7 @@ app.get('/minhasvendas', async (req, res) => {
     return res.redirect('/');
   }
 
+
   const queryVendas = `
     SELECT * FROM (
       SELECT 
@@ -491,25 +509,32 @@ app.get('/minhasvendas', async (req, res) => {
   `;
 
   const queryPontos = `
-    SELECT pontos
+    SELECT *
     FROM ranking_pontos
     WHERE id_microwork = ?
   `;
-
+    
   try {
     const [vendas] = await connection.query(queryVendas, [
       idLogado, referenteMes, idLogado, referenteMes
     ]);
 
-    const [pontosResult] = await connection.query(queryPontos, [idLogado]);
-    const pontos = pontosResult.length > 0 ? pontosResult[0].pontos : 0;
+    const [result] = await connection.query(queryPontos, [idLogado]);
+
+    
+    const { pontos, NPS, captacao, contrato, retorno } = result[0];
+    
 
     res.render('minhasvendas', {
       usuario: usuarioLogado,
       grupo: grupoLogado,
       id: idLogado,
       vendas,
-      pontos
+      pontos,
+      NPS, 
+      captacao, 
+      contrato, 
+      retorno
     });
   } catch (err) {
     console.error('Erro ao buscar dados:', err);

@@ -1,235 +1,219 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ranking de Vendas - Tropa Azul</title>
+    <link rel="stylesheet" href="/css/rankvendasmotos.css" />
+    <link rel="stylesheet" href="/css/default.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sideBar.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ranking de Vendas - Tropa Azul</title>
-  <link rel="stylesheet" href="/css/rankvendasmotos.css" />
-  <link rel="stylesheet" href="/css/default.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <link rel="stylesheet" href="/css/header.css">
-  <link rel="stylesheet" href="/css/sideBar.css">
-
-
-</head>
-
-<body>
-  <header class="header"> <div class="userName" id="user"><span><%= usuario %></span></div></header>
+  <body>
+    <header class="header">
+      <div class="userName" id="user"><span><%= usuario %></span></div>
+    </header>
     <nav id="sidebar" class="fechado">
       <div class="logoContainer">
         <a href="/segmentos" class="logoLink">
-        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
-         </a>
-       <img src="/images/tropa_azul_icon.png" alt="TVLAR MOTOS" class="logoIcon" id="toggleIcon">
+          <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo" />
+        </a>
+        <img
+          src="/images/tropa_azul_icon.png"
+          alt="TVLAR MOTOS"
+          class="logoIcon"
+          id="toggleIcon"
+        />
       </div>
-        
+
       <div class="listMedium">
-        <a href="/motos"><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a>
+        <a href="/motos"
+          ><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a
+        >
       </div>
-      
-         <div class="btLogout">
-          <button class="btFechar">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <a href="/logout" class="item-description">
-              <span>Sair</span>
-            </a>
-          </button>
-        </div>
-  </nav>
-  <div id="overlay"></div>
 
-   <!-- PODIO, DESCOMENTAR PARA APARECER  -->
+      <div class="btLogout">
+        <button class="btFechar">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <a href="/logout" class="item-description">
+            <span>Sair</span>
+          </a>
+        </button>
+      </div>
+    </nav>
+    <div id="overlay"></div>
 
+    <!-- PODIO, DESCOMENTAR PARA APARECER  -->
 
-  <!-- <div class="podio-title">
+    <!-- <div class="podio-title">
     <h2>
       RANKING - AGOSTO DE 2025
     </h2>
   </div> -->
     <h2 class="title-podium">Melhores do mês de setembro</h2>
-  <div class="podio-container">
-    <img src="/images/2_colocado.png" alt="2º Colocado" class="podio-img" />
-    <img src="/images/1_colocado.png" alt="1º Colocado" class="podio-img" />
-    <img src="/images/3_colocado.png" alt="3º Colocado" class="podio-img" />
-  </div>
+    <div class="podio-container">
+      <img src="/images/2_colocado.png" alt="2º Colocado" class="podio-img" />
+      <img src="/images/1_colocado.png" alt="1º Colocado" class="podio-img" />
+      <img src="/images/3_colocado.png" alt="3º Colocado" class="podio-img" />
+    </div>
 
-  <div class="podio-podium">
-    <div class="podium-block second">2</div>
-    <div class="podium-block first">1</div>
-    <div class="podium-block third">3</div>
-  </div> 
+    <div class="podio-podium">
+      <div class="podium-block second">2</div>
+      <div class="podium-block first">1</div>
+      <div class="podium-block third">3</div>
+    </div>
 
-  
-  <div class="card">
-    <div class="rank-title">
-      <!-- Titulo do ranking, ajustar e tirar do comentário automatico -->
-      <h2>
-        RANKING GERAL - OUT DE 2025 <!-- <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
+    <div class="card">
+      <div class="rank-title">
+        <!-- Titulo do ranking, ajustar e tirar do comentário automatico -->
+        <h2>
+          RANKING GERAL - OUT DE 2025
+          <!-- <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
           <%= anoAtual %> -->
-      </h2>
-      <p class="data-atualizacao">
-        Atualizado em:
-        <%= (()=> {
-          const d = new Date(ultimaAtualizacao);
-          const dia = String(d.getDate()).padStart(2, '0');
-          const mes = String(d.getMonth() + 1).padStart(2, '0');
-          const ano = d.getFullYear();
-          const hora = String(d.getHours()).padStart(2, '0');
-          const min = String(d.getMinutes()).padStart(2, '0');
-          return `${dia}/${mes}/${ano} às ${hora}h${min}`;
-          })() %>
-      </p>
-    </div> 
+        </h2>
+        <p class="data-atualizacao">
+          Atualizado em: <%= (()=> { const d = new Date(ultimaAtualizacao);
+          const dia = String(d.getDate()).padStart(2, '0'); const mes =
+          String(d.getMonth() + 1).padStart(2, '0'); const ano =
+          d.getFullYear(); const hora = String(d.getHours()).padStart(2, '0');
+          const min = String(d.getMinutes()).padStart(2, '0'); return
+          `${dia}/${mes}/${ano} às ${hora}h${min}`; })() %>
+        </p>
+      </div>
 
-    <div class="table-container">
-      <table class="rank-table">
-        <thead>
-          <tr>
-            <th>Posição</th>
-            <th>Filial</th>
-            <th>Vendedor</th>
-            <!-- <th>Bônus (29 a 31 jul)</th> -->  <!--esse é o titulo-->
-            <th>Pontos</th>
-            <th>Vendas</th>
-            <th>LLO (%)</th>
-            <th>Captação</th>
-            <th>Contratos</th>
-            <th>Retorno</th>
-            <th>NPS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% rankingGeral.forEach((v, i)=> { %>
+      <div class="table-container">
+        <table class="rank-table">
+          <thead>
+            <tr>
+              <th>Posição</th>
+              <th>Filial</th>
+              <th>Vendedor</th>
+              <!-- <th>Bônus (29 a 31 jul)</th> -->
+              <!--esse é o titulo-->
+              <th>Pontos</th>
+              <th>Vendas</th>
+              <th>LLO (%)</th>
+              <th>Captação</th>
+              <th>Contratos</th>
+              <th>Retorno</th>
+              <th>NPS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% rankingGeral.forEach((v, i)=> { %>
             <tr>
               <td class="rank-item">
-                <% if (v.val_pontos> 0) { %>
-                  <% if (i===0) { %>
-                    <i class="fas fa-crown gold"></i>
-                    <% } else if (i===1) { %>
-                      <i class="fas fa-crown silver"></i>
-                      <% } else if (i===2) { %>
-                        <i class="fas fa-crown bronze"></i>
-                        <% } else { %>
-                          <%= i + 1 %>º
-                            <% } %>
-                              <% } else { %>
-                                -
-                                <% } %>
+                <% if (v.val_pontos> 0) { %> <% if (i===0) { %>
+                <i class="fas fa-crown gold"></i>
+                <% } else if (i===1) { %>
+                <i class="fas fa-crown silver"></i>
+                <% } else if (i===2) { %>
+                <i class="fas fa-crown bronze"></i>
+                <% } else { %> <%= i + 1 %>º <% } %> <% } else { %> - <% } %>
               </td>
-              <td>
-                <%= v.filial %>
-              </td>
-              <td>
-                <%= v.vendedor %>
-              </td>
+              <td><%= v.filial %></td>
+              <td><%= v.vendedor %></td>
               <!-- calculo do bonus abaixo -->
               <!-- <td>
                  <%= v.pontos_extras ? '+' + v.pontos_extras : '-' %> 
               </td> -->
-              <td>
-                <%= v.val_pontos ? Math.floor(v.val_pontos) : '-' %>
-              </td>
-              <td>
-                <%= v.val_vendas ? Math.floor(v.val_vendas) : '-' %>
-              </td>
-              <td>
-                <%= v.val_lucro || '-' %>%
-              </td>
-              <td>
-                <%= v.val_captacao ? Math.floor(v.val_captacao) : '-' %>
-              </td>
+              <td><%= v.val_pontos ? Math.floor(v.val_pontos) : '-' %></td>
+              <td><%= v.val_vendas ? Math.floor(v.val_vendas) : '-' %></td>
+              <td><%= v.val_lucro || '-' %>%</td>
+              <td><%= v.val_captacao ? Math.floor(v.val_captacao) : '-' %></td>
               <td>
                 <%= v.val_contratos ? Math.floor(v.val_contratos) : '-' %>
               </td>
-              <td>
-                <%= v.val_retorno ? Math.floor(v.val_retorno) : '-' %>
-              </td>
-              <td>
-                <%= v.nota_oficial ? Math.floor(v.nota_oficial) : '-' %>
-              </td>
+              <td><%= v.val_retorno ? Math.floor(v.val_retorno) : '-' %></td>
+              <td><%= v.nota_oficial ? Math.floor(v.nota_oficial) : '-' %></td>
             </tr>
             <% }) %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
 
-  <script>
-    // Adiciona o índice para cada linha da tabela
-    document.querySelectorAll('.rank-table tbody tr').forEach((row, index) => {
-      row.style.setProperty('--row-index', index);
-    });
+    <script>
+      // Adiciona o índice para cada linha da tabela
+      document
+        .querySelectorAll(".rank-table tbody tr")
+        .forEach((row, index) => {
+          row.style.setProperty("--row-index", index);
+        });
 
-    // Animação das bordas do pódio
-    window.addEventListener('DOMContentLoaded', function () {
-      setTimeout(function () {
-        document.querySelector('.podio-item.third')?.classList.add('ativo');
-      }, 700);
-      setTimeout(function () {
-        document.querySelector('.podio-item.second')?.classList.add('ativo');
-      }, 1300);
-      setTimeout(function () {
-        document.querySelector('.podio-item.first')?.classList.add('ativo');
-      }, 1900);
-    });
-  </script>
-
-  <footer class="footer">
-    <p>Copyright &copy; 2025 Departamento de T.I | Todos os direitos reservados.</p>
-  </footer>
-
-  <script src="/js/default.js"></script>
-
-
-
-  <!-- CONFETE PODIO, DESCOMENTA MALDITO -->
-
-
-  
-  <script>
-    function confeteCantos() {
-      // Lado esquerdo (aponta para o centro)
-      confetti({
-        angle: 60, // Diagonal para o centro
-        spread: 130, // Aumenta o alcance lateral
-        startVelocity: 100, // Mais força para subir
-        particleCount: 180, // Mais partículas
-        origin: { x: 0, y: 1 }
+      // Animação das bordas do pódio
+      window.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.querySelector(".podio-item.third")?.classList.add("ativo");
+        }, 700);
+        setTimeout(function () {
+          document.querySelector(".podio-item.second")?.classList.add("ativo");
+        }, 1300);
+        setTimeout(function () {
+          document.querySelector(".podio-item.first")?.classList.add("ativo");
+        }, 1900);
       });
-      // Lado direito (aponta para o centro)
-      confetti({
-        angle: 120, // Diagonal para o centro
-        spread: 130,
-        startVelocity: 100,
-        particleCount: 180,
-        origin: { x: 1, y: 1 }
-      });
-    }
+    </script>
 
-    setTimeout(confeteCantos, 2900);
-    setTimeout(confeteCantos, 3500);
-    setTimeout(confeteCantos, 4400);
-  </script>
-  <!-- MODAL DE AVISO -->
-<div id="modalAviso" class="modal-overlay">
-  <div class="modal-box">
-    <h2>⚠️ Aviso Importante</h2>
-    <p>
-      Em breve o Ranking de Vendedores será temporariamente desativado.<br>
-      Estamos realizando a preparação para anunciar o <strong>Vendedor do Ano</strong>, 
-      por isso o ranking mensal ficará indisponível nos próximos dias.<br><br>
-      Agradecemos pela compreensão!
-    </p>
+    <footer class="footer">
+      <p>
+        Copyright &copy; 2025 Departamento de T.I | Todos os direitos
+        reservados.
+      </p>
+    </footer>
 
-    <button id="modalFechar">Entendi</button>
-  </div>
-</div>
+    <script src="/js/default.js"></script>
 
-<script src="/js/alerta.js"></script>
-<script src="/js/sidebar.js"></script>
-<script src="/js/overlay.js"></script>
-</body>
+    <!-- CONFETE PODIO, DESCOMENTA MALDITO -->
 
+    <script>
+      function confeteCantos() {
+        // Lado esquerdo (aponta para o centro)
+        confetti({
+          angle: 60, // Diagonal para o centro
+          spread: 130, // Aumenta o alcance lateral
+          startVelocity: 100, // Mais força para subir
+          particleCount: 180, // Mais partículas
+          origin: { x: 0, y: 1 },
+        });
+        // Lado direito (aponta para o centro)
+        confetti({
+          angle: 120, // Diagonal para o centro
+          spread: 130,
+          startVelocity: 100,
+          particleCount: 180,
+          origin: { x: 1, y: 1 },
+        });
+      }
+
+      setTimeout(confeteCantos, 2900);
+      setTimeout(confeteCantos, 3500);
+      setTimeout(confeteCantos, 4400);
+    </script>
+    <!-- MODAL DE AVISO -->
+    <div id="modalAviso" class="modal-overlay">
+      <div class="modal-box">
+        <h2>⚠️ Aviso Importante</h2>
+        <p>
+          Em breve o Ranking de Vendedores será temporariamente desativado.<br />
+          Estamos realizando a preparação para anunciar o
+          <strong>Vendedor do Ano</strong>, por isso o ranking mensal ficará
+          indisponível até segunda ordem.<br /><br />
+          Agradecemos pela compreensão!
+        </p>
+
+        <button id="modalFechar">Entendi</button>
+      </div>
+    </div>
+
+    <script src="/js/alerta.js"></script>
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/overlay.js"></script>
+  </body>
 </html>
