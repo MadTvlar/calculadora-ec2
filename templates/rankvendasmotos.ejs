@@ -78,13 +78,17 @@
           <%= anoAtual %> -->
         </h2>
         <p class="data-atualizacao">
-          Atualizado em: <%= (()=> { const d = new Date(ultimaAtualizacao);
-          const dia = String(d.getDate()).padStart(2, '0'); const mes =
-          String(d.getMonth() + 1).padStart(2, '0'); const ano =
-          d.getFullYear(); const hora = String(d.getHours()).padStart(2, '0');
-          const min = String(d.getMinutes()).padStart(2, '0'); return
-          `${dia}/${mes}/${ano} às ${hora}h${min}`; })() %>
-        </p>
+              Atualizado em:
+              <%= (() => { 
+                    const d = new Date(ultimaAtualizacao);
+                    const dia = String(d.getDate()).padStart(2, '0'); 
+                    const mes = String(d.getMonth() + 1).padStart(2, '0');
+                    const ano = d.getFullYear(); 
+                    const hora = String(d.getHours()).padStart(2, '0');
+                    const min = String(d.getMinutes()).padStart(2, '0');
+                    return ${dia}/${mes}/${ano} às ${hora}h${min};
+              })() %>
+            </p>
       </div>
 
       <div class="table-container">

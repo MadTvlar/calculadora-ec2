@@ -474,7 +474,7 @@ app.get('/minhasvendas', async (req, res) => {
     return res.redirect('/');
   }
 
-
+const referenteMes = new Date().toISOString().slice(0, 7);
   const queryVendas = `
     SELECT * FROM (
       SELECT 
@@ -607,7 +607,10 @@ app.get('/rankmotos', async (req, res) => {
       SELECT MAX(atualizado_em) AS ultimaAtualizacao FROM ranking_pontos
     `);
 
-    const ultimaAtualizacao = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
+    const ultimaAtualizacaoRaw = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
+    const ultimaAtualizacao = ultimaAtualizacaoRaw ? new Date(ultimaAtualizacaoRaw) : new Date();
+
+    console.log("ultimaAtualizacao:", ultimaAtualizacao);
 
     const meses = [
       'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
