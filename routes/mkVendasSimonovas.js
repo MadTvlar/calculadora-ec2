@@ -4,7 +4,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 
-async function fetchMkVendasSeminovas(pool, dataInicial, dataFinal, sendLog) {
+async function fetchMkVendasSeminovas(pool, sendLog, dataInicial, dataFinal) {
 
   sendLog('Iniciando a consulta API de para a tabela microwork.vendas_seminovas')
 

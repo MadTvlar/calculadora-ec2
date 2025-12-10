@@ -4,7 +4,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 
-async function fetchMkcaptacaoMotos(pool, dataInicial, dataFinal,sendLog) {
+async function fetchMkcaptacaoMotos(pool,sendLog, dataInicial, dataFinal) {
 
   sendLog('Iniciando a consulta API de Contratos Motos')
 
