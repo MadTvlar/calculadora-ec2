@@ -2,19 +2,11 @@
 
 require('dotenv').config();
 const axios = require('axios');
-const connection = require('../services/db');
 
-const now = new Date();
-const year = now.getFullYear();
-const month = String(now.getMonth() + 1).padStart(2, '0');
-const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
 
-const dataInicial = `${year}-${month}-01`;
-const dataFinal = `${year}-${month}-${day}`;
+async function fetchAltervision(pool, dataInicial, dataFinal, sendLog) {
+  const url = `https://bergasls.painelalter.com/api/v2/count?dateBegin=${dataInicial}&dateEnd=${dataFinal}&eventType=11&groupBy=day`;
 
-const url = `https://bergasls.painelalter.com/api/v2/count?dateBegin=${dataInicial}&dateEnd=${dataFinal}&eventType=11&groupBy=day`;
-
-async function fetchAltervision() {
   try {
     const response = await axios.get(url, {
       auth: {
@@ -27,19 +19,19 @@ async function fetchAltervision() {
 
     for (const [dataStr, empresas] of Object.entries(data)) {
       for (const [empresa, quantidade] of Object.entries(empresas)) {
-        await connection.query(
+        await pool.query(
           `INSERT INTO altervision.altervision (data, empresa, quantidade)
            VALUES (?, ?, ?)
            ON DUPLICATE KEY UPDATE quantidade = VALUES(quantidade)`,
           [dataStr, empresa, quantidade]
         );
-        console.log(`Salvo: ${dataStr} - ${empresa} - ${quantidade}`);
+        sendLog(`Salvo: ${dataStr} - ${empresa} - ${quantidade}`);
       }
     }
 
-    console.log('Processo concluído.');
+    sendLog('Processo concluído.');
   } catch (error) {
-    console.error('Erro ao buscar ou inserir dados:', error);
+    sendLog('Erro ao buscar ou inserir dados:', error);
   }
 }
 

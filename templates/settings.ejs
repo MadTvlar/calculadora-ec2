@@ -54,46 +54,59 @@
         <div class="section-header">
           <div class="input-group">
             <label>Selecione o dia inicial</label>
-            <input type="number" min="1" max="31" value="03" />
+            <input type="date" id="dataInicial" />
           </div>
           <div class="input-group">
             <label>Dia Final</label>
-            <input type="number" min="1" max="31" value="03" />
-          </div>
-          <div class="input-group">
-            <label>Mês</label>
-            <input type="number" min="1" max="12" value="03" />
+            <input type="date" id="dataFinal" />
           </div>
 
           <div class="input-group">
             <label>API</label>
-            <select>
+            <select id="selectApi">
               <option value="">Selecione...</option>
+
+              <% api.forEach(item => { %>
+              <option value="<%= item %>"><%= item %></option>
+              <% }) %>
             </select>
           </div>
-          <button class="btn-primary" id="btnInserir">Inserir</button>
+          <button class="btn-primary" id="btnInserir" type="button">Inserir</button>
         </div>
         <div class="section-content">
-          <!-- Conteúdo será adicionado aqui -->
+          <h3>Logs da API:</h3>
+          <pre
+            id="logArea"
+            style="
+              background: #111;
+              color: #0f0;
+              padding: 10px;
+              height: 300px;
+              overflow-y: auto;
+            "
+          ></pre>
         </div>
       </section>
 
       <!-- Seção Superior Direita -->
       <section class="settings-section top-right">
-        <div class="section-header">
-          <div class="input-group">
-            <label>Ano</label>
-            <input type="number" value="2025" />
+        <form action="/settings/save" method="POST">
+          <div class="section-header">
+            <div class="input-group">
+              <label>Mês e Ano</label>
+              <input
+                type="month"
+                id="mesAno"
+                name="mesAno"
+                value="<%= settings.mesReferente %>"
+              />
+            </div>
+            <button class="btn-secondary">Mudar mês</button>
           </div>
-          <div class="input-group">
-            <label>Mês</label>
-            <input type="number" min="1" max="12" value="03" />
+          <div class="section-actions">
+            <button class="btn-update" type="submit">Atualizar Ranking</button>
           </div>
-          <button class="btn-secondary">Mudar mês</button>
-        </div>
-        <div class="section-actions">
-          <button class="btn-update">Atualizar Ranking</button>
-        </div>
+        </form>
       </section>
 
       <!-- Seção Vendas Motos Novas -->
@@ -120,9 +133,65 @@
       <i class="fa-solid fa-check-circle"></i>
       <span>Dados inseridos com sucesso</span>
     </div>
+    <div id="apiFullData" data-json="<%- JSON.stringify(apiFull) %>"></div>
+    <script>
+      document
+        .getElementById("btnInserir")
+        .addEventListener("click", async () => {
+          const api = document.getElementById("selectApi").value;
+          const dataInicial = document.getElementById("dataInicial").value;
+          const dataFinal = document.getElementById("dataFinal").value;
 
+          if (!api) {
+            alert("Selecione a API");
+            return;
+          }
+
+          document.getElementById("logArea").innerText = "Iniciando...";
+
+          const response = await fetch("/run-api-stream", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: api, dataInicial, dataFinal }),
+          });
+
+          if (!response.ok) {
+            alert("Erro ao iniciar stream");
+            return;
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+
+          function lerStream() {
+            reader.read().then(({ done, value }) => {
+              if (done) return;
+
+              const texto = decoder.decode(value, { stream: true });
+
+              texto.split("\n").forEach((linha) => {
+                if (linha.startsWith("data: ")) {
+                  const msg = linha.replace("data: ", "").trim();
+
+                  const logArea = document.getElementById("logArea");
+                  logArea.innerText += "\n" + msg;
+                  logArea.scrollTop = logArea.scrollHeight;
+
+                  if (msg === "FINALIZADO") {
+                    console.log("Stream finalizada.");
+                  }
+                }
+              });
+
+              lerStream();
+            });
+          }
+
+          lerStream();
+        });
+    </script>
     <script src="/js/sidebar.js"></script>
     <script src="/js/overlay.js"></script>
-    <script src="/js/btnInserir.js"></script>
+    <!-- <script src="/js/btnInserir.js"></script> -->
   </body>
 </html>
