@@ -1,222 +1,236 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/minhasvendas.css" />
+    <link rel="stylesheet" href="/css/default.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sideBar.css" />
+    <title>Minhas Vendas - Tropa Azul</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/minhasvendas.css">
-  <link rel="stylesheet" href="/css/default.css">
-  <title>Minhas Vendas - Tropa Azul</title>
-</head>
+  <body>
+    <header class="header">
+      <div class="userName" id="user"><span><%= usuario %></span></div>
+    </header>
+    <nav id="sidebar" class="fechado">
+      <div class="logoContainer">
+        <a href="/segmentos" class="logoLink">
+          <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo" />
+        </a>
+        <img
+          src="/images/tropa_azul_icon.png"
+          alt="TVLAR MOTOS"
+          class="logoIcon"
+          id="toggleIcon"
+        />
+      </div>
 
-<body>
-  <div class="top-container">
-    <div class="logo-container">
-      <a href="/segmentos">
-        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
-      </a>
-    </div>
+      <div class="listMedium">
+        <a href="/motos"
+          ><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a
+        >
+      </div>
 
-    <div class="user-container">
-      <div class="user-menu" id="user">
-        <%= usuario %>
-          <button class="menu-toggle" onclick="toggleMenu()">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-          </button>
+      <div class="btLogout">
+        <button class="btFechar">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <a href="/logout" class="item-description">
+            <span>Sair</span>
+          </a>
+        </button>
+      </div>
+    </nav>
+    <div id="overlay"></div>
+
+    <div class="resumo-totais">
+      <div class="card-total">
+        <h4>VOLUME</h4>
+        <% let totalQuantidade=0; %> <% vendas.forEach(venda=> { totalQuantidade
+        += venda.quantidade }) %>
+        <p><%= totalQuantidade %></p>
+      </div>
+      <% let totalLucroOperacional=0; let totalValorVenda=0; let comissao=0;
+      vendas.forEach(venda=> { const valorVenda =
+      parseFloat(venda.valor_venda_real); const lucroOpe =
+      parseFloat(venda.lucro_ope); const situacao = parseInt(venda.quantidade);
+      totalValorVenda += valorVenda; totalLucroOperacional += lucroOpe; if
+      (situacao > 0 && lucroOpe < 0 || situacao < 0 && lucroOpe> 0) { comissao
+      +=0; } else { comissao +=lucroOpe}}); const llo=totalValorVenda !==0 ?
+      (totalLucroOperacional / totalValorVenda) * 100 : 0; %>
+
+      <div class="card-total">
+        <h4>LLO</h4>
+        <p><%= llo.toFixed(2) %>%</p>
+      </div>
+
+      <div class="card-total">
+        <h4>COMISSÃO</h4>
+        <p>
+          <%= (comissao * 0.085).toLocaleString('pt-BR', { style: 'currency' ,
+          currency: 'BRL' }) %>
+        </p>
+      </div>
+
+      <div class="card-total">
+        <h4>PROFISSIONAIS DO ANO</h4>
+        <p>
+          <%= pontos.toLocaleString('pt-BR', { style: 'currency' , currency:
+          'BRL' }) %>
+        </p>
+      </div>
+      <div class="card-total">
+        <h4>NPS</h4>
+        <p><%= NPS.toLocaleString() %></p>
+      </div>
+      <div class="card-total">
+        <h4>Capitação</h4>
+        <p><%= captacao.toLocaleString() %></p>
+      </div>
+      <div class="card-total">
+        <h4>Contratos</h4>
+        <p><%= contrato.toLocaleString() %></p>
+      </div>
+      <div class="card-total">
+        <h4>Retornos</h4>
+        <p><%= retorno.toLocaleString() %></p>
+      </div>
+
+      <div class="card-verde" id="total-previsto-card">
+        <h4>TOTAL PREVISTO</h4>
+        <p id="total-previsto-value">R$ 0,00</p>
       </div>
     </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-      <a href="/motos">↩️ Voltar</a>
-      <a href="/logout">🚪 Logout</a>
-    </div>
-  </div>
 
-  <div class="resumo-totais">
-    <div class="card-total">
-      <h4>VOLUME</h4>
-      <% let totalQuantidade=0; %>
-        <% vendas.forEach(venda=> { totalQuantidade += venda.quantidade }) %>
-          <p>
-            <%= totalQuantidade %>
-          </p>
-    </div>
-    <% let totalLucroOperacional=0; let totalValorVenda=0; let comissao=0; vendas.forEach(venda=> {
-      const valorVenda = parseFloat(venda.valor_venda_real);
-      const lucroOpe = parseFloat(venda.lucro_ope);
-      const situacao = parseInt(venda.quantidade);
+    <main class="dashboard-container">
+      <div class="dashboard-table">
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Situação</th>
+              <th>Data</th>
+              <th>Modelo</th>
+              <th>Cor</th>
+              <th>Chassi</th>
+              <th>Valor Venda</th>
+              <th>LLO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (vendas.length> 0) { %> <% vendas.forEach(venda=> { %>
+            <tr>
+              <td>
+                <% if (venda.quantidade> 0) { %> Vendido <% } else if
+                (venda.quantidade < 0) { %> Devolvida <% } else { %> - <% } %>
+              </td>
+              <td><%= new Date(venda.data_venda).toLocaleDateString() %></td>
+              <td><%= venda.modelo %></td>
+              <td><%= venda.cor %></td>
+              <td><%= venda.chassi %></td>
+              <td>
+                <%= parseFloat(venda.valor_venda_real).toLocaleString('pt-BR', {
+                style: 'currency' , currency: 'BRL' }) %>
+              </td>
+              <td>
+                <%= (venda.lucro_ope / venda.valor_venda_real *
+                100).toFixed(2).replace('.', ',' ) %> %
+              </td>
+            </tr>
+            <% }) %> <% } else { %>
+            <tr>
+              <td colspan="7">Nenhuma venda encontrada.</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </main>
 
-      totalValorVenda += valorVenda;
-      totalLucroOperacional += lucroOpe;
+    <footer class="footer">
+      <p>
+        Copyright &copy; 2025 Departamento de T.I | Todos os direitos
+        reservados.
+      </p>
+    </footer>
 
-      if (situacao > 0 && lucroOpe < 0 || situacao < 0 && lucroOpe> 0) { comissao +=0; } else { comissao +=lucroOpe}});
-        const llo=totalValorVenda !==0
-        ? (totalLucroOperacional / totalValorVenda) * 100 : 0; %>
+    <script src="/js/default.js"></script>
 
-        <div class="card-total">
-          <h4>LLO</h4>
-          <p>
-            <%= llo.toFixed(2) %>%
-          </p>
-        </div>
-
-        <div class="card-total">
-          <h4>COMISSÃO</h4>
-          <p>
-            <%= (comissao * 0.085).toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' }) %>
-          </p>
-        </div>
-
-        <div class="card-total">
-          <h4>PROFISSIONAIS DO ANO</h4>
-          <p>
-            <%= pontos.toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL' }) %>
-          </p>
-        </div>
-
-        <div class="card-verde" id="total-previsto-card">
-          <h4>TOTAL PREVISTO</h4>
-          <p id="total-previsto-value">R$ 0,00</p>
-        </div>
-
-
-  </div>
-
-
-  <main class="dashboard-container">
-    <div class="dashboard-table">
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Situação</th>
-            <th>Data</th>
-            <th>Modelo</th>
-            <th>Cor</th>
-            <th>Chassi</th>
-            <th>Valor Venda</th>
-            <th>LLO</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (vendas.length> 0) { %>
-            <% vendas.forEach(venda=> { %>
-              <tr>
-                <td>
-                  <% if (venda.quantidade> 0) { %>
-                    Vendido
-                    <% } else if (venda.quantidade < 0) { %>
-                      Devolvida
-                      <% } else { %>
-                        -
-                        <% } %>
-                </td>
-                <td>
-                  <%= new Date(venda.data_venda).toLocaleDateString() %>
-                </td>
-                <td>
-                  <%= venda.modelo %>
-                </td>
-                <td>
-                  <%= venda.cor %>
-                </td>
-                <td>
-                  <%= venda.chassi %>
-                </td>
-                <td>
-                  <%= parseFloat(venda.valor_venda_real).toLocaleString('pt-BR', { style: 'currency' , currency: 'BRL'
-                    }) %>
-                </td>
-                <td>
-                  <%= (venda.lucro_ope / venda.valor_venda_real * 100).toFixed(2).replace('.', ',' ) %> %
-                </td>
-              </tr>
-              <% }) %>
-                <% } else { %>
-                  <tr>
-                    <td colspan="7">Nenhuma venda encontrada.</td>
-                  </tr>
-                  <% } %>
-        </tbody>
-      </table>
-    </div>
-  </main>
-
-  <footer class="footer">
-    <p>Copyright &copy; 2025 Departamento de T.I | Todos os direitos reservados.</p>
-  </footer>
-
-  <script src="/js/default.js"></script>
-
-  <script>
-    function animateCountUp(elementId, finalValue, duration = 2500) {
-      const element = document.getElementById(elementId);
-      const card = document.getElementById('total-previsto-card');
-      let start = 0;
-      const increment = finalValue / (duration / 16);
-      const formatter = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
-
-      function createCoin() {
-        const coin = document.createElement('div');
-        coin.classList.add('coin');
-
-        const symbols = ['💸'];
-        const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-        coin.textContent = randomSymbol;
-
-        const cardWidth = card.clientWidth;
-        const left = Math.random() * (cardWidth - 24);
-
-
-        coin.style.left = `${left}px`;
-        coin.style.bottom = '-20px';
-        card.appendChild(coin);
-
-        coin.addEventListener('animationend', () => {
-          coin.remove();
+    <script>
+      function animateCountUp(elementId, finalValue, duration = 2500) {
+        const element = document.getElementById(elementId);
+        const card = document.getElementById("total-previsto-card");
+        let start = 0;
+        const increment = finalValue / (duration / 16);
+        const formatter = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         });
-      }
 
-      function step() {
-        start += increment;
-        if (start >= finalValue) {
-          element.textContent = formatter.format(finalValue);
+        function createCoin() {
+          const coin = document.createElement("div");
+          coin.classList.add("coin");
 
-          // Aplica a animação de pulo no card
-          card.classList.add('card-bounce');
+          const symbols = ["💸"];
+          const randomSymbol =
+            symbols[Math.floor(Math.random() * symbols.length)];
+          coin.textContent = randomSymbol;
 
-          // Remove a classe após a animação para poder reutilizar depois
-          card.addEventListener('animationend', () => {
-            card.classList.remove('card-bounce');
+          const cardWidth = card.clientWidth;
+          const left = Math.random() * (cardWidth - 24);
 
-            // Só começa a cair moedas depois do pulo
-            let coinsToDrop = 40;
-            let interval = setInterval(() => {
-              createCoin();
-              coinsToDrop--;
-              if (coinsToDrop <= 0) clearInterval(interval);
-            }, 50);
-          }, { once: true });
+          coin.style.left = `${left}px`;
+          coin.style.bottom = "-20px";
+          card.appendChild(coin);
 
-
-        } else {
-          element.textContent = formatter.format(start);
-          requestAnimationFrame(step);
+          coin.addEventListener("animationend", () => {
+            coin.remove();
+          });
         }
+
+        function step() {
+          start += increment;
+          if (start >= finalValue) {
+            element.textContent = formatter.format(finalValue);
+
+            // Aplica a animação de pulo no card
+            card.classList.add("card-bounce");
+
+            // Remove a classe após a animação para poder reutilizar depois
+            card.addEventListener(
+              "animationend",
+              () => {
+                card.classList.remove("card-bounce");
+
+                // Só começa a cair moedas depois do pulo
+                let coinsToDrop = 40;
+                let interval = setInterval(() => {
+                  createCoin();
+                  coinsToDrop--;
+                  if (coinsToDrop <= 0) clearInterval(interval);
+                }, 50);
+              },
+              { once: true }
+            );
+          } else {
+            element.textContent = formatter.format(start);
+            requestAnimationFrame(step);
+          }
+        }
+
+        step();
       }
 
-      step();
-    }
-
-    const totalPrevisto = parseFloat("<%= (comissao * 0.085 + pontos).toFixed(2) %>");
-    animateCountUp('total-previsto-value', totalPrevisto);
-  </script>
-
-
-
-</body>
-
+      const totalPrevisto = parseFloat(
+        "<%= (comissao * 0.085 + pontos).toFixed(2) %>"
+      );
+      animateCountUp("total-previsto-value", totalPrevisto);
+    </script>
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/overlay.js"></script>
+  </body>
 </html>

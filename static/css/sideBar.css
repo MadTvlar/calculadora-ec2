@@ -1,0 +1,265 @@
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 250px;
+  background-color: blue;
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 20px;
+  transition: transform 0.3s ease;
+  z-index: 900;
+}
+
+#sidebar.fechado {
+  transform: translateX(-50%);
+  width: 150px;
+  /* diminui a largura */
+}
+
+#sidebar.fechado .logo {
+  display: none;
+}
+
+#sidebar.fechado .logoIcon {
+  display: block;
+  width: 40px;
+  margin-left: -30px;
+}
+
+#sidebar.fechado .item-description span {
+  display: none;
+}
+
+#sidebar.fechado .userMenu {
+  display: none;
+}
+
+#sidebar.fechado .adm i {
+  font-size: 24px;
+  margin-left: -15px;
+}
+
+#sidebar:not(.fechado) .adm:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+#sidebar.fechado .btn {
+  background: #0002c6;
+  color: white;
+}
+
+.logoContainer {
+  width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 20px;
+}
+
+.logo {
+  width: 150px;
+  transition: opacity 0.3s ease;
+}
+
+.logoIcon {
+  display: none;
+  cursor: pointer;
+}
+
+.adm {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  width: 200px;
+  margin-left: 20px;
+  cursor: pointer;
+  bottom: 0;
+  transition: background-color 0.3s ease;
+  border-radius: 15px;
+}
+
+.adm i {
+  font-size: 20px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.btLogout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 55%;
+  transition: background-color 0.3s ease;
+  height: 50px;
+  width: 200px;
+  margin-left: 20px;
+  border-radius: 15px;
+}
+
+.btFechar {
+  border: none;
+  background-color: transparent;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* === Scroll apenas dentro da lista do sidebar === */
+.listSideBar {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-weight: bold;
+  gap: 30px;
+
+  max-height: calc(100vh - 180px);
+  /* deixa espaço p/ logo + botão sair */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+/* Scroll estilizado (Chrome/Edge/Safari) */
+.listSideBar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.listSideBar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+}
+
+.listSideBar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.listMedium {
+  font-weight: bold;
+  margin-bottom: -240%;
+  margin-left: 25%;
+}
+
+.listMedium a {
+  display: block;
+  width: 50%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+}
+
+.listMedium a:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.listMedium i {
+  font-size: 18px;
+}
+
+#sidebar:not(.fechado) .listMedium a:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+#sidebar.fechado .listMedium a:hover {
+  background-color: transparent;
+}
+
+#sidebar.fechado .listMedium a span {
+  display: none;
+  font-size: 40px;
+}
+
+#sidebar.fechado .listMedium {
+  justify-content: center;
+  width: 100%;
+  margin-left: 58%;
+  margin-bottom: -410%;
+  font-size: 20px;
+}
+
+.listSideBar a {
+  text-decoration: none;
+  width: 200px;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.listSideBar a:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  border-radius: 15px;
+}
+
+.listSideBar a i {
+  position: relative;
+  top: -1.5px;
+  /* ou -1px dependendo do ícone */
+}
+
+/* Quando o sidebar estiver fechado */
+#sidebar.fechado .listSideBar a {
+  justify-content: center;
+  width: 100%;
+  padding-left: 90px;
+}
+
+#sidebar.fechado .listSideBar a span {
+  display: none;
+}
+
+#sidebar.fechado .listSideBar a:hover {
+  background-color: transparent;
+  transform: none;
+}
+
+/* Hover do logout apenas quando sidebar aberto */
+#sidebar:not(.fechado) .btLogout:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+  transform: scale(1.03);
+  /* leve zoom */
+  cursor: pointer;
+}
+
+/* Quando fechado, remove hover */
+#sidebar.fechado .btLogout:hover {
+  background-color: transparent;
+  transform: none;
+}
+#sidebar.fechado .btLogout {
+  margin-bottom: 85%;
+  margin-left: 10%;
+}
+/*========================== escurece o fundo ===================== */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 889;
+}
+
+#sidebar:not(.fechado) ~ #overlay {
+  opacity: 1;
+  pointer-events: all;
+}

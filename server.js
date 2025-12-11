@@ -35,6 +35,7 @@ app.set('views', path.join(__dirname, 'templates'));
 const rotaNPS = require('./routes/nps_geral');
 app.use('/nps', rotaNPS);
 const rotaMercado = require('./routes/mercado');
+const { settings } = require('cluster');
 app.use('/', rotaMercado);
 
 // CONFIGURAÇÃO DE GERAL DE VENDAS RANK - RESUMO E MINHAS VENDAS
@@ -74,6 +75,29 @@ const icms_venda = {
   "Para Fora do Estado": 0.12,
   "Base Reduzida": 0.07,
 }
+  const atualizarRankings = require('./routes/rankingGeralMotos');
+  const fetchEstoqueMotores = require('./routes/estoqueMotores');
+  const fetchEstoqueMotos = require('./routes/estoqueMotos');
+  const fetchMkVendasMotos = require('./routes/mkVendasMotos');
+  const fetchMKVendasSeminovas = require('./routes/mkVendasSimonovas');
+  const fetchMkContratosMotos = require('./routes/mkContratosMotos');
+  const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
+  const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
+  const fetchAltervision = require('./routes/altervision');
+  const atualizarNPS = require('./routes/nps');
+
+const api_list = {
+  "Rankings": atualizarRankings,
+  "EstoqueMotores": fetchEstoqueMotores,
+  "EstoqueMotos": fetchEstoqueMotos,
+  "MkVendasMotos": fetchMkVendasMotos,
+  "MKVendasSeminovas": fetchMKVendasSeminovas,
+  "MkContratosMotos": fetchMkContratosMotos,
+  "MkcaptacaoMotos": fetchMkcaptacaoMotos,
+  "RankingPontosMotos": fetchrankingPontosMotos,
+  "Altervision": fetchAltervision,
+  "NPS": atualizarNPS
+};
 
 
 // CHAMADO PARA A TELA DE LOGIN 
@@ -135,6 +159,167 @@ app.get('/segmentos', (req, res) => {
     grupo: grupoLogado
   });
 });
+// CHAMADO PAPRA CONFIGURAÇÕES ASSIM QUE CLICAR NO LOGO
+app.get('/settings', async (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+  const pool = require('./services/db');
+
+  if (grupoLogado != 'admin') {
+    return res.redirect('/segmentos');
+  }
+
+  try {
+    // Busca o registro da tabela settings onde id = 1
+    const [rows] = await pool.query(
+      "SELECT mesReferente FROM settings WHERE id = 1"
+    );
+
+    // Se existir registro retorna, senão retorna valores vazios
+    const settingsData = rows.length > 0 ? rows[0] : {};
+
+    res.render('settings', {
+      usuario: usuarioLogado,
+      api: Object.keys(api_list),
+      apiFull: api_list,
+      settings: settingsData   // <<< Enviado para o template
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao carregar settings");
+  }
+});
+
+app.get('/aviso', (req, res) => {
+  const usuarioLogado = req.cookies.usuario_logado;
+  const grupoLogado = req.cookies.grupo_logado;
+
+  console.log(req.cookies)
+
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+    res.render('avisoRanking', {
+    usuario: usuarioLogado,
+    grupo: grupoLogado,
+
+  });
+
+});
+
+
+app.post('/settings/save', async (req, res) => {
+  const { mesAno } = req.body;
+  const pool = require('./services/db');
+
+  try {
+    await pool.query(
+      "UPDATE settings set mesReferente = ? WHERE id = 1",
+      [mesAno]
+    );
+
+    res.redirect('/settings?ok=1');
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao salvar configurações");
+  }
+});
+
+
+app.post('/run-api', async (req, res) => {
+  const { name, dataInicial, dataFinal } = req.body;
+  const pool = require('./services/db');
+
+  if (!api_list[name]) {
+    return res.status(400).json({ error: 'API não encontrada' });
+  }
+  
+    const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
+
+    const [rows] = await pool.query(consulta);  
+    const mesReferente = rows[0].mesReferente; 
+ try {
+    let resultado;
+
+    // Se a função tiver parâmetros de datas, enviamos
+    const fn = api_list[name];
+
+      if (fn.length <= 2 ) {
+        // função com 2 parâmetros
+        resultado = await fn(pool, mesReferente);
+      }
+      else if (fn.length === 3) {
+        // função com 3 parâmetros
+        resultado = await fn(pool, dataInicial, dataFinal);
+      }
+
+
+    res.json({ ok: true, resultado });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+
+app.post('/run-api-stream', async (req, res) => {
+  const { name, dataInicial, dataFinal } = req.body;
+  const pool = require('./services/db');
+
+  if (!api_list[name]) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.write(`data: API não encontrada\n\n`);
+    return res.end();
+  }
+
+  // Cabeçalhos SSE
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const sendLog = (msg) => {
+    res.write(`data: ${msg}\n\n`);
+  };
+
+  try {
+    sendLog(`Iniciando processamento da API: ${name}`);
+
+    const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
+
+    const [rows] = await pool.query(consulta);  
+    const mesReferente = rows[0].mesReferente; 
+
+    const fn = api_list[name];
+
+    let resultado;
+
+    // Decide dinamicamente quantos argumentos enviar
+      if (fn.length === 4) {
+        // pool, dataInicial, dataFinal, sendLog
+        sendLog(`Data Inical: ${dataInicial}  Data Final: ${dataFinal}`)
+        resultado = await fn(pool, sendLog, dataInicial, dataFinal);
+      } else {
+        // pool, dataInicial, sendLog
+        sendLog(`Referente ao mês: ${mesReferente}`)
+        resultado = await fn(pool, sendLog, mesReferente);
+      }
+
+    sendLog("FINALIZADO");
+   
+
+  } catch (err) {
+    sendLog("ERRO: " + err.message);
+  } finally {
+    res.end();
+  }
+});
+
+
 
 // CHAMADO PARA PAGINA DE CADASTRO DE USUARIOS (APENAS PARA ADMIN)
 app.get('/usuarios', async (req, res) => {
@@ -150,7 +335,8 @@ app.get('/usuarios', async (req, res) => {
 
     res.render('usuarios', {
       usuarios,
-      usuario: usuarioLogado
+      usuario: usuarioLogado,
+      grupo: grupoLogado
     });
   } catch (err) {
     console.error('Erro ao buscar usuários:', err);
@@ -288,6 +474,7 @@ app.get('/minhasvendas', async (req, res) => {
     return res.redirect('/');
   }
 
+const referenteMes = new Date().toISOString().slice(0, 7);
   const queryVendas = `
     SELECT * FROM (
       SELECT 
@@ -322,25 +509,40 @@ app.get('/minhasvendas', async (req, res) => {
   `;
 
   const queryPontos = `
-    SELECT pontos
+    SELECT *
     FROM ranking_pontos
     WHERE id_microwork = ?
   `;
-
+    
   try {
     const [vendas] = await connection.query(queryVendas, [
       idLogado, referenteMes, idLogado, referenteMes
     ]);
 
-    const [pontosResult] = await connection.query(queryPontos, [idLogado]);
-    const pontos = pontosResult.length > 0 ? pontosResult[0].pontos : 0;
+    let [result] = await connection.query(queryPontos, [idLogado]);
+    if (result.length === 0) {
+    result = [
+    {
+      pontos:0,
+      captacao: 0,
+      contrato: 0,
+      retorno: 0,
+      NPS: 0
+    }];}
+
+    const { pontos, NPS, captacao, contrato, retorno } = result[0];
+    
 
     res.render('minhasvendas', {
       usuario: usuarioLogado,
       grupo: grupoLogado,
       id: idLogado,
       vendas,
-      pontos
+      pontos,
+      NPS, 
+      captacao, 
+      contrato, 
+      retorno
     });
   } catch (err) {
     console.error('Erro ao buscar dados:', err);
@@ -413,7 +615,10 @@ app.get('/rankmotos', async (req, res) => {
       SELECT MAX(atualizado_em) AS ultimaAtualizacao FROM ranking_pontos
     `);
 
-    const ultimaAtualizacao = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
+    const ultimaAtualizacaoRaw = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
+    const ultimaAtualizacao = ultimaAtualizacaoRaw ? new Date(ultimaAtualizacaoRaw) : new Date();
+
+    console.log("ultimaAtualizacao:", ultimaAtualizacao);
 
     const meses = [
       'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',

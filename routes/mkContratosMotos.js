@@ -3,17 +3,9 @@
 const axios = require('axios');
 require('dotenv').config();
 
-const now = new Date();
-const year = now.getFullYear();
-const month = String(now.getMonth() + 1).padStart(2, '0');
-const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
+async function fetchMkContratosMotos(pool, sendLog, dataInicial, dataFinal) {
 
-const dataInicial = `${year}-${month}-01 00:00:00`;
-const dataFinal = `${year}-${month}-${day} 23:59:59`;
-
-async function fetchMkContratosMotos(pool) {
-
-  console.log('Iniciando a consulta API de Contratos Motos')
+  sendLog('Iniciando a consulta API de Contratos Motos')
 
   const filtros = `Reposicao=True;
         PontoVenda=null;
@@ -97,9 +89,9 @@ async function fetchMkContratosMotos(pool) {
 
     try {
       await pool.query(query, values);
-      console.log(`Contrato ${moto.contrato}, se não existir, inserido com sucesso.`);
+      sendLog(`Contrato ${moto.contrato}, se não existir, inserido com sucesso.`);
     } catch (error) {
-      console.error(`Erro ao inserir Contrato ${moto.contrato}:`, error.message);
+      sendLog(`Erro ao inserir Contrato ${moto.contrato}:`, error.message);
     }
   }
 }

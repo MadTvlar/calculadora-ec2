@@ -1,231 +1,339 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/motos.css" />
+    <link rel="stylesheet" href="/css/default.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/header.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/sideBar.css" />
+    <title>Simulador Motos - Tropa Azul</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/motos.css">
-  <link rel="stylesheet" href="/css/default.css">
-  <title>Simulador Motos - Tropa Azul</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap"
-    rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+  <body>
+    <header class="header">
+      <div class="userName" id="user"><span> <%= usuario %> </span></div>
+    </header>
 
-<body>
-  <div class="top-container">
-    <div class="logo-container">
-      <a href="/segmentos">
-        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo">
-      </a>
-    </div>
+    <nav id="sidebar" class="fechado">
+      <div class="containerBody">
+        <div class="logoContainer">
+          <a href="/segmentos" class="logoLink">
+            <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo" />
+          </a>
+          <img
+            src="/images/tropa_azul_icon.png"
+            alt="TVLAR MOTOS"
+            class="logoIcon"
+            id="toggleIcon"
+          />
+        </div>
 
-    <div class="user-container">
-      <div class="user-menu" id="user">
-        <%= usuario %>
-          <button class="menu-toggle" onclick="toggleMenu()">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-          </button>
+        <div class="listSideBar" id="listSideBar">
+          <a href="#" id="save-pdf"
+            ><i class="fa-solid fa-file"></i>&nbsp;<span>
+              Salvar em PDF</span
+            ></a
+          >
+          <a href="/rankmotos"
+            ><i class="fa-solid fa-trophy"></i>&nbsp;<span>
+              Ranking Vendas</span
+            ></a
+          >
+          <a href="/minhasvendas"
+            ><i class="fa-solid fa-money-bills"></i>&nbsp;<span>
+              Minhas Vendas</span
+            ></a
+          >
+          <a href="/resumomotos"
+            ><i class="fa-solid fa-ranking-star"></i>&nbsp;<span>
+              Resumo do Mês</span
+            ></a
+          >
+          <% if (grupo==='admin' || grupo==='sup' ) { %>
+          <a href="/reservasmotos"
+            ><i class="fa-solid fa-thumbtack"></i>&nbsp;<span>
+              Reservas de Moto</span
+            ></a
+          >
+          <!-- <a href="/diapassor"><i class="fa-solid fa-calendar-days"></i>&nbsp;<span> Diapassor</span></a> -->
+          <% } %> <% if (grupo==='admin' ) { %>
+          <a href="/nps"
+            ><i class="fa-solid fa-arrow-up-wide-short"></i>&nbsp;<span>
+              NPS</span
+            ></a
+          >
+          <a href="/rh"
+            ><i class="fa-solid fa-person"></i>&nbsp;<span> RH</span></a
+          >
+          <a href="/mercado"
+            ><i class="fa-solid fa-arrow-trend-up"></i>&nbsp;<span>
+              Mercado</span
+            ></a
+          >
+          <% } %>
+        </div>
       </div>
-    </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-      <a href="#" id="save-pdf">🧾 Salvar em PDF</a>
-      <a href="/rankmotos">🏆 Ranking Vendas</a>
-      <a href="/minhasvendas">💵 Minhas Vendas</a>
-      <a href="/resumomotos">📊 Resumo do Mês</a>
-      <% if (grupo==='admin' || grupo==='sup' ) { %>
-        <a href="/reservasmotos">📌 Reservas de Moto</a>
-        <a href="/diapassor">📅 Diapassor</a>
-        <% } %>
-          <% if (grupo==='admin' ) { %>
-            <a href="/nps">NPS</a>
-            <a href="/rh">RH</a>
-            <a href="/mercado">Mercado</a>
-            <% } %>
-              <a href="/logout">🚪 Logout</a>
-    </div>
-  </div>
+      <div class="btLogout">
+        <button class="btFechar">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <a href="/logout" class="item-description">
+            <span>Sair</span>
+          </a>
+        </button>
+      </div>
+    </nav>
 
+    <div id="overlay"></div>
 
-  <div id="formContainer" class="form-container">
-    <div class="card" id="card1">
+    <div id="formContainer" class="form-container">
+      <div class="card" id="card1">
+        <label for="motos_yamaha">MOTOS YAMAHA</label>
+        <select id="motos_yamaha" name="motos_yamaha">
+          <option value="">Selecione um modelo</option>
+        </select>
 
-      <label for="motos_yamaha">MOTOS YAMAHA</label>
-      <select id="motos_yamaha" name="motos_yamaha">
-        <option value="">Selecione um modelo</option>
-      </select>
+        <label for="chassi_moto">CHASSI</label>
+        <select id="chassi_moto" name="chassi_moto">
+          <option value="">Selecione uma moto</option>
+        </select>
 
-      <label for="chassi_moto">CHASSI</label>
-      <select id="chassi_moto" name="chassi_moto">
-        <option value="">Selecione uma moto</option>
-      </select>
+        <label for="cliente">CLIENTE</label>
+        <input type="text" id="cliente" placeholder="Nome do Cliente" />
 
-      <label for="cliente">CLIENTE</label>
-      <input type="text" id="cliente" placeholder="Nome do Cliente">
+        <label for="cpfCliente">CPF</label>
+        <input
+          type="text"
+          id="cpf"
+          placeholder="CPF ou CNPJ do Cliente"
+          maxlength="17"
+          oninput="formatarDocumento(this);"
+          onblur="validarDocumento(this.value);"
+        />
 
-      <label for="cpfCliente">CPF</label>
-      <input type="text" id="cpf" placeholder="CPF ou CNPJ do Cliente" maxlength="17" oninput="formatarDocumento(this);"
-        onblur="validarDocumento(this.value);">
-
-      <label for="formaPagamento">FORMA DE PAGAMENTO</label>
-      <select id="forma_pagamento" name="formas_pagamentos">
-        <option value="">Selecione</option>
-        <% formasPagamentos.forEach(pagamento=> { %>
-          <option value="<%= pagamento %>">
-            <%= pagamento %>
-          </option>
+        <label for="formaPagamento">FORMA DE PAGAMENTO</label>
+        <select id="forma_pagamento" name="formas_pagamentos">
+          <option value="">Selecione</option>
+          <% formasPagamentos.forEach(pagamento=> { %>
+          <option value="<%= pagamento %>"><%= pagamento %></option>
           <% }); %>
-      </select>
-    </div>
-
-    <div class="card disabled" id="card2">
-      <label for="formaBanco">BANCO</label>
-      <select id="forma_banco" name="bancos">
-        <option value="">Selecione</option>
-        <% bancos.forEach (banco=> { %>
-          <option value="<%= banco %>">
-            <%= banco %>
-          </option>})
-          <% }); %>
-      </select>
-
-      <label for="bancoRetorno">BANCO RETORNO</label>
-      <select id="banco_retorno" name="banco_retornos">
-        <option value="">Selecione</option>
-        <% bancoRetorno.forEach (retorno=> { %>
-          <option value="<%= retorno %>">
-            <%= retorno %>
-          </option>"})>
-          <%}); %>
-      </select>
-
-      <label for="precoNegociado">VALOR DO BEM</label>
-      <input type="text" id="preco_negociado" placeholder="R$00,00" disabled>
-
-      <label for="entradaBonificada">ENTRADA BONIFICADA</label>
-      <input type="text" id="entrada_bonificada" placeholder="R$00,00" disabled>
-
-      <label for="revisao">REVISÃO</label>
-      <input type="text" id="revisao" placeholder="R$00,00" disabled>
-
-
-    </div>
-
-    <div class="card disabled" id="card3">
-
-      <span id="entradaAlter"
-        style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem;"></span>
-      <input type="text" id="entrada_real" placeholder="R$00,00" disabled>
-
-
-      <div id="campoParcelas"
-        style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
-        <label for="parcelas" style="margin-bottom: 10px;">QTD. DE PARCELAS</label>
-        <select id="parcelas" name="parcelas">
-          <% Object.keys(taxas).forEach((taxa)=> { %>
-            <option value="<%= taxa %>">
-              <%= taxa %>
-            </option>
-            <% }); %>
         </select>
       </div>
 
-      <div class="box-container">
-        <label for="emplacamento" style="margin-right: 5px;">EMPLACAMENTO</label>
-        <input type="checkbox" id="enableEmplacamento" style="margin-left: -2px;">
+      <div class="card disabled" id="card2">
+        <label for="formaBanco">BANCO</label>
+        <select id="forma_banco" name="bancos">
+          <option value="">Selecione</option>
+          <% bancos.forEach (banco=> { %>
+          <option value="<%= banco %>"><%= banco %></option>
+          }) <% }); %>
+        </select>
+
+        <label for="bancoRetorno">BANCO RETORNO</label>
+        <select id="banco_retorno" name="banco_retornos">
+          <option value="">Selecione</option>
+          <% bancoRetorno.forEach (retorno=> { %>
+          <option value="<%= retorno %>"><%= retorno %></option>
+          "})> <%}); %>
+        </select>
+
+        <label for="precoNegociado">VALOR DO BEM</label>
+        <input
+          type="text"
+          id="preco_negociado"
+          placeholder="R$00,00"
+          disabled
+        />
+
+        <label for="entradaBonificada">ENTRADA BONIFICADA</label>
+        <input
+          type="text"
+          id="entrada_bonificada"
+          placeholder="R$00,00"
+          disabled
+        />
+
+        <label for="revisao">REVISÃO</label>
+        <input type="text" id="revisao" placeholder="R$00,00" disabled />
       </div>
-      <input type="text" id="retorno_emplacamento" placeholder="R$00,00" disabled>
 
+      <div class="card disabled" id="card3">
+        <span
+          id="entradaAlter"
+          style="
+            text-align: left;
+            font-weight: bold;
+            color: rgb(255, 255, 255);
+            font-size: 0.9rem;
+          "
+        ></span>
+        <input type="text" id="entrada_real" placeholder="R$00,00" disabled />
 
-
-
-
-      <div id="freteManaus"
-        style="text-align: left; font-weight: bold; color: rgb(255, 255, 255); font-size: 0.9rem; display: none;">
-
-        <div class="input-group-row">
-          <label for="frete_despesa">FRETE DESPESA:</label>
-          <input type="text" id="frete_despesa" placeholder="R$00,00" disabled>
+        <div
+          id="campoParcelas"
+          style="
+            text-align: left;
+            font-weight: bold;
+            color: rgb(255, 255, 255);
+            font-size: 0.9rem;
+            display: none;
+          "
+        >
+          <label for="parcelas" style="margin-bottom: 10px"
+            >QTD. DE PARCELAS</label
+          >
+          <select id="parcelas" name="parcelas">
+            <% Object.keys(taxas).forEach((taxa)=> { %>
+            <option value="<%= taxa %>"><%= taxa %></option>
+            <% }); %>
+          </select>
         </div>
 
+        <div class="box-container">
+          <label for="emplacamento" style="margin-right: 5px"
+            >EMPLACAMENTO</label
+          >
+          <input
+            type="checkbox"
+            id="enableEmplacamento"
+            style="margin-left: -2px"
+          />
+        </div>
+        <input
+          type="text"
+          id="retorno_emplacamento"
+          placeholder="R$00,00"
+          disabled
+        />
+
+        <div
+          id="freteManaus"
+          style="
+            text-align: left;
+            font-weight: bold;
+            color: rgb(255, 255, 255);
+            font-size: 0.9rem;
+            display: none;
+          "
+        >
+          <div class="input-group-row">
+            <label for="frete_despesa">FRETE DESPESA:</label>
+            <input
+              type="text"
+              id="frete_despesa"
+              placeholder="R$00,00"
+              disabled
+            />
+          </div>
+        </div>
+
+        <div class="input-group-row">
+          <label for="frete_receita">FRETE RECEITA:</label>
+          <input
+            type="text"
+            id="frete_receita"
+            placeholder="R$00,00"
+            disabled
+          />
+        </div>
+
+        <div class="input-group-row">
+          <label for="acessorio">ACESSÓRIOS VENDIDOS:</label>
+          <input
+            type="text"
+            id="retorno_acessorio"
+            placeholder="R$00,00"
+            disabled
+          />
+        </div>
+
+        <div class="input-group-row">
+          <label for="brinde">BRINDE:</label>
+          <input
+            type="text"
+            id="retorno_brinde"
+            placeholder="R$00,00"
+            disabled
+          />
+        </div>
+      </div>
+    </div>
+
+    <div id="card4" style="display: none; margin-left: -15px" class="card4">
+      <p style="text-align: center">
+        <strong>FILIAL <%= empresa %> - CHASSI </strong>
+        <span id="mensagemFilial" style="text-transform: uppercase"></span>
+      </p>
+
+      <div id="caixa_destacada1" class="caixa-destacada">
+        <p id="valor_bem"></p>
+        <p id="valor_venda_real"></p>
+        <p id="parcelas_taxa"></p>
+        <p id="custo_produto"></p>
+        <p id="margem_bruta"></p>
       </div>
 
-      <div class="input-group-row">
-        <label for="frete_receita">FRETE RECEITA:</label>
-        <input type="text" id="frete_receita" placeholder="R$00,00" disabled>
+      <p style="text-align: center; margin-left: -15px">
+        <strong>DESPESAS</strong>
+      </p>
+      <div id="caixa_destacada2" class="caixa-destacada">
+        <p id="custo_emplacamento"></p>
+        <p id="custo_frete"></p>
+        <p id="custo_acessorio"></p>
+        <p id="resultado_brinde"></p>
+        <p id="taxa_cartao"></p>
+        <p id="despesas_ope_fin_mkt"></p>
+        <p id="resultado_despesas"></p>
       </div>
 
-
-      <div class="input-group-row">
-        <label for="acessorio">ACESSÓRIOS VENDIDOS:</label>
-        <input type="text" id="retorno_acessorio" placeholder="R$00,00" disabled>
+      <p style="text-align: center; margin-left: -15px">
+        <strong>RECEITAS</strong>
+      </p>
+      <div id="caixa_destacada3" class="caixa-destacada">
+        <p id="resultado_banco"></p>
+        <p id="receita_emplacamento"></p>
+        <p id="receita_frete"></p>
+        <p id="receita_acessorio"></p>
+        <p id="resultado_receitas"></p>
       </div>
 
-      <div class="input-group-row">
-        <label for="brinde">BRINDE:</label>
-        <input type="text" id="retorno_brinde" placeholder="R$00,00" disabled>
+      <p style="text-align: center; margin-left: -15px">
+        <strong>TOTAIS</strong>
+      </p>
+      <div id="caixa_destacada4" class="caixa-destacada">
+        <p id="resultado_liquido"></p>
+        <p id="resultado_porcentual"></p>
+        <p id="comissao"></p>
       </div>
     </div>
-  </div>
 
-  <div id="card4" style="display: none; margin-left: -15px">
-    <p style="text-align: center;"><strong>FILIAL <%= empresa %> - CHASSI </strong> <span id="mensagemFilial"
-        style="text-transform: uppercase;"></span></p>
+    <footer class="footer">
+      <p>
+        Copyright &copy; 2025 Departamento de T.I | Todos os direitos
+        reservados.
+      </p>
+    </footer>
 
-    <div id="caixa_destacada1" class="caixa-destacada">
-      <p id="valor_bem"></p>
-      <p id="valor_venda_real"></p>
-      <p id="parcelas_taxa"></p>
-      <p id="custo_produto"></p>
-      <p id="margem_bruta"></p>
-    </div>
+    <a id="showCard4Button" class="scroll-top-btn">Simular</a>
 
-    <p style="text-align: center; margin-left: -15px"><strong>DESPESAS</strong></p>
-    <div id="caixa_destacada2" class="caixa-destacada">
-      <p id="custo_emplacamento"></p>
-      <p id="custo_frete"></p>
-      <p id="custo_acessorio"></p>
-      <p id="resultado_brinde"></p>
-      <p id="taxa_cartao"></p>
-      <p id="despesas_ope_fin_mkt"></p>
-      <p id="resultado_despesas"></p>
-    </div>
+    <div id="dados_emplacamento" data-valor="<%= valorMesAtual %>"></div>
+    <div id="id_microwork" data-valor="<%= id %>"></div>
+    <div id="empresa" data-valor="<%= empresa %>"></div>
 
-    <p style="text-align: center; margin-left: -15px;"><strong>RECEITAS</strong></p>
-    <div id="caixa_destacada3" class="caixa-destacada">
-      <p id="resultado_banco"> </p>
-      <p id="receita_emplacamento"></p>
-      <p id="receita_frete"></p>
-      <p id="receita_acessorio"></p>
-      <p id="resultado_receitas"></p>
-    </div>
-
-    <p style="text-align: center; margin-left: -15px;"><strong>TOTAIS</strong></p>
-    <div id="caixa_destacada4" class="caixa-destacada">
-      <p id="resultado_liquido"></p>
-      <p id="resultado_porcentual"></p>
-      <p id="comissao"></p>
-    </div>
-  </div>
-
-  <footer class="footer">
-    <p>Copyright &copy; 2025 Departamento de T.I | Todos os direitos reservados.</p>
-  </footer>
-
-  <a id="showCard4Button" class="scroll-top-btn">Simular</a>
-
-
-  <div id="dados_emplacamento" data-valor="<%= valorMesAtual %>"></div>
-  <div id="id_microwork" data-valor="<%= id %>"></div>
-  <div id="empresa" data-valor="<%= empresa %>"></div>
-
-  <script src="./js/motos.js"></script>
-  <script src="./js/default.js"></script>
-
-
-
-</body>
-
+    <script src="./js/motos.js"></script>
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/overlay.js"></script>
+  </body>
 </html>

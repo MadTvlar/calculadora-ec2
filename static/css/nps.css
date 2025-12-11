@@ -1,18 +1,4 @@
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #ffffff, #ffffff);
-  color: #000000;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 100vh;
-  text-align: center;
-  overflow: auto;
-  position: relative;
-}
+
 
 /* Topo */
 .top-container {

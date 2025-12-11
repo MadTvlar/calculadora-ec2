@@ -1,9 +1,11 @@
 // Essa rota faz a orgnanização da pontuação do mês selecionado na variavel mesReferente do NPS
 
-const connection = require('../services/db');
+async function atualizarNPS(pool, sendLog, mesReferente) {
 
-async function atualizarNPS() {
+  sendLog(`Limpando a tabela tropa_azul.nps`)
+  await pool.query(`TRUNCATE TABLE nps`);
 
+<<<<<<< HEAD
   console.log(`Limpando a tabela tropa_azul.nps`)
   await connection.query(`TRUNCATE TABLE nps`);
 
@@ -11,6 +13,9 @@ async function atualizarNPS() {
   const mesReferente = '2025-11';
 
   const [resultados] = await connection.query(`
+=======
+  const [resultados] = await pool.query(`
+>>>>>>> 5a31b3e0901e5d52396d4c09257b43691dae0dd3
   SELECT 
     id_microwork,
     vendedor AS vendedores,
@@ -32,7 +37,7 @@ async function atualizarNPS() {
       nota_oficial = ((parseInt(promotoras) - parseInt(detratoras)) / total) * 100;
     }
 
-    await connection.query(`
+    await pool.query(`
       INSERT INTO nps (id_microwork, vendedores, promotoras, neutras, detratoras, nota_oficial, atualizado_em)
       VALUES (?, ?, ?, ?, ?, ?, NOW())
       ON DUPLICATE KEY UPDATE
@@ -45,7 +50,7 @@ async function atualizarNPS() {
     `, [id_microwork, vendedores, promotoras, neutras, detratoras, nota_oficial]);
   }
 
-  console.log(`tabela tropa_azul.nps atualizado!`)
+  sendLog(`tabela tropa_azul.nps atualizado!`)
 }
 
 module.exports = atualizarNPS;
