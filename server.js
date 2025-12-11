@@ -519,9 +519,17 @@ const referenteMes = new Date().toISOString().slice(0, 7);
       idLogado, referenteMes, idLogado, referenteMes
     ]);
 
-    const [result] = await connection.query(queryPontos, [idLogado]);
+    let [result] = await connection.query(queryPontos, [idLogado]);
+    if (result.length === 0) {
+    result = [
+    {
+      pontos:0,
+      captacao: 0,
+      contrato: 0,
+      retorno: 0,
+      NPS: 0
+    }];}
 
-    
     const { pontos, NPS, captacao, contrato, retorno } = result[0];
     
 
