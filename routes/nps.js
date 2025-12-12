@@ -5,9 +5,6 @@ async function atualizarNPS(pool, sendLog, mesReferente) {
   sendLog(`Limpando a tabela tropa_azul.nps`)
   await pool.query(`TRUNCATE TABLE nps`);
 
-  console.log(`Limpando a tabela tropa_azul.nps`)
-  await connection.query(`TRUNCATE TABLE nps`);
-
   const [resultados] = await pool.query(`
 
   SELECT 
