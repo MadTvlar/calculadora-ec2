@@ -56,27 +56,13 @@
       RANKING - AGOSTO DE 2025
     </h2>
   </div> -->
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     <h2 class="title-podium">Melhores do mês de Outubro</h2>
-  <div class="podio-container">
-    <img src="/images/2_colocado.png" alt="2º Colocado" class="podio-img" />
-    <img src="/images/1_colocado.png" alt="1º Colocado" class="podio-img" />
-    <img src="/images/3_colocado.png" alt="3º Colocado" class="podio-img" />
-  </div>
-=======
-=======
->>>>>>> 965d1c58d72dd7c88990c249132fc6d2ac720f32
-    <h2 class="title-podium">Melhores do mês de setembro</h2>
     <div class="podio-container">
       <img src="/images/2_colocado.png" alt="2º Colocado" class="podio-img" />
       <img src="/images/1_colocado.png" alt="1º Colocado" class="podio-img" />
       <img src="/images/3_colocado.png" alt="3º Colocado" class="podio-img" />
     </div>
-<<<<<<< HEAD
->>>>>>> 5a31b3e0901e5d52396d4c09257b43691dae0dd3
-=======
->>>>>>> 965d1c58d72dd7c88990c249132fc6d2ac720f32
 
     <div class="podio-podium">
       <div class="podium-block second">2</div>
@@ -84,41 +70,21 @@
       <div class="podium-block third">3</div>
     </div>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-  
-  <div class="card">
-    <div class="rank-title">
-      <!-- Titulo do ranking, ajustar e tirar do comentário automatico -->
-      <h2>
-        RANKING GERAL - NOV DE 2025 <!-- <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
-=======
-=======
->>>>>>> 965d1c58d72dd7c88990c249132fc6d2ac720f32
     <div class="card">
       <div class="rank-title">
         <!-- Titulo do ranking, ajustar e tirar do comentário automatico -->
         <h2>
-          RANKING GERAL - OUT DE 2025
-          <!-- <%= mesAtual.charAt(0).toUpperCase() + mesAtual.slice(1) %>
-<<<<<<< HEAD
->>>>>>> 5a31b3e0901e5d52396d4c09257b43691dae0dd3
-=======
->>>>>>> 965d1c58d72dd7c88990c249132fc6d2ac720f32
-          <%= anoAtual %> -->
+          RANKING GERAL - NOV DE 2025 <%= mesAtual.charAt(0).toUpperCase() +
+          mesAtual.slice(1) %>
         </h2>
         <p class="data-atualizacao">
-              Atualizado em:
-              <%= (() => { 
-                    const d = new Date(ultimaAtualizacao);
-                    const dia = String(d.getDate()).padStart(2, '0'); 
-                    const mes = String(d.getMonth() + 1).padStart(2, '0');
-                    const ano = d.getFullYear(); 
-                    const hora = String(d.getHours()).padStart(2, '0');
-                    const min = String(d.getMinutes()).padStart(2, '0');
-                    return ${dia}/${mes}/${ano} às ${hora}h${min};
-              })() %>
-            </p>
+          Atualizado em: <%= (() => { const d = new Date(ultimaAtualizacao);
+          const dia = String(d.getDate()).padStart(2, '0'); const mes =
+          String(d.getMonth() + 1).padStart(2, '0'); const ano =
+          d.getFullYear(); const hora = String(d.getHours()).padStart(2, '0');
+          const min = String(d.getMinutes()).padStart(2, '0'); return
+          `${dia}/${mes}/${ano} às ${hora}h${min}`; })() %>
+        </p>
       </div>
 
       <div class="table-container">

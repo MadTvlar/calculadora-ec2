@@ -1,22 +1,10 @@
-<<<<<<< HEAD
 ##Arquivos de ambiente e deploy locais
-=======
-# Arquivos de ambiente e deploy locais
->>>>>>> 334eedabf4063acc91ce69903739ad8f27bc39de
 .env
 .env.*
 docker-compose.yml
 docker-compose*.yml
-<<<<<<< HEAD
 node_modules/
 
 ##scripts locais de deploy
 deploy.sh
 deploy-hml.sh
-=======
-node_modules
-
-# scripts locais de deploy
-deploy.sh
-deploy-hml.sh
->>>>>>> 334eedabf4063acc91ce69903739ad8f27bc39de

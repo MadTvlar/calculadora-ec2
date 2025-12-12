@@ -5,21 +5,11 @@ async function atualizarNPS(pool, sendLog, mesReferente) {
   sendLog(`Limpando a tabela tropa_azul.nps`)
   await pool.query(`TRUNCATE TABLE nps`);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   console.log(`Limpando a tabela tropa_azul.nps`)
   await connection.query(`TRUNCATE TABLE nps`);
 
-  // SELECIONAR A DATA NA QUAL A PONTUAÇÃO IRÁ VALER
-  const mesReferente = '2025-11';
+  const [resultados] = await pool.query(`
 
-  const [resultados] = await connection.query(`
-=======
-  const [resultados] = await pool.query(`
->>>>>>> 5a31b3e0901e5d52396d4c09257b43691dae0dd3
-=======
-  const [resultados] = await pool.query(`
->>>>>>> 965d1c58d72dd7c88990c249132fc6d2ac720f32
   SELECT 
     id_microwork,
     vendedor AS vendedores,

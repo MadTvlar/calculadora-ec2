@@ -618,8 +618,6 @@ app.get('/rankmotos', async (req, res) => {
     const ultimaAtualizacaoRaw = ultimaAtualizacaoRows[0].ultimaAtualizacao || new Date();
     const ultimaAtualizacao = ultimaAtualizacaoRaw ? new Date(ultimaAtualizacaoRaw) : new Date();
 
-    console.log("ultimaAtualizacao:", ultimaAtualizacao);
-
     const meses = [
       'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
       'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
