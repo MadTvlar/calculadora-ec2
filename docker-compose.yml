@@ -2,11 +2,7 @@ version: "3.8"
 
 services:
   calculadora:
-<<<<<<< HEAD
     image: calculadora-ec2:prod # ⬅️ Nome fixo da imagem
-=======
-    image: calculadora-ec2:prod  # ⬅️ Nome fixo da imagem
->>>>>>> dd18c09958e32b8ce78cb827e0886040f7eb4372
     build: .
     ports:
       - "8080:8080"
