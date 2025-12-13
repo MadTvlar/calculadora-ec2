@@ -1,11 +1,11 @@
-version: '3.8'
+version: "3.8"
 
 services:
   calculadora:
-    image: calculadora-ec2:latest  # ⬅️ Nome fixo da imagem
+    image: calculadora-ec2:${DOCKER_NAME} # ⬅️ Nome fixo da imagem
     build: .
     ports:
-      - "8081:8080"
+      - "${DOCKER_PORT}:8080"
     restart: always
     env_file:
       - .env
