@@ -20,7 +20,7 @@ function delay(ms) {
 }
 
 // Função principal de atualização
-async function executarAtualizacao() {
+async function executarAtualizacao(apiUnica = null){
   console.log('Executando os fetch...');
 
     
@@ -38,50 +38,53 @@ async function executarAtualizacao() {
     const dataInicial = `${year}-${month}-01 00:00:00`;
     const dataFinal = `${year}-${month}-${day} 23:59:59`;
 
-    
-
-  
-
 
   try {
     const delayMs = 1000;
 
-    await fetchEstoqueMotores(pool);
+    const sendLog = (msg) => {
+        console.log(msg);
+    };
+
+    await fetchEstoqueMotores(pool,sendLog);
     await delay(delayMs);
 
-    await fetchEstoqueMotos(pool);
+    await fetchEstoqueMotos(pool,sendLog);
     await delay(delayMs);
 
-    await fetchMkVendasMotos(pool, dataInicial, dataFinal);
+    await fetchMkVendasMotos(pool,sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await fetchMKVendasSeminovas(pool, dataInicial, dataFinal);
+    await fetchMKVendasSeminovas(pool,sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await fetchMkContratosMotos(pool, dataInicial, dataFinal);
+    await fetchMkContratosMotos(pool,sendLog, dataInicial, dataFinal,sendLog);
     await delay(delayMs);
 
-    await fetchMkcaptacaoMotos(pool, dataInicial, dataFinal);
+    await fetchMkcaptacaoMotos(pool,sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await atualizarNPS(pool, mesReferente);
+    await atualizarNPS(pool,sendLog, mesReferente);
     await delay(delayMs);
 
-    await fetchAltervision(pool, dataInicial, dataFinal);
+    await fetchAltervision(pool,sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await fetchRankingGeralMotos(pool, mesReferente);
+    await fetchRankingGeralMotos(pool,sendLog, mesReferente);
     await delay(delayMs);
 
-    await fetchrankingPontosMotos(pool, mesReferente);
+    await fetchrankingPontosMotos(pool,sendLog, mesReferente);
     await delay(delayMs);
 
-    const agora = new Date();
-    await pool.query(
-      'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
-      [agora]
-    );
-    console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
+    if (!apiUnica) {
+        const agora = new Date();
+        await pool.query(
+          'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
+          [agora]
+        );
+        console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
+      }
+      
   } catch (err) {
     console.error('Erro na atualização:', err);
   }
