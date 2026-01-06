@@ -57,7 +57,7 @@ const bancos = [
 ];
 
 const bancoRetorno = [
-  "R0", "R1", "R2", "R3", "R4"
+  "R0", "R1", "R2", "R3", "R4", "R5"
 ];
 
 const filiais = [
