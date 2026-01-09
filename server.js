@@ -1387,15 +1387,38 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/download-excel', async (req, res) => {
+  try {
+    // =============================
+    // FUNÇÃO DE FORMATAÇÃO
+    // =============================
+    function formatarReal(valor) {
+      if (valor === null || valor === undefined) return '';
+      return Number(valor).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+    }
 
-  function formatarReal(valor) {
-    if (valor === null || valor === undefined) return '';
-    return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
+    // =============================
+    // BUSCA MÊS REFERENTE (SETTINGS)
+    // =============================
+    const [[setting]] = await connection.query(`
+      SELECT mesReferente
+      FROM settings
+      ORDER BY id DESC
+      LIMIT 1
+    `);
 
-  const [ano, mes] = referenteMes.split('-').map(Number);
+    if (!setting || !setting.mesReferente) {
+      return res.status(400).send('Mês referente não configurado no settings');
+    }
 
-  const queryVendas = `
+    const [ano, mes] = setting.mesReferente.split('-').map(Number);
+
+    // =============================
+    // QUERY DE VENDAS
+    // =============================
+    const queryVendas = `
       SELECT 
         vm.*,
         vm.empresa,
@@ -1412,45 +1435,51 @@ app.get('/download-excel', async (req, res) => {
         END AS status
       FROM (
         SELECT 
-          empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi, valor_venda, lucro_ope, quantidade, data_venda
+          empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi,
+          valor_venda, lucro_ope, quantidade, data_venda
         FROM microwork.vendas_motos
-        WHERE YEAR(data_venda) = ${ano} AND MONTH(data_venda) = ${mes}
+        WHERE YEAR(data_venda) = ${ano}
+          AND MONTH(data_venda) = ${mes}
 
         UNION ALL
 
         SELECT 
-          empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi, valor_venda, lucro_ope, quantidade, data_venda
+          empresa, id_microwork, vendedor, cpf_cnpj, modelo, chassi,
+          valor_venda, lucro_ope, quantidade, data_venda
         FROM microwork.vendas_seminovas
-        WHERE YEAR(data_venda) = ${ano} AND MONTH(data_venda) = ${mes}
+        WHERE YEAR(data_venda) = ${ano}
+          AND MONTH(data_venda) = ${mes}
       ) vm
       LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
       ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
     `;
 
+    const queryPontos = `
+      SELECT id_microwork, pontos, vendas, llo, captacao, contrato, retorno, NPS
+      FROM ranking_pontos
+    `;
 
-
-
-  const queryPontos = `
-    SELECT id_microwork, pontos, vendas, llo, captacao, contrato, retorno, NPS
-    FROM ranking_pontos
-  `;
-
-  try {
+    // =============================
+    // EXECUTA QUERIES
+    // =============================
     const [vendas] = await connection.query(queryVendas);
     const [pontos] = await connection.query(queryPontos);
 
+    // =============================
+    // EXCEL
+    // =============================
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Vendas');
 
     worksheet.columns = [
-      { header: 'Filial', key: 'empresa', width: 5 },
+      { header: 'Filial', key: 'empresa', width: 6 },
       { header: 'ID', key: 'id_microwork', width: 7 },
-      { header: 'Vendedor', key: 'nome_vendedor', width: 47 },
-      { header: 'cpf_cnpj', key: 'cpf_cnpj', width: 18 },
-      { header: 'Status', key: 'status', width: 9 },
+      { header: 'Vendedor', key: 'nome_vendedor', width: 40 },
+      { header: 'CPF/CNPJ', key: 'cpf_cnpj', width: 18 },
+      { header: 'Status', key: 'status', width: 10 },
       { header: 'Modelo', key: 'modelo', width: 30 },
       { header: 'Chassi', key: 'chassi', width: 20 },
-      { header: 'Data da Venda', key: 'data_venda', width: 15 },
+      { header: 'Data Venda', key: 'data_venda', width: 14 },
       { header: 'Valor', key: 'valor_venda', width: 12 },
       { header: 'Lucro Op.', key: 'lucro_ope', width: 12 },
       { header: 'Comissão', key: 'comissao', width: 12 },
@@ -1460,91 +1489,102 @@ app.get('/download-excel', async (req, res) => {
       { header: 'Captação', key: 'captacao', width: 9 },
       { header: 'Contrato', key: 'contrato', width: 9 },
       { header: 'Retorno', key: 'retorno', width: 8 },
-      { header: 'NPS', key: 'NPS', width: 5 },
-      { header: '', key: 'L', width: 68 }, // Coluna L
-      { header: '', key: 'M', width: 15 }, // Coluna M
-      { header: '', key: 'N', width: 22 }, // Coluna N
-      { header: '', key: 'O', width: 22 }  // Coluna O
+      { header: 'NPS', key: 'NPS', width: 6 },
+      { header: '', key: 'L', width: 55 },
+      { header: '', key: 'M', width: 15 },
+      { header: '', key: 'N', width: 22 },
+      { header: '', key: 'O', width: 22 }
     ];
 
+    // =============================
+    // MAPA DE PONTOS
+    // =============================
     const pontosPorId = {};
     pontos.forEach(p => pontosPorId[p.id_microwork] = p);
 
-    // Agrupar vendas por vendedor
-    let vendasPorVendedor = {};
-    vendas.forEach(venda => {
-      if ((venda.nome_vendedor || 'NÃO IDENTIFICADO') === 'NÃO IDENTIFICADO') return;
-      if (!vendasPorVendedor[venda.nome_vendedor]) vendasPorVendedor[venda.nome_vendedor] = [];
-      vendasPorVendedor[venda.nome_vendedor].push(venda);
+    // =============================
+    // AGRUPA POR VENDEDOR
+    // =============================
+    const vendasPorVendedor = {};
+    vendas.forEach(v => {
+      const nome = v.nome_vendedor || 'NÃO IDENTIFICADO';
+      if (nome === 'NÃO IDENTIFICADO') return;
+      if (!vendasPorVendedor[nome]) vendasPorVendedor[nome] = [];
+      vendasPorVendedor[nome].push(v);
     });
 
+    // =============================
+    // MONTA PLANILHA
+    // =============================
     Object.keys(vendasPorVendedor).forEach(nome_vendedor => {
-      const vendasVendedor = vendasPorVendedor[nome_vendedor];
+      const vendasVend = vendasPorVendedor[nome_vendedor];
       let somaComissao = 0;
-      vendasVendedor.forEach(venda => {
+
+      worksheet.addRow({});
+      const titulo = worksheet.addRow([`VENDEDOR: ${nome_vendedor}`]);
+      titulo.font = { bold: true };
+
+      vendasVend.forEach(venda => {
         somaComissao += Number(venda.comissao) || 0;
-        const pontoInfo = pontosPorId[venda.id_microwork] || {};
+        const p = pontosPorId[venda.id_microwork] || {};
+
         worksheet.addRow({
-          empresa: venda.empresa || 'NÃO IDENTIFICADA',
+          empresa: venda.empresa,
           id_microwork: venda.id_microwork,
           nome_vendedor: venda.nome_vendedor,
           cpf_cnpj: venda.cpf_cnpj,
           status: venda.status,
           modelo: venda.modelo,
           chassi: venda.chassi,
-          data_venda: venda.data_venda ? new Date(venda.data_venda).toLocaleDateString() : '',
+          data_venda: venda.data_venda
+            ? new Date(venda.data_venda).toLocaleDateString('pt-BR')
+            : '',
           valor_venda: formatarReal(venda.valor_venda),
           lucro_ope: formatarReal(venda.lucro_ope),
           comissao: formatarReal(venda.comissao),
-          pontos: pontoInfo.pontos || 0,
-          vendas: pontoInfo.vendas || 0,
-          llo: pontoInfo.llo || 0,
-          captacao: pontoInfo.captacao || 0,
-          contrato: pontoInfo.contrato || 0,
-          retorno: pontoInfo.retorno || 0,
-          NPS: pontoInfo.NPS || 0
+          pontos: p.pontos || 0,
+          vendas: p.vendas || 0,
+          llo: p.llo || 0,
+          captacao: p.captacao || 0,
+          contrato: p.contrato || 0,
+          retorno: p.retorno || 0,
+          NPS: p.NPS || 0
         });
       });
-      // Linha de totalizador a partir da coluna L
-      const pontoInfoTotal = pontosPorId[vendasVendedor[0].id_microwork] || {};
-      worksheet.addRow({
-        empresa: '',
-        id_microwork: '',
-        nome_vendedor: '',
-        cpf_cnpj: '',
-        status: '',
-        modelo: '',
-        chassi: '',
-        data_venda: '',
-        valor_venda: '',
-        lucro_ope: '',
-        comissao: '',
-        pontos: '',
-        vendas: '',
-        llo: '',
-        captacao: '',
-        contrato: '',
-        retorno: '',
-        NPS: '',
-        L: 'TOTAL DO VENDEDOR: ' + nome_vendedor,
-        M: 'PONTOS: ' + (pontoInfoTotal.pontos || 0),
-        N: 'COMISSÃO: ' + formatarReal(somaComissao),
-        O: 'TOTAL: ' + formatarReal(somaComissao + (pontoInfoTotal.pontos || 0))
+
+      const pTotal = pontosPorId[vendasVend[0].id_microwork] || {};
+      const totalRow = worksheet.addRow({
+        L: `TOTAL DO VENDEDOR: ${nome_vendedor}`,
+        M: `PONTOS: ${pTotal.pontos || 0}`,
+        N: `COMISSÃO: ${formatarReal(somaComissao)}`,
+        O: `TOTAL: ${formatarReal(somaComissao + (pTotal.pontos || 0))}`
       });
-      // Linha em branco para separar
+
+      totalRow.font = { bold: true };
       worksheet.addRow({});
     });
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="vendas.xlsx"');
+    // =============================
+    // DOWNLOAD
+    // =============================
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="vendas_${ano}_${mes}.xlsx"`
+    );
 
     await workbook.xlsx.write(res);
     res.end();
+
   } catch (err) {
     console.error('Erro ao gerar Excel:', err);
     res.status(500).send('Erro ao gerar Excel');
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
