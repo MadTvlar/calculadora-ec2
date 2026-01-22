@@ -560,7 +560,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
               if (checkboxEmplacamento.checked && formaPagamento === "Financiado") {
 
                 let ipva = precoNegociado * valorMesAtual;
-                if (ipva < 420) ipva = 0;
+                if (ipva < 420.01) ipva = 0;
 
                 despEmplacamento = ipva + 147.87 + 290 + 351.69;
 
@@ -573,7 +573,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
               } else if (checkboxEmplacamento.checked && formaPagamento === "À Vista") {
 
                 let ipva = entradaReal * valorMesAtual;
-                if (ipva < 420) ipva = 0;
+                if (ipva < 420.01) ipva = 0;
 
                 despEmplacamento = ipva + 147.87 + 290 + 237.71;
 
