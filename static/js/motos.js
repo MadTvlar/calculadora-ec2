@@ -443,6 +443,10 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
             resultadoBanco = resultBanco * 0.048;
             document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
 
+          } else if (bancoRetorno === "R5") {
+            resultadoBanco = resultBanco * 0.06;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
           } else {
             resultadoBanco = 0;
             document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
@@ -494,7 +498,7 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
               `Margem Bruta: ${'.'.repeat(81)} R$ ${margem_bruta.toFixed(2).replace('.', ',')}`;
 
             if (checkboxEmplacamento.checked) {
-              despEmplacamento = (valorVendaReal * valorMesAtual) + 140.75 + 290 + 227.08;
+              despEmplacamento = (valorVendaReal * valorMesAtual) + 147,87 + 290 + 237.71;
               document.getElementById('custo_emplacamento').innerText =
                 `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
 
@@ -552,22 +556,44 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
 
 
         const checkboxEmplacamento = document.getElementById('enableEmplacamento');
-        if (checkboxEmplacamento.checked && formaPagamento === "Financiado") {
-          despEmplacamento = (precoNegociado * valorMesAtual) + 140.75 + 290 + 335.52;
-          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
 
-        } else if (checkboxEmplacamento.checked && formaPagamento === "À Vista") {
-          despEmplacamento = (entradaReal * valorMesAtual) + 140.75 + 290 + 227.08;
-          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+              if (checkboxEmplacamento.checked && formaPagamento === "Financiado") {
 
-        } else if (formaPagamento !== "Cartão de Crédito") {
-          despEmplacamento = 0;
+                let ipva = precoNegociado * valorMesAtual;
+                if (ipva < 420) ipva = 0;
 
-          document.getElementById('custo_emplacamento').innerText = `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
-          document.getElementById('receita_emplacamento').innerText = `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
-        }
+                despEmplacamento = ipva + 147.87 + 290 + 351.69;
+
+                document.getElementById('custo_emplacamento').innerText =
+                  `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+
+                document.getElementById('receita_emplacamento').innerText =
+                  `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+
+              } else if (checkboxEmplacamento.checked && formaPagamento === "À Vista") {
+
+                let ipva = entradaReal * valorMesAtual;
+                if (ipva < 420) ipva = 0;
+
+                despEmplacamento = ipva + 147.87 + 290 + 237.71;
+
+                document.getElementById('custo_emplacamento').innerText =
+                  `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+
+                document.getElementById('receita_emplacamento').innerText =
+                  `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+
+              } else if (formaPagamento !== "Cartão de Crédito") {
+
+                despEmplacamento = 0;
+
+                document.getElementById('custo_emplacamento').innerText =
+                  `Emplacamento Custo: ${'.'.repeat(69)} R$ -${despEmplacamento.toFixed(2).replace('.', ',')}`;
+
+                document.getElementById('receita_emplacamento').innerText =
+                  `Emplacamento Receita: ${'.'.repeat(66)} R$ ${retornoEmplacamento.toFixed(2).replace('.', ',')}`;
+              }
+
 
 
         if (formaPagamento !== "Cartão de Crédito") {

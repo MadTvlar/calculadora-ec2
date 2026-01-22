@@ -4,7 +4,7 @@ require('dotenv').config();
 const axios = require('axios');
 
 
-async function fetchAltervision(pool, dataInicial, dataFinal, sendLog) {
+async function fetchAltervision(pool, sendLog, dataInicial, dataFinal) {
   const url = `https://bergasls.painelalter.com/api/v2/count?dateBegin=${dataInicial}&dateEnd=${dataFinal}&eventType=11&groupBy=day`;
 
   try {
