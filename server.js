@@ -39,7 +39,7 @@ const { settings } = require('cluster');
 app.use('/', rotaMercado);
 
 // CONFIGURAÇÃO DE GERAL DE VENDAS RANK - RESUMO E MINHAS VENDAS
-const referenteMes = '2025-11';
+const referenteMes = '2026-11';
 
 // FUNÇÃO PARA SE OBTER O VALOR DO EMPLACAMENTO NO MÊS QUE ESTAMOS
 function obterValorMesAtual() {
@@ -1392,8 +1392,12 @@ app.get('/download-excel', async (req, res) => {
     if (valor === null || valor === undefined) return '';
     return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
+  const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
 
-  const [ano, mes] = referenteMes.split('-').map(Number);
+  const [rows] = await connection.query(consulta);  
+  const mesReferente = rows[0].mesReferente;
+
+  const [ano, mes] = mesReferente.split('-').map(Number);
 
   const queryVendas = `
       SELECT 
