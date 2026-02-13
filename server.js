@@ -1,5 +1,6 @@
 // CONFIGURAÇÕES INICIAIS
 require('dotenv').config();
+require('./services/db');
 
 //PACOTES EXTERNOS
 const express = require('express');
