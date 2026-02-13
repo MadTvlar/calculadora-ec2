@@ -76,16 +76,16 @@ const icms_venda = {
   "Para Fora do Estado": 0.12,
   "Base Reduzida": 0.07,
 }
-  const atualizarRankings = require('./routes/rankingGeralMotos');
-  const fetchEstoqueMotores = require('./routes/estoqueMotores');
-  const fetchEstoqueMotos = require('./routes/estoqueMotos');
-  const fetchMkVendasMotos = require('./routes/mkVendasMotos');
-  const fetchMKVendasSeminovas = require('./routes/mkVendasSimonovas');
-  const fetchMkContratosMotos = require('./routes/mkContratosMotos');
-  const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
-  const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
-  const fetchAltervision = require('./routes/altervision');
-  const atualizarNPS = require('./routes/nps');
+const atualizarRankings = require('./routes/rankingGeralMotos');
+const fetchEstoqueMotores = require('./routes/estoqueMotores');
+const fetchEstoqueMotos = require('./routes/estoqueMotos');
+const fetchMkVendasMotos = require('./routes/mkVendasMotos');
+const fetchMKVendasSeminovas = require('./routes/mkVendasSimonovas');
+const fetchMkContratosMotos = require('./routes/mkContratosMotos');
+const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
+const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
+const fetchAltervision = require('./routes/altervision');
+const atualizarNPS = require('./routes/nps');
 
 const api_list = {
   "Rankings": atualizarRankings,
@@ -202,7 +202,7 @@ app.get('/aviso', (req, res) => {
   if (!usuarioLogado) {
     return res.redirect('/');
   }
-    res.render('avisoRanking', {
+  res.render('avisoRanking', {
     usuario: usuarioLogado,
     grupo: grupoLogado,
 
@@ -222,7 +222,7 @@ app.post('/settings/save', async (req, res) => {
     );
 
     res.redirect('/settings?ok=1');
-    
+
   } catch (err) {
     console.error(err);
     res.status(500).send("Erro ao salvar configurações");
@@ -237,25 +237,25 @@ app.post('/run-api', async (req, res) => {
   if (!api_list[name]) {
     return res.status(400).json({ error: 'API não encontrada' });
   }
-  
-    const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
 
-    const [rows] = await pool.query(consulta);  
-    const mesReferente = rows[0].mesReferente; 
- try {
+  const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
+
+  const [rows] = await pool.query(consulta);
+  const mesReferente = rows[0].mesReferente;
+  try {
     let resultado;
 
     // Se a função tiver parâmetros de datas, enviamos
     const fn = api_list[name];
 
-      if (fn.length <= 2 ) {
-        // função com 2 parâmetros
-        resultado = await fn(pool, mesReferente);
-      }
-      else if (fn.length === 3) {
-        // função com 3 parâmetros
-        resultado = await fn(pool, dataInicial, dataFinal);
-      }
+    if (fn.length <= 2) {
+      // função com 2 parâmetros
+      resultado = await fn(pool, mesReferente);
+    }
+    else if (fn.length === 3) {
+      // função com 3 parâmetros
+      resultado = await fn(pool, dataInicial, dataFinal);
+    }
 
 
     res.json({ ok: true, resultado });
@@ -292,26 +292,26 @@ app.post('/run-api-stream', async (req, res) => {
 
     const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
 
-    const [rows] = await pool.query(consulta);  
-    const mesReferente = rows[0].mesReferente; 
+    const [rows] = await pool.query(consulta);
+    const mesReferente = rows[0].mesReferente;
 
     const fn = api_list[name];
 
     let resultado;
 
     // Decide dinamicamente quantos argumentos enviar
-      if (fn.length === 4) {
-        // pool, dataInicial, dataFinal, sendLog
-        sendLog(`Data Inical: ${dataInicial}  Data Final: ${dataFinal}`)
-        resultado = await fn(pool, sendLog, dataInicial, dataFinal);
-      } else {
-        // pool, dataInicial, sendLog
-        sendLog(`Referente ao mês: ${mesReferente}`)
-        resultado = await fn(pool, sendLog, mesReferente);
-      }
+    if (fn.length === 4) {
+      // pool, dataInicial, dataFinal, sendLog
+      sendLog(`Data Inical: ${dataInicial}  Data Final: ${dataFinal}`)
+      resultado = await fn(pool, sendLog, dataInicial, dataFinal);
+    } else {
+      // pool, dataInicial, sendLog
+      sendLog(`Referente ao mês: ${mesReferente}`)
+      resultado = await fn(pool, sendLog, mesReferente);
+    }
 
     sendLog("FINALIZADO");
-   
+
 
   } catch (err) {
     sendLog("ERRO: " + err.message);
@@ -475,7 +475,7 @@ app.get('/minhasvendas', async (req, res) => {
     return res.redirect('/');
   }
 
-const referenteMes = new Date().toISOString().slice(0, 7);
+  const referenteMes = new Date().toISOString().slice(0, 7);
   const queryVendas = `
     SELECT * FROM (
       SELECT 
@@ -514,7 +514,7 @@ const referenteMes = new Date().toISOString().slice(0, 7);
     FROM ranking_pontos
     WHERE id_microwork = ?
   `;
-    
+
   try {
     const [vendas] = await connection.query(queryVendas, [
       idLogado, referenteMes, idLogado, referenteMes
@@ -522,17 +522,18 @@ const referenteMes = new Date().toISOString().slice(0, 7);
 
     let [result] = await connection.query(queryPontos, [idLogado]);
     if (result.length === 0) {
-    result = [
-    {
-      pontos:0,
-      captacao: 0,
-      contrato: 0,
-      retorno: 0,
-      NPS: 0
-    }];}
+      result = [
+        {
+          pontos: 0,
+          captacao: 0,
+          contrato: 0,
+          retorno: 0,
+          NPS: 0
+        }];
+    }
 
     const { pontos, NPS, captacao, contrato, retorno } = result[0];
-    
+
 
     res.render('minhasvendas', {
       usuario: usuarioLogado,
@@ -540,9 +541,9 @@ const referenteMes = new Date().toISOString().slice(0, 7);
       id: idLogado,
       vendas,
       pontos,
-      NPS, 
-      captacao, 
-      contrato, 
+      NPS,
+      captacao,
+      contrato,
       retorno
     });
   } catch (err) {
@@ -949,33 +950,38 @@ app.get('/rh', async (req, res) => {
   const grupoLogado = req.cookies.grupo_logado;
   const idLogado = req.cookies.id_logado;
 
+  const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
+
+  const [rows] = await connection.query(consulta);  // pega só os resultados
+  const mesReferente = rows[0].mesReferente;  // pega a string da primeira linha
+
   const queryVendas = `
-    SELECT 
-      vm.*,
-      vm.empresa,
-      rp.vendedor AS nome_vendedor,
-      CASE 
-        WHEN vm.quantidade = 1 AND vm.lucro_ope * 0.085 < 0 THEN 0
-        WHEN vm.quantidade = 0 AND vm.lucro_ope * 0.085 > 0 THEN 0
-        WHEN vm.quantidade = -1 AND vm.lucro_ope * 0.085 > 0 THEN 0
-        ELSE vm.lucro_ope * 0.085
-      END AS comissao,
-      CASE 
-        WHEN vm.quantidade = 1 THEN 'Vendido'
-        WHEN vm.quantidade = 0 OR vm.quantidade = -1 THEN 'Devolvida'
-      END AS status
-    FROM (
-      SELECT empresa, id_microwork, modelo, chassi, vendedor, valor_venda, lucro_ope, quantidade, data_venda
-      FROM microwork.vendas_motos
-      WHERE YEAR(data_venda) = YEAR(CURDATE()) AND MONTH(data_venda) = MONTH(CURDATE())
-      UNION ALL
-      SELECT empresa, id_microwork, modelo, chassi, vendedor, lucro_ope, valor_venda, quantidade, data_venda
-      FROM microwork.vendas_seminovas
-      WHERE YEAR(data_venda) = YEAR(CURDATE()) AND MONTH(data_venda) = MONTH(CURDATE())
-    ) vm
-    LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
-    ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
-  `;
+  SELECT 
+    vm.*,
+    vm.empresa,
+    rp.vendedor AS nome_vendedor,
+    CASE 
+      WHEN vm.quantidade = 1 AND vm.lucro_ope * 0.085 < 0 THEN 0
+      WHEN vm.quantidade = 0 AND vm.lucro_ope * 0.085 > 0 THEN 0
+      WHEN vm.quantidade = -1 AND vm.lucro_ope * 0.085 > 0 THEN 0
+      ELSE vm.lucro_ope * 0.085
+    END AS comissao,
+    CASE 
+      WHEN vm.quantidade = 1 THEN 'Vendido'
+      WHEN vm.quantidade = 0 OR vm.quantidade = -1 THEN 'Devolvida'
+    END AS status
+  FROM (
+    SELECT empresa, id_microwork, modelo, chassi, vendedor, valor_venda, lucro_ope, quantidade, data_venda
+    FROM microwork.vendas_motos
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
+    UNION ALL
+    SELECT empresa, id_microwork, modelo, chassi, vendedor, lucro_ope, valor_venda, quantidade, data_venda
+    FROM microwork.vendas_seminovas
+    WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
+  ) vm
+  LEFT JOIN ranking_pontos rp ON vm.id_microwork = rp.id_microwork
+  ORDER BY vm.empresa ASC, rp.vendedor ASC, vm.data_venda DESC
+`;
 
   const queryPontos = `
     SELECT id_microwork, pontos, vendas, llo, captacao, contrato, retorno, NPS
@@ -984,7 +990,7 @@ app.get('/rh', async (req, res) => {
 
   try {
     const [[vendas], [pontos]] = await Promise.all([
-      connection.query(queryVendas),
+      connection.query(queryVendas, [mesReferente, mesReferente]),
       connection.query(queryPontos)
     ]);
 

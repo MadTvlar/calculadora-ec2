@@ -22,7 +22,7 @@ async function initDatabase() {
     console.log('Conectado ao banco de dados "tropa_azul"!');
 
 
-      // Criar a tabela 'vendas' caso não exista
+    // Criar a tabela 'vendas' caso não exista
     const createSimulacaoMotos = `
       CREATE TABLE IF NOT EXISTS simulacao_motos (
         id int NOT NULL AUTO_INCREMENT,
@@ -409,9 +409,7 @@ async function initDatabase() {
 
     const createSettings = ` 
       CREATE TABLE IF NOT EXISTS settings (
-        id int DEFAULT NULL,
-        dataInicial date DEFAULT NULL,
-        dataFinal date DEFAULT NULL,
+        id int  AUTO-INCREMENT DEFAULT NULL,
         mesReferente varchar(10) DEFAULT NULL
       );
     `;
@@ -421,8 +419,8 @@ async function initDatabase() {
   } catch (error) {
     console.error('Erro ao inicializar o banco:', error);
   }
- }
- initDatabase(); 
-  
+}
+initDatabase();
+
 // Exportar o pool de conexões
 module.exports = pool;
