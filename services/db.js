@@ -430,6 +430,18 @@ async function initDatabase() {
     `;
     connection.query(createVendedores);
 
+    const createRankingTipos = `
+      CREATE TABLE IF NOT EXISTS core_ranking_tipos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        descricao TEXT,
+        ano_referencia INT NOT NULL,
+        ativo TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    connection.query(createRankingTipos);
+
     const createGrupos = `
       CREATE TABLE IF NOT EXISTS dominio_grupos (
         grupo_id INT NOT NULL AUTO_INCREMENT,
@@ -614,18 +626,6 @@ async function initDatabase() {
       );
     `;
     connection.query(createRankingMetricas);
-
-    const createRankingTipos = `
-      CREATE TABLE IF NOT EXISTS core_ranking_tipos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nome VARCHAR(100) NOT NULL,
-        descricao TEXT,
-        ano_referencia INT NOT NULL,
-        ativo TINYINT(1) DEFAULT 1,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `;
-    connection.query(createRankingTipos);
 
     const createRankingRegras = `
       CREATE TABLE IF NOT EXISTS core_ranking_regras (
