@@ -1,197 +1,392 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SETTINGS</title>
-    <link rel="stylesheet" href="/css/settings.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <link rel="stylesheet" href="/css/header.css" />
-    <link rel="stylesheet" href="/css/sideBar.css" />
-    <link rel="stylesheet" href="/css/default.css" />
-  </head>
 
-  <body>
-    <header class="header">
-      <div class="userName" id="user"><span><%= usuario %></span></div>
-    </header>
-    <nav id="sidebar" class="fechado">
-      <div class="logoContainer">
-        <a href="/segmentos" class="logoLink">
-          <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SETTINGS</title>
+  <link rel="stylesheet" href="/css/settings.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/css/sideBar.css" />
+  <link rel="stylesheet" href="/css/default.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <header class="header">
+    <div class="userName" id="user"><span>
+        <%= usuario %>
+      </span></div>
+  </header>
+  <nav id="sidebar" class="fechado">
+    <div class="logoContainer">
+      <a href="/segmentos" class="logoLink">
+        <img src="/images/tropa_azul.png" alt="TVLAR MOTOS" class="logo" />
+      </a>
+      <img src="/images/tropa_azul_icon.png" alt="TVLAR MOTOS" class="logoIcon" id="toggleIcon" />
+    </div>
+
+    <div class="listMedium">
+      <a href="/segmentos"><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a>
+    </div>
+
+    <div class="btLogout">
+      <button class="btFechar">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <a href="/logout" class="item-description">
+          <span>Sair</span>
         </a>
-        <img
-          src="/images/tropa_azul_icon.png"
-          alt="TVLAR MOTOS"
-          class="logoIcon"
-          id="toggleIcon"
-        />
-      </div>
+      </button>
+    </div>
+  </nav>
+  <div id="overlay"></div>
 
-      <div class="listMedium">
-        <a href="/segmentos"
-          ><i class="fa-solid fa-rotate-left"></i>&nbsp;<span> Voltar</span></a
-        >
-      </div>
-
-      <div class="btLogout">
-        <button class="btFechar">
-          <i class="fa-solid fa-right-from-bracket"></i>
-          <a href="/logout" class="item-description">
-            <span>Sair</span>
-          </a>
-        </button>
-      </div>
-    </nav>
-    <div id="overlay"></div>
-
-    <main class="settings-container">
-      <!-- Seção Superior Esquerda -->
-      <section class="settings-section top-left">
-        <div class="section-header">
-          <div class="input-group">
-            <label>Selecione o dia inicial</label>
-            <input type="date" id="dataInicial" />
-          </div>
-          <div class="input-group">
-            <label>Dia Final</label>
-            <input type="date" id="dataFinal" />
-          </div>
-
-          <div class="input-group">
-            <label>API</label>
-            <select id="selectApi">
-              <option value="">Selecione...</option>
-
-              <% api.forEach(item => { %>
-              <option value="<%= item %>"><%= item %></option>
-              <% }) %>
-            </select>
-          </div>
-          <button class="btn-primary" id="btnInserir" type="button">Inserir</button>
+  <main class="settings-container">
+    <!-- Seção Superior Esquerda -->
+    <section class="settings-section top-left">
+      <div class="section-header">
+        <div class="input-group">
+          <label>Selecione o dia inicial</label>
+          <input type="date" id="dataInicial" />
         </div>
-        <div class="section-content">
-          <h3>Logs da API:</h3>
-          <pre
-            id="logArea"
-            style="
+        <div class="input-group">
+          <label>Dia Final</label>
+          <input type="date" id="dataFinal" />
+        </div>
+
+        <div class="input-group">
+          <label>API</label>
+          <select id="selectApi">
+            <option value="">Selecione...</option>
+
+            <% api.forEach(item=> { %>
+              <option value="<%= item %>">
+                <%= item %>
+              </option>
+              <% }) %>
+          </select>
+        </div>
+        <button class="btn-primary" id="btnInserir" type="button">Inserir</button>
+      </div>
+      <div class="section-content">
+        <h3>Logs da API:</h3>
+        <pre id="logArea" style="
               background: #111;
               color: #0f0;
               padding: 10px;
               height: 300px;
               overflow-y: auto;
-            "
-          ></pre>
-        </div>
-      </section>
+            "></pre>
+      </div>
+    </section>
 
-      <!-- Seção Superior Direita -->
-      <section class="settings-section top-right">
-        <form action="/settings/save" method="POST">
-          <div class="section-header">
-            <div class="input-group">
-              <label>Mês e Ano</label>
-              <input
-                type="month"
-                id="mesAno"
-                name="mesAno"
-                value="<%= settings.mesReferente %>"
-              />
-            </div>
-            <button class="btn-secondary">Mudar mês</button>
+    <!-- Seção Superior Direita -->
+    <section class="settings-section top-right">
+      <form action="/settings/save" method="POST">
+        <div class="section-header">
+          <div class="input-group">
+            <label>Mês e Ano</label>
+            <input type="month" id="mesAno" name="mesAno" value="<%= settings.mesReferente %>" />
           </div>
-          <div class="section-actions">
-            <button class="btn-update" type="submit">Atualizar Ranking</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Seção Vendas Motos Novas -->
-      <section class="settings-section middle-section">
-        <h2 class="section-title">Vendas de motos novas que são diferentes</h2>
-        <div class="section-content">
-          <!-- Conteúdo será adicionado aqui -->
+          <button class="btn-secondary">Mudar mês</button>
         </div>
-      </section>
-
-      <!-- Seção Vendas Motos Seminovas -->
-      <section class="settings-section bottom-section">
-        <h2 class="section-title">
-          Vendas de motos seminovas que são diferentes
-        </h2>
-        <div class="section-content">
-          <!-- Conteúdo será adicionado aqui -->
+        <div class="section-actions">
+          <button class="btn-update" type="submit">Atualizar Ranking</button>
         </div>
-      </section>
-    </main>
+      </form>
+    </section>
 
-    <!-- Toast de Sucesso -->
-    <div id="toastSuccess" class="toast-message">
-      <i class="fa-solid fa-check-circle"></i>
-      <span>Dados inseridos com sucesso</span>
+    <div class="flex gap-4 mt-4">
+      <button id="btnGerarSnapshot"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold">
+        Gerar Snapshot
+      </button>
+
+      <button id="btnCalcularRanking"
+        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold">
+        Calcular Ranking
+      </button>
     </div>
-    <div id="apiFullData" data-json="<%- JSON.stringify(apiFull) %>"></div>
-    <script>
-      document
-        .getElementById("btnInserir")
-        .addEventListener("click", async () => {
-          const api = document.getElementById("selectApi").value;
-          const dataInicial = document.getElementById("dataInicial").value;
-          const dataFinal = document.getElementById("dataFinal").value;
 
-          if (!api) {
-            alert("Selecione a API");
-            return;
-          }
+    <!-- Seção Grupo de Vendedores -->
+    <section class="settings-section ranking-config-section">
 
-          document.getElementById("logArea").innerText = "Iniciando...";
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-700">
+          Controle do Grupo
+        </h2>
 
-          const response = await fetch("/run-api-stream", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: api, dataInicial, dataFinal }),
-          });
+        <span id="rankingMesLabel" class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
+        </span>
+      </div>
 
-          if (!response.ok) {
-            alert("Erro ao iniciar stream");
-            return;
-          }
+      <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
 
-          const reader = response.body.getReader();
-          const decoder = new TextDecoder();
+        <div class="flex items-center justify-between flex-wrap gap-4">
 
-          function lerStream() {
-            reader.read().then(({ done, value }) => {
-              if (done) return;
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold text-gray-600">
+              Grupo
+            </label>
+            <select id="rankingGrupoSelect" class="border border-gray-300 rounded-lg px-4 py-2">
+            </select>
+          </div>
 
-              const texto = decoder.decode(value, { stream: true });
+          <div>
+            <span class="text-sm text-gray-600">Status do Ranking:</span>
+            <span id="rankingStatus" class="ml-2 font-semibold text-green-600">
+              Carregando...
+            </span>
+          </div>
 
-              texto.split("\n").forEach((linha) => {
-                if (linha.startsWith("data: ")) {
-                  const msg = linha.replace("data: ", "").trim();
+          <div class="flex gap-3">
+            <button id="btnFecharRanking"
+              class="bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded-lg text-sm font-semibold">
+              Fechar Ranking
+            </button>
 
-                  const logArea = document.getElementById("logArea");
-                  logArea.innerText += "\n" + msg;
-                  logArea.scrollTop = logArea.scrollHeight;
+            <button id="btnReabrirRanking"
+              class="bg-yellow-500 hover:bg-yellow-600 transition text-white px-4 py-2 rounded-lg text-sm font-semibold">
+              Reabrir Ranking
+            </button>
+          </div>
 
-                  if (msg === "FINALIZADO") {
-                    console.log("Stream finalizada.");
-                  }
-                }
-              });
+        </div>
 
-              lerStream();
-            });
-          }
+      </div>
 
-          lerStream();
-        });
-    </script>
-    <script src="/js/sidebar.js"></script>
-    <script src="/js/overlay.js"></script>
-    <!-- <script src="/js/btnInserir.js"></script> -->
-  </body>
+    </section>
+
+    <!-- Seção Grupo de Vendedores -->
+    <section class="settings-section middle-section">
+      <h2 class="text-xl font-bold text-gray-700 mb-4">
+        Grupos de Vendedores
+      </h2>
+
+      <div class="bg-gray-50 p-8 rounded-2xl shadow-inner border border-gray-200">
+
+        <!-- FORM -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold text-gray-600">Nome do Grupo</label>
+            <input id="grupoNome" type="text" placeholder="Ex: Vendas Internas"
+              class="border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition rounded-lg px-4 py-2 outline-none" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold text-gray-600">Descrição</label>
+            <input id="grupoDescricao" type="text" placeholder="Descrição opcional"
+              class="border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition rounded-lg px-4 py-2 outline-none" />
+          </div>
+
+          <div class="flex items-end">
+            <button id="btnSalvarGrupo"
+              class="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-semibold rounded-lg px-6 py-2 shadow-md flex items-center justify-center gap-2">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Salvar</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- TABELA -->
+        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+          <table class="min-w-full text-sm text-left text-gray-700">
+            <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wider">
+              <tr>
+                <th class="px-6 py-3">Nome</th>
+                <th class="px-6 py-3">Descrição</th>
+                <th class="px-6 py-3 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="grupoTableBody" class="divide-y divide-gray-200 bg-white">
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Seção de Vinculo Vendedor e Grupo -->
+    <section class="settings-section bottom-section mt-10">
+
+      <h2 class="text-xl font-bold text-gray-700 mb-6">
+        Vincular Vendedores aos Grupos
+      </h2>
+
+      <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-200">
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-start">
+
+          <!-- COLUNA GRUPOS -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-600 mb-3">
+              Grupos
+            </label>
+
+            <input id="grupoSearch" type="text" placeholder="Buscar grupo..."
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:ring-2 focus:ring-blue-500" />
+
+            <div id="grupoList"
+              class="h-64 overflow-y-auto border border-gray-200 rounded-xl bg-gray-50 divide-y divide-gray-200">
+            </div>
+          </div>
+
+          <!-- BOTÃO CENTRAL -->
+          <div class="flex items-center justify-center">
+            <button id="btnVincular"
+              class="bg-green-600 hover:bg-green-700 transition text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 text-sm font-semibold">
+              <i class="fa-solid fa-link"></i>
+              Vincular
+            </button>
+          </div>
+
+          <!-- COLUNA VENDEDORES -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-gray-600 mb-3">
+              Vendedores
+            </label>
+
+            <input id="vendedorSearch" type="text" placeholder="Buscar vendedor..."
+              class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:ring-2 focus:ring-green-500" />
+
+            <div id="vendedorList"
+              class="h-64 overflow-y-auto border border-gray-200 rounded-xl bg-gray-50 divide-y divide-gray-200">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- LISTA VINCULADOS -->
+        <div class="mt-10">
+          <h3 class="text-md font-semibold text-gray-600 mb-4">
+            Vendedores vinculados ao grupo selecionado
+          </h3>
+
+          <div class="rounded-xl border border-gray-200 overflow-hidden">
+            <table class="min-w-full text-sm text-left">
+              <thead class="bg-gray-100 text-gray-600 text-xs uppercase">
+                <tr>
+                  <th class="px-6 py-3">Vendedor</th>
+                  <th class="px-6 py-3 text-center">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="vinculadosTableBody" class="divide-y divide-gray-200 bg-white">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Seção Métricas -->
+    <section class="settings-section middle-section mt-10">
+
+      <h2 class="text-xl font-bold text-gray-700 mb-4">
+        Métricas do Ranking
+      </h2>
+
+      <div class="bg-gray-50 p-8 rounded-2xl shadow-inner border border-gray-200">
+
+        <!-- TABELA MÉTRICAS -->
+        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+          <table class="min-w-full text-sm text-left text-gray-700">
+            <thead class="bg-gray-100 text-gray-600 uppercase text-xs tracking-wider">
+              <tr>
+                <th class="px-6 py-3">Métrica</th>
+                <th class="px-6 py-3">Descrição</th>
+              </tr>
+            </thead>
+            <tbody id="metricaTableBody" class="divide-y divide-gray-200 bg-white">
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Seção Regras do Ranking -->
+    <section class="settings-section middle-section mt-10">
+
+      <h2 class="text-xl font-bold text-gray-700 mb-4">
+        Regras do Ranking
+      </h2>
+
+      <div class="bg-gray-50 p-8 rounded-2xl shadow-inner border border-gray-200">
+
+        <!-- Seleção Tipo -->
+        <div class="mb-6">
+          <label class="text-sm font-semibold text-gray-600">
+            Tipo de Ranking
+          </label>
+          <select id="regraRankTipo" class="border border-gray-300 rounded-lg px-4 py-2 w-full mt-2">
+          </select>
+        </div>
+
+        <!-- FORM -->
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
+
+          <select id="regraMetrica" class="border border-gray-300 rounded-lg px-4 py-2">
+            <option value="">Selecione Métrica</option>
+          </select>
+
+          <input id="regraMin" type="number" step="0.01" placeholder="Min"
+            class="border border-gray-300 rounded-lg px-4 py-2" />
+
+          <input id="regraMax" type="number" step="0.01" placeholder="Max"
+            class="border border-gray-300 rounded-lg px-4 py-2" />
+
+          <input id="regraPontos" type="number" step="0.01" placeholder="Pontos"
+            class="border border-gray-300 rounded-lg px-4 py-2" />
+
+          <select id="regraMultiplica" class="border border-gray-300 rounded-lg px-4 py-2">
+            <option value="">Multiplica Por (opcional)</option>
+          </select>
+
+          <button id="btnSalvarRegra" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-2">
+            Salvar
+          </button>
+
+        </div>
+
+        <!-- TABELA -->
+        <div class="overflow-x-auto border border-gray-200 rounded-xl">
+          <table class="min-w-full text-sm text-left">
+            <thead class="bg-gray-100 text-xs uppercase text-gray-600">
+              <tr>
+                <th class="px-4 py-3">Métrica</th>
+                <th class="px-4 py-3">Min</th>
+                <th class="px-4 py-3">Max</th>
+                <th class="px-4 py-3">Pontos</th>
+                <th class="px-4 py-3">Multiplica</th>
+                <th class="px-4 py-3 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="regrasTableBody" class="divide-y divide-gray-200 bg-white">
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast de Sucesso -->
+  <div id="toastSuccess" class="toast-message">
+    <i class="fa-solid fa-check-circle"></i>
+    <span>Dados inseridos com sucesso</span>
+  </div>
+  <div id="apiFullData" data-json="<%- JSON.stringify(apiFull) %>"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/overlay.js"></script>
+
+</body>
+
 </html>

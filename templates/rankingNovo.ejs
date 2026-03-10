@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RANKING</title>
+
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/default.css" />
+    <link rel="stylesheet" href="/css/rankingNovo.css" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+
+    <style>
+        .loadingModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loadingBox {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .loadingText {
+            font-weight: 600;
+            margin-top: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <a href="/segmentos" class="logoLink">
+                <img src="/images/tropa_azul.png" class="logo" />
+            </a>
+        </div>
+        <div class="userName">
+            <span>
+                <%= usuario %>
+            </span>
+        </div>
+    </header>
+
+    <div id="overlay"></div>
+
+
+    <!-- MODAL LOADING -->
+    <div id="loadingMoto" class="loadingModal hidden">
+
+        <div class="loadingBox">
+
+            <div id="motoAnim" style="width:200px;height:200px"></div>
+
+            <p class="loadingText">
+                Calculando Ranking...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <main class="p-6 bg-gray-50 min-h-screen flex justify-center">
+        <div class="w-full max-w-[1400px]">
+
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-8">
+
+                <div class="flex flex-wrap gap-6 items-end">
+
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            Grupo
+                        </label>
+                        <select id="grupoSelect"
+                            class="mt-2 border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            Mês
+                        </label>
+                        <input type="month" id="mesSelect"
+                            class="mt-2 border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <button id="btnBuscar"
+                        class="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-xl font-semibold shadow-sm">
+                        Buscar Ranking
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <section class="mb-6">
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Ranking Geral
+                </h2>
+                <p id="rankingAtualizacao" class="text-sm text-gray-400 mt-1"></p>
+            </section>
+
+
+            <section class="mb-10">
+                <div id="rankingPodium" class="grid grid-cols-1 md:grid-cols-3 gap-6 justify-center">
+                </div>
+            </section>
+
+
+            <section class="settings-section">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left">
+
+                            <thead class="bg-gray-100 text-xs uppercase text-gray-500 tracking-wider">
+                                <tr id="rankingHeader"></tr>
+                            </thead>
+
+                            <tbody id="rankingTable" class="divide-y divide-gray-200 bg-white">
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/overlay.js"></script>
+
+    <script>
+
+        const grupoSelect = document.getElementById('grupoSelect');
+        const mesSelect = document.getElementById('mesSelect');
+        const tabela = document.getElementById('rankingTable');
+        const podium = document.getElementById('rankingPodium');
+        const rankingAtualizacao = document.getElementById('rankingAtualizacao');
+
+        const loadingMoto = document.getElementById("loadingMoto");
+
+        function mostrarLoading() {
+            loadingMoto.classList.remove("hidden");
+        }
+
+        function esconderLoading() {
+            loadingMoto.classList.add("hidden");
+        }
+
+        lottie.loadAnimation({
+            container: document.getElementById("motoAnim"),
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+            path: "https://assets1.lottiefiles.com/packages/lf20_3rwasyjy.json"
+        });
+
+
+        const hoje = new Date();
+        mesSelect.value =
+            `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+
+
+        async function carregarGrupos() {
+
+            const res = await fetch('/api/dominio/grupos/ranking');
+            const grupos = await res.json();
+
+            grupoSelect.innerHTML = '<option value="">Selecione...</option>';
+
+            grupos.forEach(g => {
+
+                grupoSelect.innerHTML +=
+                    `<option value="${g.grupo_id}">${g.nome}</option>`;
+
+            });
+
+        }
+
+
+        async function carregarRanking() {
+
+            mostrarLoading();
+
+            const inicioLoading = Date.now();
+
+            const grupo = grupoSelect.value;
+            const mes = mesSelect.value;
+
+            if (!grupo || !mes) {
+
+                alert('Selecione grupo e mês');
+                esconderLoading();
+                return;
+
+            }
+
+            const res =
+                await fetch(`/api/ranking/resultado?grupo_id=${grupo}&mes=${mes}`);
+
+            const data = await res.json();
+
+            const header = document.getElementById('rankingHeader');
+
+            if (data.metricas_ativas?.length) {
+                data.metricas_ativas.sort((a, b) => a.ordem - b.ordem);
+            }
+
+            header.innerHTML = `
+<th class="px-4 py-3">Posição</th>
+<th class="px-4 py-3">Filial</th>
+<th class="px-4 py-3">Vendedor</th>
+<th class="px-4 py-3">Bônus</th>
+<th class="px-4 py-3">Total Pontos</th>
+`;
+
+            data.metricas_ativas?.forEach(m => {
+
+                header.innerHTML += `
+<th class="px-4 py-3">
+${m.metrica.toUpperCase()}
+</th>
+`;
+
+            });
+
+            tabela.innerHTML = '';
+            podium.innerHTML = '';
+
+            if (!data.ranking || data.ranking.length === 0) {
+
+                tabela.innerHTML =
+                    `<tr>
+<td colspan="20" class="text-center py-10 text-gray-400">
+Nenhum ranking encontrado
+</td>
+</tr>`;
+
+                esconderLoading();
+                return;
+
+            }
+
+
+            data.ranking.slice(0, 3).forEach(v => {
+
+                podium.innerHTML += `
+<div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-6 rounded-2xl shadow-lg text-center">
+
+<div class="text-4xl font-extrabold mb-2">
+${v.posicao}º
+</div>
+
+<div class="font-semibold text-lg">
+${v.nome}
+</div>
+
+<div class="mt-2 text-xl font-bold">
+${Math.floor(v.total_pontos)} pts
+</div>
+
+</div>
+`;
+
+            });
+
+
+            data.ranking.forEach(v => {
+
+                let linha = `
+<tr class="hover:bg-gray-50 transition">
+
+<td class="px-4 py-2 font-semibold">
+${v.posicao}
+</td>
+
+<td class="px-4 py-2">
+${v.filial || '-'}
+</td>
+
+<td class="px-4 py-2">
+${v.nome}
+</td>
+
+<td class="px-4 py-2 text-green-600 font-semibold">
+${v.bonus ? '+' + v.bonus : '-'}
+</td>
+
+<td class="px-4 py-2 text-blue-600 font-bold">
+${Math.floor(v.total_pontos)}
+</td>
+`;
+
+                data.metricas_ativas?.forEach(m => {
+
+                    linha += `
+<td class="px-4 py-2">
+${v[m.metrica] ?? '-'}
+</td>
+`;
+
+                });
+
+                linha += `</tr>`;
+
+                tabela.innerHTML += linha;
+
+            });
+
+
+            rankingAtualizacao.innerText =
+                "Atualizado em: " +
+                new Date(data.ultima_atualizacao).toLocaleString();
+
+
+            const tempoMinimo = 2000;
+            const tempoDecorrido = Date.now() - inicioLoading;
+            const tempoRestante = tempoMinimo - tempoDecorrido;
+
+            setTimeout(() => {
+                esconderLoading();
+            }, tempoRestante > 0 ? tempoRestante : 0);
+
+        }
+
+        document
+            .getElementById('btnBuscar')
+            .addEventListener('click', carregarRanking);
+
+        carregarGrupos();
+
+    </script>
+
+</body>
+
+</html>

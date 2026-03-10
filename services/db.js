@@ -404,16 +404,288 @@ async function initDatabase() {
       );
     `;
 
-
     connection.query(createRankingPontos);
+
 
     const createSettings = ` 
       CREATE TABLE IF NOT EXISTS settings (
-        id int  AUTO-INCREMENT DEFAULT NULL,
-        mesReferente varchar(10) DEFAULT NULL
+        id INT NOT NULL AUTO_INCREMENT,
+        mesReferente VARCHAR(10) DEFAULT NULL,
+        PRIMARY KEY (id)
       );
     `;
+
     connection.query(createSettings);
+
+    const createVendedores = `
+      CREATE TABLE IF NOT EXISTS dominio_vendedores (
+        vendedor_id INT NOT NULL,
+        nome VARCHAR(255) NOT NULL,
+        filial VARCHAR(5),
+        vendedor_ativo BOOLEAN DEFAULT TRUE,
+        dt_criacao TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+        dt_alteracao TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (vendedor_id)
+      );
+    `;
+    connection.query(createVendedores);
+
+    const createGrupos = `
+      CREATE TABLE IF NOT EXISTS dominio_grupos (
+        grupo_id INT NOT NULL AUTO_INCREMENT,
+        nome VARCHAR(100) NOT NULL,
+        descricao TEXT,
+        grupo_ativo BOOLEAN DEFAULT TRUE,
+        ranking TINYINT(1) NOT NULL DEFAULT 0,
+        rank_tipo_id INT NULL,
+        dt_criacao TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+        dt_alteracao TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+        PRIMARY KEY (grupo_id),
+        UNIQUE KEY unq_nome (nome),
+        INDEX idx_ativo (grupo_ativo),
+
+        CONSTRAINT fk_grupo_rank_tipo
+          FOREIGN KEY (rank_tipo_id) 
+          REFERENCES core_ranking_tipos(id)
+      );
+    `;
+    connection.query(createGrupos);
+
+    const createGruposVendedores = `
+      CREATE TABLE IF NOT EXISTS core_grupos_vendedores (
+        grupo_id INT NOT NULL,
+        vendedor_id INT NOT NULL,
+        
+        PRIMARY KEY (grupo_id, vendedor_id),
+        INDEX idx_vendedor (vendedor_id),
+
+        CONSTRAINT fk_grupo
+          FOREIGN KEY (grupo_id)
+          REFERENCES dominio_grupos (grupo_id)
+          ON DELETE RESTRICT
+          ON UPDATE CASCADE,
+
+        CONSTRAINT fk_vendedor
+          FOREIGN KEY (vendedor_id)
+          REFERENCES dominio_vendedores (vendedor_id)
+          ON DELETE RESTRICT
+          ON UPDATE CASCADE
+      );
+    `;
+    connection.query(createGruposVendedores);
+
+    const createCoreRankingResultado = `
+      CREATE TABLE IF NOT EXISTS core_ranking_resultado (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+        mes_referente DATE NOT NULL,
+        rank_tipo_id INT NOT NULL,
+        grupo_id INT NOT NULL,
+        ativo TINYINT NOT NULL DEFAULT 1,
+        vendedor_id INT NOT NULL,
+
+        posicao INT NOT NULL,
+        total_pontos INT NOT NULL DEFAULT 0,
+        bonus INT NOT NULL DEFAULT 0,
+
+        -- Snapshot das métricas usadas no cálculo
+        vendas INT NOT NULL DEFAULT 0,
+        llo DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+        ritmo INT NOT NULL DEFAULT 0,
+        retorno INT NOT NULL DEFAULT 0,
+        captacao INT NOT NULL DEFAULT 0,
+        nps DECIMAL(5,2) NOT NULL DEFAULT 0,
+        contratos INT NOT NULL DEFAULT 0,
+        cny INT NOT NULL DEFAULT 0,
+        clube INT NOT NULL DEFAULT 0,
+        entrega_clube INT NOT NULL DEFAULT 0,
+
+        atualizado_em TIMESTAMP NOT NULL 
+            DEFAULT CURRENT_TIMESTAMP 
+            ON UPDATE CURRENT_TIMESTAMP,
+
+        UNIQUE KEY uk_rank_vendedor_mes (mes_referente, rank_tipo_id, vendedor_id),
+
+        INDEX idx_rank_mes (rank_tipo_id, mes_referente),
+        INDEX idx_posicao (rank_tipo_id, mes_referente, posicao),
+
+        CONSTRAINT fk_resultado_rank_tipo
+          FOREIGN KEY (rank_tipo_id)
+          REFERENCES core_ranking_tipos(id)
+          ON DELETE CASCADE,
+
+        CONSTRAINT fk_resultado_vendedor
+          FOREIGN KEY (vendedor_id)
+          REFERENCES dominio_vendedores(vendedor_id)
+          ON DELETE CASCADE
+      );
+  `;
+    connection.query(createCoreRankingResultado);
+
+    const createRankingConfig = `
+      CREATE TABLE IF NOT EXISTS core_ranking_config_mes (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+        mes_referente DATE NOT NULL,
+        grupo_id INT NOT NULL,
+
+        fechado BOOLEAN NOT NULL DEFAULT FALSE,
+        fechado_em TIMESTAMP NULL,
+
+        atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+          ON UPDATE CURRENT_TIMESTAMP,
+
+        UNIQUE KEY uk_mes_grupo (mes_referente, grupo_id),
+
+        CONSTRAINT fk_config_grupo
+          FOREIGN KEY (grupo_id)
+          REFERENCES dominio_grupos (grupo_id)
+          ON DELETE CASCADE
+      );
+  `;
+    connection.query(createRankingConfig);
+
+    const createRankingAjustes = `
+      CREATE TABLE IF NOT EXISTS core_ranking_ajustes (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+        mes_referente DATE NOT NULL,
+        grupo_id INT NOT NULL,
+        vendedor_id INT NOT NULL,
+
+        pontos INT NOT NULL, -- pode ser positivo ou negativo
+        motivo TEXT NOT NULL,
+
+        aplicado_por INT NULL,
+        aplicado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+        INDEX idx_mes_grupo_vendedor (mes_referente, grupo_id, vendedor_id),
+
+        CONSTRAINT fk_ajuste_grupo
+          FOREIGN KEY (grupo_id)
+          REFERENCES dominio_grupos (grupo_id)
+          ON DELETE CASCADE,
+
+        CONSTRAINT fk_ajuste_vendedor
+          FOREIGN KEY (vendedor_id)
+          REFERENCES dominio_vendedores (vendedor_id)
+          ON DELETE CASCADE
+      );
+    `;
+    connection.query(createRankingAjustes);
+
+    const createCoreRankingAdvertencia = `
+      CREATE TABLE IF NOT EXISTS core_ranking_advertencias (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+        mes_referente DATE NOT NULL,
+        vendedor_id INT NOT NULL,
+
+        ativo BOOLEAN NOT NULL DEFAULT TRUE,
+        motivo TEXT NOT NULL,
+
+        aplicado_por INT NULL,
+        aplicado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+        removido_em TIMESTAMP NULL,
+        removido_por INT NULL,
+
+        UNIQUE KEY uk_mes_vendedor (mes_referente, vendedor_id),
+
+        INDEX idx_vendedor (vendedor_id),
+
+        CONSTRAINT fk_adv_vendedor
+          FOREIGN KEY (vendedor_id)
+          REFERENCES dominio_vendedores (vendedor_id)
+          ON DELETE CASCADE
+      );
+    `;
+    connection.query(createCoreRankingAdvertencia);
+
+    const createRankingMetricas = `
+      CREATE TABLE IF NOT EXISTS core_ranking_metricas (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        metrica VARCHAR(50) NOT NULL UNIQUE,
+        descricao VARCHAR(255),
+        ativo TINYINT(1) NOT NULL DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      );
+    `;
+    connection.query(createRankingMetricas);
+
+    const createRankingTipos = `
+      CREATE TABLE IF NOT EXISTS core_ranking_tipos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        descricao TEXT,
+        ano_referencia INT NOT NULL,
+        ativo TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    connection.query(createRankingTipos);
+
+    const createRankingRegras = `
+      CREATE TABLE IF NOT EXISTS core_ranking_regras (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        rank_tipo_id INT NOT NULL,
+        metrica_id INT NOT NULL,
+        min_valor DECIMAL(10,2),
+        max_valor DECIMAL(10,2),
+        pontos DECIMAL(10,2) NOT NULL,
+        multiplica_por_metrica_id INT NULL,
+        bonus TINYINT(1) NOT NULL DEFAULT 0,
+        ordem INT DEFAULT 1,
+        ativo TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (rank_tipo_id) REFERENCES core_ranking_tipos(id),
+        FOREIGN KEY (metrica_id) REFERENCES core_ranking_metricas(id),
+        FOREIGN KEY (multiplica_por_metrica_id) REFERENCES core_ranking_metricas(id),
+
+        INDEX idx_rank_tipo (rank_tipo_id),
+        INDEX idx_metrica (metrica_id)
+      );
+    `;
+    connection.query(createRankingRegras);
+
+    const createRankingMetricasSnapshot = `
+      CREATE TABLE IF NOT EXISTS core_ranking_snapshot (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+
+        vendedor_id INT NOT NULL,
+        mes_referente DATE NOT NULL,
+
+        vendas INT DEFAULT 0,
+        llo DECIMAL(10,2) DEFAULT 0,
+        ritmo INT DEFAULT 0,
+        retorno INT DEFAULT 0,
+        captacao INT DEFAULT 0,
+        nps DECIMAL(5,2) DEFAULT 0,
+        cny INT DEFAULT 0,
+        clube INT DEFAULT 0,
+        entrega_clube INT DEFAULT 0,
+        r2 INT DEFAULT 0,
+        r4 INT DEFAULT 0,
+
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+            ON UPDATE CURRENT_TIMESTAMP,
+
+        UNIQUE KEY uniq_vendedor_mes (vendedor_id, mes_referente),
+
+        INDEX idx_mes (mes_referente),
+
+        CONSTRAINT fk_snapshot_vendedor
+            FOREIGN KEY (vendedor_id)
+            REFERENCES dominio_vendedores(vendedor_id)
+            ON DELETE CASCADE
+    );
+    `;
+    connection.query(createRankingMetricasSnapshot);
+
 
     connection.release();
   } catch (error) {

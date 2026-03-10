@@ -32,6 +32,8 @@ app.use(session({
 }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'templates'));
+const mainRoutes = require('./routes');
+app.use(mainRoutes);
 
 const rotaNPS = require('./routes/nps_geral');
 app.use('/nps', rotaNPS);
@@ -639,6 +641,22 @@ app.get('/rankmotos', async (req, res) => {
     console.error("Erro ao buscar ranking de motos:", error);
     res.status(500).send("Erro ao carregar o ranking.");
   }
+});
+
+// NOVA ROTA RANKING (baseado no novo sistema)
+
+app.get('/rankingtropa', (req, res) => {
+
+  const usuarioLogado = req.cookies.usuario_logado;
+
+  if (!usuarioLogado) {
+    return res.redirect('/');
+  }
+
+  res.render('rankingNovo', {
+    usuario: usuarioLogado
+  });
+
 });
 
 // CHAMADO PARA CADA KPI NA PAGINA REUMO MêS

@@ -3,10 +3,11 @@
 .settings-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
+  grid-template-rows: auto;
   gap: 20px;
   padding: 20px;
-  margin-left: 80px; /* Espaço para a sidebar */
+  margin-left: 80px;
+  /* Espaço para a sidebar */
   min-height: calc(100vh - 60px);
 }
 
@@ -42,12 +43,12 @@
 /* Seção Meio (Vendas Motos Novas) */
 .settings-section.middle-section {
   grid-column: 1 / -1;
-  grid-row: 2;
   display: flex;
   flex-direction: column;
   gap: 15px;
   margin-right: 7%;
 }
+
 .settings-section.middle-section .section-content {
   border-radius: 8px 8px 8px 8px;
 }
@@ -55,15 +56,16 @@
 /* Seção Inferior (Vendas Motos Seminovas) */
 .settings-section.bottom-section {
   grid-column: 1 / -1;
-  grid-row: 3;
   display: flex;
   flex-direction: column;
   gap: 15px;
   margin-right: 7%;
 }
+
 .settings-section.bottom-section .section-content {
   border-radius: 8px 8px 8px 8px;
 }
+
 /* Header das Seções */
 .section-header {
   background: #007bff;
@@ -271,4 +273,12 @@
     font-size: 14px;
     padding: 12px 20px;
   }
+}
+
+.settings-section.ranking-config-section {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-right: 7%;
 }
