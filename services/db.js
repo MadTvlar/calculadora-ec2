@@ -687,7 +687,6 @@ async function initDatabase() {
     `;
     connection.query(createRankingMetricasSnapshot);
 
-
     connection.release();
   } catch (error) {
     console.error('Erro ao inicializar o banco:', error);
