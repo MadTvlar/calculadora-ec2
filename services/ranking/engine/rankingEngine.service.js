@@ -160,7 +160,7 @@ class RankingEngineService {
                     calculado = pontos;
                 }
 
-                if (Number(regra.pontos) === 1 && podeReceberPontos || Number(regra.pontos != 1)) {
+                if (podeReceberPontos || Number(regra.rank_tipo_id != 1)) {
                     totalPontos += calculado;
                 }
 
