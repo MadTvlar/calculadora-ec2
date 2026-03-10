@@ -77,21 +77,21 @@ class RankingSnapshotService {
         `, [mes_referente]);
 
         // CLUBE
-        const [clube] = await this.connection.query(`
+        const [club] = await this.connection.query(`
             SELECT
                 id_microwork AS vendedor_id,
-                COUNT(*) AS clube
+                COUNT(*) AS club
             FROM microwork.contratos_motos
             WHERE administrador = 'LIBERACRED'
             AND DATE_FORMAT(data_venda, '%Y-%m') = ?
             GROUP BY id_microwork
         `, [mes_referente]);
 
-        // Entrega clube
-        const [entrega_clube] = await this.connection.query(`
+        // Entrega club
+        const [entrega_club] = await this.connection.query(`
             SELECT
                 id_microwork AS vendedor_id,
-                COUNT(*) AS entrega_clube
+                COUNT(*) AS entrega_club
             FROM microwork.vendas_motos
             WHERE tipo_venda = 'LIBERA CRED'
             AND DATE_FORMAT(data_venda, '%Y-%m') = ?
@@ -182,8 +182,8 @@ class RankingSnapshotService {
                         captacao: 0,
                         contratos: 0,
                         cny: 0,
-                        clube: 0,
-                        entrega_clube: 0,
+                        club: 0,
+                        entrega_club: 0,
                         nps: 0,
                         r2: 0,
                         r4: 0
@@ -200,8 +200,8 @@ class RankingSnapshotService {
         merge(captacao, 'captacao');
         merge(contratos, 'contratos');
         merge(cny, 'cny');
-        merge(clube, 'clube');
-        merge(entrega_clube, 'entrega_clube');
+        merge(club, 'club');
+        merge(entrega_club, 'entrega_club');
         merge(retorno, 'retorno');
         merge(retorno, 'r2');
         merge(retorno, 'r4');
@@ -241,8 +241,8 @@ class RankingSnapshotService {
                         nps,
                         contratos,
                         cny,
-                        clube,
-                        entrega_clube,
+                        club,
+                        entrega_club,
                         r2,
                         r4
                     )
@@ -256,8 +256,8 @@ class RankingSnapshotService {
                         nps = VALUES(nps),
                         contratos = VALUES(contratos),
                         cny = VALUES(cny),
-                        clube = VALUES(clube),
-                        entrega_clube = VALUES(entrega_clube),
+                        club = VALUES(club),
+                        entrega_club = VALUES(entrega_club),
                         r2 = VALUES(r2),
                         r4 = VALUES(r4),
                         atualizado_em = CURRENT_TIMESTAMP
@@ -272,8 +272,8 @@ class RankingSnapshotService {
                     dados.nps,
                     dados.contratos,
                     dados.cny,
-                    dados.clube,
-                    dados.entrega_clube,
+                    dados.club,
+                    dados.entrega_club,
                     dados.r2,
                     dados.r4
                 ])

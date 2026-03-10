@@ -510,8 +510,8 @@ async function initDatabase() {
         nps DECIMAL(5,2) NOT NULL DEFAULT 0,
         contratos INT NOT NULL DEFAULT 0,
         cny INT NOT NULL DEFAULT 0,
-        clube INT NOT NULL DEFAULT 0,
-        entrega_clube INT NOT NULL DEFAULT 0,
+        club INT NOT NULL DEFAULT 0,
+        entrega_club INT NOT NULL DEFAULT 0,
 
         atualizado_em TIMESTAMP NOT NULL 
             DEFAULT CURRENT_TIMESTAMP 
@@ -664,9 +664,10 @@ async function initDatabase() {
         retorno INT DEFAULT 0,
         captacao INT DEFAULT 0,
         nps DECIMAL(5,2) DEFAULT 0,
+        contratos INT DEFAULT 0,
         cny INT DEFAULT 0,
-        clube INT DEFAULT 0,
-        entrega_clube INT DEFAULT 0,
+        club INT DEFAULT 0,
+        entrega_club INT DEFAULT 0,
         r2 INT DEFAULT 0,
         r4 INT DEFAULT 0,
 

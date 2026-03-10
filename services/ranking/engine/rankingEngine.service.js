@@ -129,7 +129,7 @@ class RankingEngineService {
             let totalBonus = 0;
 
             const vendas = Number(dados.vendas || 0);
-            const liberaCred = Number(dados.clube || 0);
+            const liberaCred = Number(dados.club || 0);
 
             const podeReceberPontos = vendas >= 5 && liberaCred >= 5;
             const podeReceberBonus = vendas >= 7;
@@ -228,8 +228,8 @@ class RankingEngineService {
             nps,
             contratos,
             cny,
-            clube,
-            entrega_clube
+            club,
+            entrega_club
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
@@ -244,8 +244,8 @@ class RankingEngineService {
             nps = VALUES(nps),
             contratos = VALUES(contratos),
             cny = VALUES(cny),
-            clube = VALUES(clube),
-            entrega_clube = VALUES(entrega_clube),
+            club = VALUES(club),
+            entrega_club = VALUES(entrega_club),
             atualizado_em = CURRENT_TIMESTAMP
     `, [
                 mes_referente,
@@ -263,8 +263,8 @@ class RankingEngineService {
                 r.nps,
                 r.contratos,
                 r.cny,
-                r.clube,
-                r.entrega_clube
+                r.club,
+                r.entrega_club
             ]);
         }
 
