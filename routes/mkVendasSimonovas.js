@@ -1,8 +1,7 @@
 // Essa rota faz requisição de API do microwork, do relatório de vendas.
-
+const ensureVendedor = require('../services/ensureVendedor');
 const axios = require('axios');
 require('dotenv').config();
-
 
 async function fetchMkVendasSeminovas(pool, sendLog, dataInicial, dataFinal) {
 
@@ -56,11 +55,11 @@ async function fetchMkVendasSeminovas(pool, sendLog, dataInicial, dataFinal) {
     const dataVendaFormatada = moto.datamovimentacao ? moto.datamovimentacao.substring(0, 10) : null;
 
     const [rows] = await pool.query(
-      'SELECT empresa FROM microwork.vendas_seminovas WHERE doc_fiscal = ?',
-      [moto.docfiscal]
+      'SELECT lucro_ope FROM microwork.vendas_seminovas WHERE doc_fiscal = ? AND chassi = ?',
+      [moto.docfiscal, moto.chassi]
     );
 
-    if (rows.length === 0 || rows[0].empresa !== moto.empresa) {
+    if (rows.length === 0 || Number(rows[0].lucro_ope) !== moto.lucrooperacionalantescomissao) {
       const query = `
   INSERT INTO microwork.vendas_seminovas (
     empresa, quantidade, financiada, banco, id_microwork, vendedor, 
@@ -134,6 +133,8 @@ async function fetchMkVendasSeminovas(pool, sendLog, dataInicial, dataFinal) {
         (moto.valorvenda - moto.acessorios) * 0.06,
         moto.lucrooperacionalantescomissao
       ];
+
+      await ensureVendedor(pool, sendLog, moto.idpessoavendedor, moto.vendedor, moto.empresa);
 
       try {
         await pool.query(query, values);

@@ -14,77 +14,92 @@ const fetchMkcaptacaoMotos = require('./routes/mkCaptacaoMotos');
 const fetchrankingPontosMotos = require('./routes/rankingPontosMotos');
 const fetchAltervision = require('./routes/altervision');
 const atualizarNPS = require('./routes/nps');
+const RankingSnapshotService = require('./services/ranking/snapshot/rankingSnapshot.service');
+const RankingEngineService = require('./services/ranking/engine/rankingEngine.service');
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Função principal de atualização
-async function executarAtualizacao(apiUnica = null){
+async function executarAtualizacao(apiUnica = null) {
   console.log('Executando os fetch...');
 
-    
-    const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
 
-    const [rows] = await pool.query(consulta);  // pega só os resultados
-    const mesReferente = rows[0].mesReferente;  // pega a string da primeira linha
+  const consulta = 'SELECT mesReferente FROM settings WHERE id = 1;'
 
-    //data para rodar schedule 
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
+  const [rows] = await pool.query(consulta);  // pega só os resultados
+  const mesReferente = rows[0].mesReferente;  // pega a string da primeira linha
 
-    const dataInicial = `${year}-${month}-01 00:00:00`;
-    const dataFinal = `${year}-${month}-${day} 23:59:59`;
+  //data para rodar schedule 
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(new Date(year, now.getMonth() + 1, 0).getDate()).padStart(2, '0');
+
+  const dataInicial = `${year}-${month}-01 00:00:00`;
+  const dataFinal = `${year}-${month}-${day} 23:59:59`;
+
+  const snapshotService = new RankingSnapshotService(pool);
+  const rankingEngine = new RankingEngineService(pool);
 
 
   try {
     const delayMs = 1000;
 
     const sendLog = (msg) => {
-        console.log(msg);
+      console.log(msg);
     };
 
-    await fetchEstoqueMotores(pool,sendLog);
+    await fetchEstoqueMotores(pool, sendLog);
     await delay(delayMs);
 
-    await fetchEstoqueMotos(pool,sendLog);
+    await fetchEstoqueMotos(pool, sendLog);
     await delay(delayMs);
 
-    await fetchMkVendasMotos(pool,sendLog, dataInicial, dataFinal);
+    await fetchMkVendasMotos(pool, sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await fetchMKVendasSeminovas(pool,sendLog, dataInicial, dataFinal);
+    await fetchMKVendasSeminovas(pool, sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await fetchMkContratosMotos(pool,sendLog, dataInicial, dataFinal,sendLog);
+    await fetchMkContratosMotos(pool, sendLog, dataInicial, dataFinal, sendLog);
     await delay(delayMs);
 
-    await fetchMkcaptacaoMotos(pool,sendLog, dataInicial, dataFinal);
+    await fetchMkcaptacaoMotos(pool, sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await atualizarNPS(pool,sendLog, mesReferente);
+    await atualizarNPS(pool, sendLog, mesReferente);
     await delay(delayMs);
 
-    await fetchAltervision(pool,sendLog, dataInicial, dataFinal);
+    await fetchAltervision(pool, sendLog, dataInicial, dataFinal);
     await delay(delayMs);
 
-    await fetchRankingGeralMotos(pool,sendLog, mesReferente);
+    await fetchRankingGeralMotos(pool, sendLog, mesReferente);
     await delay(delayMs);
 
-    await fetchrankingPontosMotos(pool,sendLog, mesReferente);
+    await fetchrankingPontosMotos(pool, sendLog, mesReferente);
+    await delay(delayMs);
+
+    // SNAPSHOT
+    sendLog('[NOVO] Gerando snapshot do ranking...');
+    await snapshotService.gerarSnapshot(mesReferente);
+    await delay(delayMs);
+
+    // ENGINE
+    sendLog('[NOVO] Calculando ranking...');
+    await rankingEngine.calcularTodosGrupos(`${mesReferente}-01`);
     await delay(delayMs);
 
     if (!apiUnica) {
-        const agora = new Date();
-        await pool.query(
-          'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
-          [agora]
-        );
-        console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
-      }
-      
+      const agora = new Date();
+      await pool.query(
+        'REPLACE INTO updates (id, atualizado_em) VALUES (1, ?)',
+        [agora]
+      );
+      console.log(`\nAtualização registrada em: ${agora.toISOString()}`);
+    }
+
   } catch (err) {
     console.error('Erro na atualização:', err);
   }

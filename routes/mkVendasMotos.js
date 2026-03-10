@@ -1,9 +1,7 @@
 // Essa rota faz requisição de API do microwork, do relatório de vendas.
-
+const ensureVendedor = require('../services/ensureVendedor');
 const axios = require('axios');
 require('dotenv').config();
-
-
 
 async function fetchMkVendasMotos(pool, sendLog, dataInicial, dataFinal) {
   sendLog('Iniciando a consulta API de para a tabela microwork.vendas_motos');
@@ -54,7 +52,13 @@ async function fetchMkVendasMotos(pool, sendLog, dataInicial, dataFinal) {
   for (const moto of dados) {
     const dataMovimentacaoFormatada = moto.datamovimentacao ? moto.datamovimentacao.substring(0, 10) : null;
 
-    const query = `
+    const [rows] = await pool.query(
+      'SELECT lucro_ope FROM microwork.vendas_motos WHERE doc_fiscal = ? AND chassi = ?',
+      [moto.docfiscal, moto.chassi]
+    );
+
+    if (rows.length === 0 || Number(rows[0].lucro_ope) !== moto.lucrooperacionalantescomissao) {
+      const query = `
       INSERT INTO microwork.vendas_motos (
         empresa, municipio, quantidade, financiada, banco, id_microwork, vendedor, 
         cpf_cnpj, data_venda, pedido, doc_fiscal, modelo, cor, chassi, ano, cliente, telefone_cliente,
@@ -93,44 +97,47 @@ async function fetchMkVendasMotos(pool, sendLog, dataInicial, dataFinal) {
         lucro_ope = VALUES(lucro_ope)
     `;
 
-    const values = [
-      moto.empresa,
-      moto.municipio,
-      moto.quantidade,
-      moto.quantidadefinanciada,
-      moto.financeira,
-      moto.idpessoavendedor,
-      moto.vendedor,
-      moto.cpfoucnpjvendedor,
-      dataMovimentacaoFormatada,
-      moto.proposta,
-      moto.docfiscal,
-      moto.modelo,
-      moto.cor,
-      moto.chassi,
-      moto.anofabrmod,
-      moto.pessoa,
-      moto.telefonecelularformatado,
-      moto.diasestoque,
-      moto.tipovenda,
-      moto.custocontabil,
-      moto.valorvenda,
-      moto.acessorios,
-      moto.valorvenda - moto.acessorios,
-      moto.propostaloja,
-      moto.valorfinanciamento,
-      moto.valorbonus,
-      moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,
-      moto.documentacao,
-      (moto.valorvenda - moto.acessorios) * 0.06,
-      moto.lucrooperacionalantescomissao
-    ];
+      const values = [
+        moto.empresa,
+        moto.municipio,
+        moto.quantidade,
+        moto.quantidadefinanciada,
+        moto.financeira,
+        moto.idpessoavendedor,
+        moto.vendedor,
+        moto.cpfoucnpjvendedor,
+        dataMovimentacaoFormatada,
+        moto.proposta,
+        moto.docfiscal,
+        moto.modelo,
+        moto.cor,
+        moto.chassi,
+        moto.anofabrmod,
+        moto.pessoa,
+        moto.telefonecelularformatado,
+        moto.diasestoque,
+        moto.tipovenda,
+        moto.custocontabil,
+        moto.valorvenda,
+        moto.acessorios,
+        moto.valorvenda - moto.acessorios,
+        moto.propostaloja,
+        moto.valorfinanciamento,
+        moto.valorbonus,
+        moto.valorfinanciamento ? moto.valorbonus / moto.valorfinanciamento * 100 : null,
+        moto.documentacao,
+        (moto.valorvenda - moto.acessorios) * 0.06,
+        moto.lucrooperacionalantescomissao
+      ];
 
-    try {
-      await pool.query(query, values);
-      sendLog(`Chassi ${moto.chassi} com data ${dataMovimentacaoFormatada} inserido/atualizado com sucesso.`);
-    } catch (error) {
-      sendLog(`Erro ao inserir/atualizar chassi ${moto.chassi} com data ${dataMovimentacaoFormatada}:`, error.message);
+      await ensureVendedor(pool, sendLog, moto.idpessoavendedor, moto.vendedor, moto.empresa);
+
+      try {
+        await pool.query(query, values);
+        sendLog(`Chassi ${moto.chassi} com data ${dataMovimentacaoFormatada} inserido/atualizado com sucesso.`);
+      } catch (error) {
+        sendLog(`Erro ao inserir/atualizar chassi ${moto.chassi} com data ${dataMovimentacaoFormatada}:`, error.message);
+      }
     }
   }
 }

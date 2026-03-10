@@ -6,7 +6,6 @@ async function atualizarNPS(pool, sendLog, mesReferente) {
   await pool.query(`TRUNCATE TABLE nps`);
 
   const [resultados] = await pool.query(`
-
   SELECT 
     id_microwork,
     vendedor AS vendedores,
