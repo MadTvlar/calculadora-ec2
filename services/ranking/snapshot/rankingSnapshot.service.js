@@ -76,7 +76,7 @@ class RankingSnapshotService {
             GROUP BY id_microwork
         `, [mes_referente]);
 
-        // CLUBE
+        // CLUB
         const [club] = await this.connection.query(`
             SELECT
                 id_microwork AS vendedor_id,
