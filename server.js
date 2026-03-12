@@ -56,11 +56,11 @@ const formasPagamentos = [
 ];
 
 const bancos = [
-  "Yamaha", "Pan", "Santander", "Bradesco", "C6 Bank", "Banco BV"
+  "Yamaha", "Pan", "Santander", "Bradesco", "C6 Bank", "Banco BV", "Sicredi"
 ];
 
 const bancoRetorno = [
-  "R0", "R1", "R2", "R3", "R4", "R5"
+  "R0", "R1", "R2", "R3", "R4", "R5", "R6"
 ];
 
 const filiais = [

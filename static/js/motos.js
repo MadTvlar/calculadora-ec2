@@ -447,6 +447,14 @@ document.getElementById('showCard4Button').addEventListener('click', async funct
             resultadoBanco = resultBanco * 0.06;
             document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
 
+          }else if (bancoRetorno === "R6") {
+            resultadoBanco = resultBanco * 0.072;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
+          }else if (bancoRetorno === "R7") {
+            resultadoBanco = resultBanco * 0.072;
+            document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
+
           } else {
             resultadoBanco = 0;
             document.getElementById('resultado_banco').innerText = `Retorno do Banco: ${'.'.repeat(74)} R$ ${resultadoBanco.toFixed(2).replace('.', ',')}`;
