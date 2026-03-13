@@ -201,10 +201,40 @@ class RankingEngineService {
             });
         }
 
-        // 9 Ordenar ranking
-        const rankingOrdenado = resultados
-            .sort((a, b) => b.total_pontos - a.total_pontos);
+        //ALTERAÇÕES DA ORDEM D RANKING ARA OS ESPECIALISTAS--------------------------------------------------------
 
+        // verificar se alguém já pontuou
+        const existePontuacao = resultados.some(r => r.total_pontos > 0);
+
+        // 9 Ordenar ranking
+        const rankingOrdenado = resultados.sort((a, b) => {
+
+        // 1️⃣ primeiro critério → pontos
+        if (b.total_pontos !== a.total_pontos) {
+            return b.total_pontos - a.total_pontos;
+        }
+
+        // 2️⃣ club
+        if ((b.club || 0) !== (a.club || 0)) {
+            return (b.club || 0) - (a.club || 0);
+        }
+
+        // 3️⃣ contratos
+        if ((b.contratos || 0) !== (a.contratos || 0)) {
+            return (b.contratos || 0) - (a.contratos || 0);
+        }
+
+        // 4️⃣ vendas
+        if ((b.vendas || 0) !== (a.vendas || 0)) {
+            return (b.vendas || 0) - (a.vendas || 0);
+        }
+
+        return 0;
+    });
+        console.log("ORDENANDO RANKING");
+
+            //FINAL DAS ALTERAÇÕES DA ORDEM D RANKING ARA OS ESPECIALISTAS--------------------------------------------------------
+       
         // 10 Salvar resultado
         for (let posicao = 1; posicao <= rankingOrdenado.length; posicao++) {
 
