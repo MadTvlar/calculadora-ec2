@@ -34,25 +34,30 @@ class RankingSnapshotService {
             GROUP BY id_microwork
         `, [mes_referente]);
 
-        // LLO Novas
-        const [lloNovas] = await this.connection.query(`
-            SELECT 
-                id_microwork AS vendedor_id,
-                ROUND(SUM(lucro_ope) / NULLIF(SUM(valor_venda_real),0) * 100, 2) AS lloNovas
-            FROM microwork.vendas_motos
-            WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
-            GROUP BY id_microwork
-        `, [mes_referente]);
+        // LLO
+        const [llo] = await this.connection.query(`
+            SELECT
+                vendedor_id,
+                ROUND(SUM(lucro_ope) / NULLIF(SUM(valor_venda_real), 0) * 100, 2) AS llo
+            FROM (
+                SELECT
+                    id_microwork AS vendedor_id,
+                    lucro_ope,
+                    valor_venda_real
+                FROM microwork.vendas_motos
+                WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
 
-        // LLO Seminovas
-        const [lloSeminovas] = await this.connection.query(`
-            SELECT 
-                id_microwork AS vendedor_id,
-                ROUND(SUM(lucro_ope) / NULLIF(SUM(valor_venda_real),0) * 100, 2) AS lloSeminovas
-            FROM microwork.vendas_seminovas
-            WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
-            GROUP BY id_microwork
-        `, [mes_referente]);
+                UNION ALL
+
+                SELECT
+                    id_microwork AS vendedor_id,
+                    lucro_ope,
+                    valor_venda_real
+                FROM microwork.vendas_seminovas
+                WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
+            ) AS base
+            GROUP BY vendedor_id
+        `, [mes_referente, mes_referente]);
 
         // ritmo (primeiros 15 dias) Novas
         const [ritmoNovas] = await this.connection.query(`
@@ -242,8 +247,7 @@ class RankingSnapshotService {
                     mapa[row.vendedor_id] = {
                         vendasNovas: 0,
                         vendasSeminovas: 0,
-                        lloNovas: 0,
-                        lloSeminovas: 0,
+                        llo: 0,
                         ritmo: 0,
                         retornoNovas: 0,
                         retornoSeminovas: 0,
@@ -266,8 +270,7 @@ class RankingSnapshotService {
 
         merge(volumeSeminovas, 'vendasSeminovas');
         merge(volumeNovas, 'vendasNovas');
-        merge(lloSeminovas, 'lloSeminovas');
-        merge(lloNovas, 'lloNovas');
+        merge(llo, 'llo');
         merge(ritmoSeminovas, 'ritmoSeminovas');
         merge(ritmoNovas, 'ritmoNovas');
         merge(captacao, 'captacao');
@@ -341,7 +344,7 @@ class RankingSnapshotService {
                     vendedor_id,
                     `${mes_referente}-01`,
                     Number(dados.vendasNovas || 0) + Number(dados.vendasSeminovas || 0),
-                    Number(dados.lloNovas || 0) + Number(dados.lloSeminovas || 0),
+                    dados.llo,
                     Number(dados.ritmoNovas || 0) + Number(dados.ritmoSeminovas || 0),
                     Number(dados.retornoNovas || 0) + Number(dados.retornoSeminovas || 0),
                     dados.captacao,
