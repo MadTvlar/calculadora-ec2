@@ -15,31 +15,62 @@ class RankingSnapshotService {
         console.log('SNAPSHOT INICIANDO:', mes_referente);
 
         // Volume de vendas
-        const [volume] = await this.connection.query(`
+        const [volumeNovas] = await this.connection.query(`
             SELECT 
                 id_microwork AS vendedor_id,
-                SUM(quantidade) AS vendas
+                SUM(quantidade) AS vendasNovas
             FROM microwork.vendas_motos
             WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
             GROUP BY id_microwork
         `, [mes_referente]);
 
-        // LLO
-        const [llo] = await this.connection.query(`
+        // Volume de vendas Seminovas
+        const [volumeSeminovas] = await this.connection.query(`
             SELECT 
                 id_microwork AS vendedor_id,
-                ROUND(SUM(lucro_ope) / NULLIF(SUM(valor_venda_real),0) * 100, 2) AS llo
+                SUM(quantidade) AS vendasSeminovas
+            FROM microwork.vendas_seminovas
+            WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
+            GROUP BY id_microwork
+        `, [mes_referente]);
+
+        // LLO Novas
+        const [lloNovas] = await this.connection.query(`
+            SELECT 
+                id_microwork AS vendedor_id,
+                ROUND(SUM(lucro_ope) / NULLIF(SUM(valor_venda_real),0) * 100, 2) AS lloNovas
             FROM microwork.vendas_motos
             WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
             GROUP BY id_microwork
         `, [mes_referente]);
 
-        // ritmo (primeiros 15 dias)
-        const [ritmo] = await this.connection.query(`
+        // LLO Seminovas
+        const [lloSeminovas] = await this.connection.query(`
             SELECT 
                 id_microwork AS vendedor_id,
-                SUM(quantidade) AS ritmo
+                ROUND(SUM(lucro_ope) / NULLIF(SUM(valor_venda_real),0) * 100, 2) AS lloSeminovas
+            FROM microwork.vendas_seminovas
+            WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
+            GROUP BY id_microwork
+        `, [mes_referente]);
+
+        // ritmo (primeiros 15 dias) Novas
+        const [ritmoNovas] = await this.connection.query(`
+            SELECT 
+                id_microwork AS vendedor_id,
+                SUM(quantidade) AS ritmoNovas
             FROM microwork.vendas_motos
+            WHERE data_venda >= CONCAT(?, '-01')
+            AND data_venda < CONCAT(?, '-16')
+            GROUP BY id_microwork
+        `, [mes_referente, mes_referente]);
+
+        // ritmo (primeiros 15 dias) Seminovas
+        const [ritmoSeminovas] = await this.connection.query(`
+            SELECT 
+                id_microwork AS vendedor_id,
+                SUM(quantidade) AS ritmoSeminovas
+            FROM microwork.vendas_seminovas
             WHERE data_venda >= CONCAT(?, '-01')
             AND data_venda < CONCAT(?, '-16')
             GROUP BY id_microwork
@@ -98,8 +129,8 @@ class RankingSnapshotService {
             GROUP BY id_microwork
         `, [mes_referente]);
 
-        // Retorno + R2 + R4
-        const [retorno] = await this.connection.query(`
+        // Retorno + R2 + R4 Novas
+        const [retornoNovas] = await this.connection.query(`
             SELECT 
                 id_microwork AS vendedor_id,
 
@@ -109,7 +140,7 @@ class RankingSnapshotService {
                         THEN quantidade
                         ELSE 0
                     END
-                ) AS retorno,
+                ) AS retornoNovas,
 
                 SUM(
                     CASE 
@@ -117,7 +148,7 @@ class RankingSnapshotService {
                         THEN quantidade
                         ELSE 0
                     END
-                ) AS r2,
+                ) AS r2Novas,
 
                 SUM(
                     CASE 
@@ -125,9 +156,43 @@ class RankingSnapshotService {
                         THEN quantidade
                         ELSE 0
                     END
-                ) AS r4
+                ) AS r4Novas
 
             FROM microwork.vendas_motos
+            WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
+            GROUP BY id_microwork
+        `, [mes_referente]);
+
+        // Retorno + R2 + R4 Seminovas
+        const [retornoSeminovas] = await this.connection.query(`
+            SELECT 
+                id_microwork AS vendedor_id,
+
+                SUM(
+                    CASE 
+                        WHEN retorno_porcent >= 2 
+                        THEN quantidade
+                        ELSE 0
+                    END
+                ) AS retornoSeminovas,
+
+                SUM(
+                    CASE 
+                        WHEN retorno_porcent >= 2 AND retorno_porcent < 4 
+                        THEN quantidade
+                        ELSE 0
+                    END
+                ) AS r2Seminovas,
+
+                SUM(
+                    CASE 
+                        WHEN retorno_porcent >= 4 
+                        THEN quantidade
+                        ELSE 0
+                    END
+                ) AS r4Seminovas
+
+            FROM microwork.vendas_seminovas
             WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
             GROUP BY id_microwork
         `, [mes_referente]);
@@ -175,18 +240,23 @@ class RankingSnapshotService {
 
                 if (!mapa[row.vendedor_id]) {
                     mapa[row.vendedor_id] = {
-                        vendas: 0,
-                        llo: 0,
+                        vendasNovas: 0,
+                        vendasSeminovas: 0,
+                        lloNovas: 0,
+                        lloSeminovas: 0,
                         ritmo: 0,
-                        retorno: 0,
+                        retornoNovas: 0,
+                        retornoSeminovas: 0,
                         captacao: 0,
                         contratos: 0,
                         cny: 0,
                         club: 0,
                         entrega_club: 0,
                         nps: 0,
-                        r2: 0,
-                        r4: 0
+                        r2Novas: 0,
+                        r2Seminovas: 0,
+                        r4Novas: 0,
+                        r4Seminovas: 0
                     };
                 }
 
@@ -194,17 +264,23 @@ class RankingSnapshotService {
             }
         };
 
-        merge(volume, 'vendas');
-        merge(llo, 'llo');
-        merge(ritmo, 'ritmo');
+        merge(volumeSeminovas, 'vendasSeminovas');
+        merge(volumeNovas, 'vendasNovas');
+        merge(lloSeminovas, 'lloSeminovas');
+        merge(lloNovas, 'lloNovas');
+        merge(ritmoSeminovas, 'ritmoSeminovas');
+        merge(ritmoNovas, 'ritmoNovas');
         merge(captacao, 'captacao');
         merge(contratos, 'contratos');
         merge(cny, 'cny');
         merge(club, 'club');
         merge(entrega_club, 'entrega_club');
-        merge(retorno, 'retorno');
-        merge(retorno, 'r2');
-        merge(retorno, 'r4');
+        merge(retornoSeminovas, 'retornoSeminovas');
+        merge(retornoSeminovas, 'r2Seminovas');
+        merge(retornoSeminovas, 'r4Seminovas');
+        merge(retornoNovas, 'retornoNovas');
+        merge(retornoNovas, 'r2Novas');
+        merge(retornoNovas, 'r4Novas');
         merge(nps, 'nps');
 
         // UPSERT
@@ -264,18 +340,18 @@ class RankingSnapshotService {
                 `, [
                     vendedor_id,
                     `${mes_referente}-01`,
-                    dados.vendas,
-                    dados.llo,
-                    dados.ritmo,
-                    dados.retorno,
+                    Number(dados.vendasNovas || 0) + Number(dados.vendasSeminovas || 0),
+                    Number(dados.lloNovas || 0) + Number(dados.lloSeminovas || 0),
+                    Number(dados.ritmoNovas || 0) + Number(dados.ritmoSeminovas || 0),
+                    Number(dados.retornoNovas || 0) + Number(dados.retornoSeminovas || 0),
                     dados.captacao,
                     dados.nps,
                     dados.contratos,
                     dados.cny,
                     dados.club,
                     dados.entrega_club,
-                    dados.r2,
-                    dados.r4
+                    Number(dados.r2Novas || 0) + Number(dados.r2Seminovas || 0),
+                    Number(dados.r4Novas || 0) + Number(dados.r2Novas || 0)
                 ])
             );
         }
