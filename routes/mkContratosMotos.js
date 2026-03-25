@@ -34,7 +34,7 @@ async function fetchMkContratosMotos(pool, sendLog, dataInicial, dataFinal) {
     idrelatorioconfiguracaoleiaute: 194,
     idrelatoriousuarioleiaute: 1146,
     ididioma: 1,
-    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 15],
+    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 15, 18],
     filtros: filtros
   }, {
     headers: {

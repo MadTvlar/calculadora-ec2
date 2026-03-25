@@ -32,7 +32,7 @@ async function fetchEstoqueMotos(pool,sendLog) {
     idrelatorioconfiguracaoleiaute: 47,
     idrelatoriousuarioleiaute: 1084,
     ididioma: 1,
-    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13],
+    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 18],
     filtros: filtros
   }, {
     headers: {

@@ -37,7 +37,7 @@ async function fetchMkVendasMotos(pool, sendLog, dataInicial, dataFinal) {
     idrelatorioconfiguracaoleiaute: 248,
     idrelatoriousuarioleiaute: 1177,
     ididioma: 1,
-    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 15],
+    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 15,18],
     filtros: filtros
   }, {
     headers: {
