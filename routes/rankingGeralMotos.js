@@ -172,7 +172,6 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
   const [rankContrato] = await pool.query(`
   SELECT 
     id_microwork,
-    empresa,
     TRIM(
       REGEXP_REPLACE(
         REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''),
@@ -183,7 +182,7 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
     COUNT(*) AS totalContratos
   FROM microwork.contratos_motos
   WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
-  GROUP BY id_microwork, empresa, vendedor
+  GROUP BY id_microwork, vendedor
   ORDER BY totalContratos DESC;
 `, [mesReferente]);
 
@@ -192,7 +191,6 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
   WITH vendas AS (
     SELECT 
       id_microwork,
-      empresa,
       TRIM(
         REGEXP_REPLACE(
           REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''),
@@ -209,7 +207,6 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
 
     SELECT 
       id_microwork,
-      empresa,
       TRIM(
         REGEXP_REPLACE(
           REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''),
@@ -224,13 +221,12 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
   )
   SELECT
     id_microwork,
-    empresa,
     vendedor,
     COUNT(*) - SUM(CASE WHEN quantidade = -1 THEN 2 ELSE 0 END) AS quantidadeRetorno
   FROM vendas
   WHERE retorno_porcent >= 2
     AND DATE_FORMAT(data_venda, '%Y-%m') = ?
-  GROUP BY id_microwork, empresa, vendedor
+  GROUP BY id_microwork, vendedor
   ORDER BY quantidadeRetorno DESC;
 `, [mesReferente]);
 
@@ -239,7 +235,6 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
   WITH vendas AS (
     SELECT 
       id_microwork,
-      empresa,
       TRIM(
         REGEXP_REPLACE(
           REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''), 
@@ -255,7 +250,6 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
 
     SELECT 
       id_microwork,
-      empresa,
       TRIM(
         REGEXP_REPLACE(
           REGEXP_REPLACE(TRIM(vendedor), '^[0-9. ]+', ''), 
@@ -269,7 +263,6 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
   )
   SELECT 
     id_microwork,
-    empresa,
     vendedor,
     SUM(
       CASE 
@@ -287,7 +280,7 @@ async function atualizarRankings(pool, sendLog, mesReferente) {
     ) AS r4
   FROM vendas
   WHERE DATE_FORMAT(data_venda, '%Y-%m') = ?
-  GROUP BY id_microwork, empresa, vendedor;
+  GROUP BY id_microwork, vendedor;
 `, [mesReferente]);
 
 
