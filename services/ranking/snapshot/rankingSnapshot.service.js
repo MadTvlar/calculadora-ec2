@@ -237,7 +237,7 @@ class RankingSnapshotService {
             };
         }
 
-        // mapa consolidado
+        // mapa
         const mapa = {};
 
         const merge = (rows, campo) => {
