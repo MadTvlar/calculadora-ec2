@@ -132,7 +132,7 @@ class RankingEngineService {
             const liberaCred = Number(dados.club || 0);
 
             const podeReceberPontos = vendas >= 5 && liberaCred >= 5;
-            const podeReceberBonus = vendas >= 7;
+            const podeReceberBonus = vendas >= 7 && liberaCred >= 3;
 
             // cálculo das regras
             for (const regra of regras) {

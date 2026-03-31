@@ -22,7 +22,7 @@ async function fetchMkcaptacaoMotos(pool,sendLog, dataInicial, dataFinal) {
     idrelatorioconfiguracaoleiaute: 531,
     idrelatoriousuarioleiaute: 1150,
     ididioma: 1,
-    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15],
+    listaempresas: [3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15,18],
     filtros: filtros
   }, {
     headers: {
