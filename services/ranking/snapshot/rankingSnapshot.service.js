@@ -354,7 +354,7 @@ class RankingSnapshotService {
                     dados.club,
                     dados.entrega_club,
                     Number(dados.r2Novas || 0) + Number(dados.r2Seminovas || 0),
-                    Number(dados.r4Novas || 0) + Number(dados.r2Novas || 0)
+                    Number(dados.r4Novas || 0) + Number(dados.r4Seminovas || 0)
                 ])
             );
         }
