@@ -517,7 +517,7 @@ async function initDatabase() {
             DEFAULT CURRENT_TIMESTAMP 
             ON UPDATE CURRENT_TIMESTAMP,
 
-        UNIQUE KEY uk_rank_vendedor_mes (mes_referente, rank_tipo_id, vendedor_id),
+        UNIQUE KEY uk_rank_vendedor_mes (mes_referente, rank_tipo_id, vendedor_id, grupo_id),
 
         INDEX idx_rank_mes (rank_tipo_id, mes_referente),
         INDEX idx_posicao (rank_tipo_id, mes_referente, posicao),
