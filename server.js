@@ -1245,21 +1245,21 @@ app.get('/api/motos/chassis-por-modelo', async (req, res) => {
 
   try {
     const [rows] = await connection.query(
-      `SELECT DISTINCT 
-          chassi, 
-          cor, 
-          patio, 
-          ano, 
-          dias_estoque,
-          CASE 
-            WHEN situacao_reserva = 'Ativa' THEN 'RESERVADO'
-            ELSE ''
-          END AS status_reserva
-       FROM microwork.estoque_motos 
-       WHERE modelo LIKE ?
-       ORDER BY patio DESC`,
-      [`%${modeloSelecionado.trim()}%`]
-    );
+    `SELECT DISTINCT 
+        chassi, 
+        cor, 
+        patio, 
+        ano, 
+        dias_estoque,
+        CASE 
+          WHEN situacao_reserva = 'Ativa' THEN 'RESERVADO'
+          ELSE ''
+        END AS status_reserva
+    FROM microwork.estoque_motos 
+    WHERE modelo = ? 
+    ORDER BY patio DESC`,
+    [modeloSelecionado.trim()]  // <-- remove os % do parâmetro
+);
 
     res.json(rows);  // Envia os dados com status_reserva para o front-end
   } catch (err) {
